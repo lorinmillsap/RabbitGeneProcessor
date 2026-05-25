@@ -1,7 +1,7 @@
 [
     {
         "Symbol": "B",
-        "Name": "Brown Locus",
+        "Name": "Black/brown Locus",
         "Description": "Controls the intensity of the black pigment.",
         "Category": "Color",
         "Alleles": [
@@ -26,7 +26,7 @@
     {
         "Symbol": "C",
         "Name": "Color Locus",
-        "Description": "Controls the amount of pigment developed.",
+        "Description": "Controls the amount of pigment developed.  More specifically controls tyrosinase which is a melanin precursor.",
         "Category": "Color",
         "Alleles": [
             {
@@ -176,6 +176,30 @@
         ]
     },
     {
+        "Symbol": "W",
+        "Name": "Wide Band Locus",
+        "Description": "Controls the width of the intermediate band on agouti hairs.",
+        "Category": "Color",
+        "Alleles": [
+            {
+                "Symbol": "W",
+                "Name": "Normal Band",
+                "Description": "Normal width band.",
+                "Dominance": "Dominant",
+                "Order": 1,
+                "AlternativeNotations": []
+            },
+            {
+                "Symbol": "w",
+                "Name": "Wide Band",
+                "Description": "Maximizes the expression of the intermediate band.",
+                "Dominance": "Recessive",
+                "Order": 2,
+                "AlternativeNotations": []
+            }
+        ]
+    },
+    {
         "Symbol": "A",
         "Name": "Agouti Locus",
         "Description": "Controls the distribution of pigment on the hair shaft.",
@@ -302,30 +326,6 @@
                 "Name": "Vienna",
                 "Description": "Heterozygous (Vv) often shows white spots/snip (Vienna Marked). Homozygous (vv) is Blue-Eyed White.",
                 "Dominance": "PartiallyRecessive",
-                "Order": 2,
-                "AlternativeNotations": []
-            }
-        ]
-    },
-    {
-        "Symbol": "W",
-        "Name": "Wide Band Locus",
-        "Description": "Controls the width of the intermediate band on agouti hairs.",
-        "Category": "Pattern",
-        "Alleles": [
-            {
-                "Symbol": "W",
-                "Name": "Normal Band",
-                "Description": "Normal width band.",
-                "Dominance": "Dominant",
-                "Order": 1,
-                "AlternativeNotations": []
-            },
-            {
-                "Symbol": "w",
-                "Name": "Wide Band",
-                "Description": "Maximizes the expression of the intermediate band.",
-                "Dominance": "Recessive",
                 "Order": 2,
                 "AlternativeNotations": []
             }
