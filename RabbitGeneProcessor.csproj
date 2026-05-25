@@ -9,5 +9,8 @@
 
     <ItemGroup>
         <None Include=".junie\**" />
+        <None Update="Data\LociDefinitions.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 </Project>

@@ -1,0 +1,478 @@
+[
+    {
+        "Symbol": "B",
+        "Name": "Brown Locus",
+        "Description": "Controls the intensity of the black pigment.",
+        "Category": "Color",
+        "Alleles": [
+            {
+                "Symbol": "B",
+                "Name": "Black",
+                "Description": "Full black pigment.",
+                "Dominance": "Dominant",
+                "Order": 1,
+                "AlternativeNotations": []
+            },
+            {
+                "Symbol": "b",
+                "Name": "Brown",
+                "Description": "Chocolate pigment.",
+                "Dominance": "Recessive",
+                "Order": 2,
+                "AlternativeNotations": []
+            }
+        ]
+    },
+    {
+        "Symbol": "C",
+        "Name": "Color Locus",
+        "Description": "Controls the amount of pigment developed.",
+        "Category": "Color",
+        "Alleles": [
+            {
+                "Symbol": "C",
+                "Name": "Full Color",
+                "Description": "Full development of color.",
+                "Dominance": "Dominant",
+                "Order": 1,
+                "AlternativeNotations": []
+            },
+            {
+                "Symbol": "cchd",
+                "Name": "Dark Chinchilla",
+                "Description": "Removes yellow pigment; dark grey.",
+                "Dominance": "PartiallyDominant",
+                "Order": 2,
+                "AlternativeNotations": [
+                    "c^chd",
+                    "C^chd"
+                ]
+            },
+            {
+                "Symbol": "cchl",
+                "Name": "Sable/Siamese",
+                "Description": "Shaded pattern.",
+                "Dominance": "PartiallyRecessive",
+                "Order": 3,
+                "AlternativeNotations": [
+                    "c^chl",
+                    "C^chl"
+                ]
+            },
+            {
+                "Symbol": "ch",
+                "Name": "Himalayan",
+                "Description": "Points colored, body white.",
+                "Dominance": "PartiallyRecessive",
+                "Order": 4,
+                "AlternativeNotations": [
+                    "c^h",
+                    "C^h"
+                ]
+            },
+            {
+                "Symbol": "c",
+                "Name": "REW",
+                "Description": "No pigment (White with Pink Eyes).",
+                "Dominance": "Recessive",
+                "Order": 5,
+                "AlternativeNotations": []
+            }
+        ]
+    },
+    {
+        "Symbol": "D",
+        "Name": "Dense/Dilute Locus",
+        "Description": "Controls the density of pigment granules.",
+        "Category": "Color",
+        "Alleles": [
+            {
+                "Symbol": "D",
+                "Name": "Dense",
+                "Description": "Normal pigment density.",
+                "Dominance": "Dominant",
+                "Order": 1,
+                "AlternativeNotations": []
+            },
+            {
+                "Symbol": "d",
+                "Name": "Dilute",
+                "Description": "Pigment granules are clumped, making colors look lighter (e.g., Blue instead of Black).",
+                "Dominance": "Recessive",
+                "Order": 2,
+                "AlternativeNotations": []
+            }
+        ]
+    },
+    {
+        "Symbol": "E",
+        "Name": "Extension Locus",
+        "Description": "Controls the extension of eumalanin.",
+        "Category": "Color",
+        "Alleles": [
+            {
+                "Symbol": "Es",
+                "Name": "Steel",
+                "Description": "Extends Eumelanin expression to the maximum; dominant to normal Extension (E).",
+                "Dominance": "PartiallyDominant",
+                "Order": 1,
+                "AlternativeNotations": [
+                    "ES",
+                    "E^s",
+                    "E^S"
+                ]
+            },
+            {
+                "Symbol": "E",
+                "Name": "Normal Extension",
+                "Description": "Normal distribution of color.",
+                "Dominance": "PartiallyDominant",
+                "Order": 2,
+                "AlternativeNotations": []
+            },
+            {
+                "Symbol": "ej",
+                "Name": "Harlequin",
+                "Description": "Patchy distribution of Eumalanin and Pheomelanin in alternating bands.",
+                "Dominance": "PartiallyRecessive",
+                "Order": 3,
+                "AlternativeNotations": [
+                    "E^j",
+                    "e^j"
+                ]
+            },
+            {
+                "Symbol": "e",
+                "Name": "Non-extension",
+                "Description": "Minimizes the expression of Eumalanin.",
+                "Dominance": "Recessive",
+                "Order": 4,
+                "AlternativeNotations": []
+            }
+        ]
+    },
+    {
+        "Symbol": "P",
+        "Name": "Lutino Locus",
+        "Description": "A rare mutation that causes a partial albinism and fully suppresess eumalanin resulting in pink eyes and an orange color.",
+        "Category": "Color",
+        "Alleles": [
+            {
+                "Symbol": "P",
+                "Name": "Normal Eye",
+                "Description": "Normal color and eye pigment.",
+                "Dominance": "Dominant",
+                "Order": 1,
+                "AlternativeNotations": []
+            },
+            {
+                "Symbol": "p",
+                "Name": "Pink-Eye Dilute",
+                "Description": "Lutino coloration.",
+                "Dominance": "Recessive",
+                "Order": 2,
+                "AlternativeNotations": []
+            }
+        ]
+    },
+    {
+        "Symbol": "A",
+        "Name": "Agouti Locus",
+        "Description": "Controls the distribution of pigment on the hair shaft.",
+        "Category": "Pattern",
+        "Alleles": [
+            {
+                "Symbol": "A",
+                "Name": "Agouti",
+                "Description": "Banded hair shaft; white or cream belly, eye circles, inside of ears, and underside of tail.",
+                "Dominance": "Dominant",
+                "Order": 1,
+                "AlternativeNotations": []
+            },
+            {
+                "Symbol": "at",
+                "Name": "Tan Pattern",
+                "Description": "Solid color top with tan/white markings on belly, eye circles, etc.",
+                "Dominance": "PartiallyDominant",
+                "Order": 2,
+                "AlternativeNotations": [
+                    "At",
+                    "a^t",
+                    "A^t"
+                ]
+            },
+            {
+                "Symbol": "a",
+                "Name": "Self",
+                "Description": "Solid color all over.",
+                "Dominance": "Recessive",
+                "Order": 3,
+                "AlternativeNotations": []
+            }
+        ]
+    },
+    {
+        "Symbol": "Du",
+        "Name": "Dutch Locus",
+        "Description": "Controls the Dutch marking pattern.",
+        "Category": "Pattern",
+        "Alleles": [
+            {
+                "Symbol": "Du",
+                "Name": "Normal",
+                "Description": "No Dutch markings.",
+                "Dominance": "Dominant",
+                "Order": 1,
+                "AlternativeNotations": []
+            },
+            {
+                "Symbol": "du",
+                "Name": "Dutch Marked",
+                "Description": "Dutch marking pattern (white belt, blaze, and feet).",
+                "Dominance": "Recessive",
+                "Order": 2,
+                "AlternativeNotations": []
+            }
+        ]
+    },
+    {
+        "Symbol": "En",
+        "Name": "Broken/English Spotting Locus",
+        "Description": "Controls white spotting pattern.",
+        "Category": "Pattern",
+        "Alleles": [
+            {
+                "Symbol": "En",
+                "Name": "Broken",
+                "Description": "White spotting pattern. Homozygous (EnEn) usually results in 'Charlie' pattern.",
+                "Dominance": "PartiallyDominant",
+                "Order": 1,
+                "AlternativeNotations": []
+            },
+            {
+                "Symbol": "en",
+                "Name": "Non-broken",
+                "Description": "Solid color (no spotting).",
+                "Dominance": "Recessive",
+                "Order": 2,
+                "AlternativeNotations": []
+            }
+        ]
+    },
+    {
+        "Symbol": "Si",
+        "Name": "Silvering Locus",
+        "Description": "Controls silvering (white hairs mixed with colored hairs).",
+        "Category": "Pattern",
+        "Alleles": [
+            {
+                "Symbol": "Si",
+                "Name": "Non-silver",
+                "Description": "No silvering.",
+                "Dominance": "Dominant",
+                "Order": 1,
+                "AlternativeNotations": []
+            },
+            {
+                "Symbol": "si",
+                "Name": "Silvering",
+                "Description": "Produces white hairs mixed with color.",
+                "Dominance": "Recessive",
+                "Order": 2,
+                "AlternativeNotations": []
+            }
+        ]
+    },
+    {
+        "Symbol": "V",
+        "Name": "Vienna Locus",
+        "Description": "Controls the Blue-Eyed White (BEW) pattern.",
+        "Category": "Pattern",
+        "Alleles": [
+            {
+                "Symbol": "V",
+                "Name": "Normal",
+                "Description": "Non-Vienna",
+                "Dominance": "Dominant",
+                "Order": 1,
+                "AlternativeNotations": []
+            },
+            {
+                "Symbol": "v",
+                "Name": "Vienna",
+                "Description": "Heterozygous (Vv) often shows white spots/snip (Vienna Marked). Homozygous (vv) is Blue-Eyed White.",
+                "Dominance": "PartiallyRecessive",
+                "Order": 2,
+                "AlternativeNotations": []
+            }
+        ]
+    },
+    {
+        "Symbol": "W",
+        "Name": "Wide Band Locus",
+        "Description": "Controls the width of the intermediate band on agouti hairs.",
+        "Category": "Pattern",
+        "Alleles": [
+            {
+                "Symbol": "W",
+                "Name": "Normal Band",
+                "Description": "Normal width band.",
+                "Dominance": "Dominant",
+                "Order": 1,
+                "AlternativeNotations": []
+            },
+            {
+                "Symbol": "w",
+                "Name": "Wide Band",
+                "Description": "Maximizes the expression of the intermediate band.",
+                "Dominance": "Recessive",
+                "Order": 2,
+                "AlternativeNotations": []
+            }
+        ]
+    },
+    {
+        "Symbol": "We",
+        "Name": "White-Eared Locus",
+        "Description": "A spotting gene that primarily affects the ears.",
+        "Category": "Pattern",
+        "Alleles": [
+            {
+                "Symbol": "We",
+                "Name": "White-Eared",
+                "Description": "Produces white ears and often white on the head.",
+                "Dominance": "PartiallyDominant",
+                "Order": 1,
+                "AlternativeNotations": []
+            },
+            {
+                "Symbol": "we",
+                "Name": "Normal",
+                "Description": "No white-eared markings.",
+                "Dominance": "Recessive",
+                "Order": 2,
+                "AlternativeNotations": []
+            }
+        ]
+    },
+    {
+        "Symbol": "L",
+        "Name": "Long Fur Locus",
+        "Description": "Controls hair length.",
+        "Category": "Fur",
+        "Alleles": [
+            {
+                "Symbol": "L",
+                "Name": "Normal Hair",
+                "Description": "Short, normal hair.",
+                "Dominance": "Dominant",
+                "Order": 1,
+                "AlternativeNotations": []
+            },
+            {
+                "Symbol": "l",
+                "Name": "Long Hair (Angora)",
+                "Description": "Long hair growth.",
+                "Dominance": "Recessive",
+                "Order": 2,
+                "AlternativeNotations": []
+            }
+        ]
+    },
+    {
+        "Symbol": "M",
+        "Name": "Mane Locus",
+        "Description": "Controls the presence of a mane.",
+        "Category": "Fur",
+        "Alleles": [
+            {
+                "Symbol": "M",
+                "Name": "Mane",
+                "Description": "Produces a mane. Heterozygous (Mm) usually results in a single mane, homozygous (MM) in a double mane.",
+                "Dominance": "PartiallyDominant",
+                "Order": 1,
+                "AlternativeNotations": []
+            },
+            {
+                "Symbol": "m",
+                "Name": "Normal",
+                "Description": "No mane.",
+                "Dominance": "Recessive",
+                "Order": 2,
+                "AlternativeNotations": []
+            }
+        ]
+    },
+    {
+        "Symbol": "R",
+        "Name": "Rex Locus",
+        "Description": "Controls the rex fur texture (short, plush).",
+        "Category": "Fur",
+        "Alleles": [
+            {
+                "Symbol": "R",
+                "Name": "Normal Fur",
+                "Description": "Normal length and texture.",
+                "Dominance": "Dominant",
+                "Order": 1,
+                "AlternativeNotations": []
+            },
+            {
+                "Symbol": "r",
+                "Name": "Rex",
+                "Description": "Short, dense, upright fur.",
+                "Dominance": "Recessive",
+                "Order": 2,
+                "AlternativeNotations": []
+            }
+        ]
+    },
+    {
+        "Symbol": "Sa",
+        "Name": "Satin Locus",
+        "Description": "Controls the satin sheen of the fur.",
+        "Category": "Fur",
+        "Alleles": [
+            {
+                "Symbol": "Sa",
+                "Name": "Normal",
+                "Description": "Normal fur texture.",
+                "Dominance": "Dominant",
+                "Order": 1,
+                "AlternativeNotations": []
+            },
+            {
+                "Symbol": "sa",
+                "Name": "Satin",
+                "Description": "Finer hair shaft with a transparent outer layer, creating high sheen.",
+                "Dominance": "Recessive",
+                "Order": 2,
+                "AlternativeNotations": []
+            }
+        ]
+    },
+    {
+        "Symbol": "Dw",
+        "Name": "Dwarf Locus",
+        "Description": "Controls dwarfism.",
+        "Category": "Body",
+        "Alleles": [
+            {
+                "Symbol": "DW",
+                "Name": "Dwarf",
+                "Description": "Reduces size. Homozygous (DWDW) is usually lethal ('Peanut').",
+                "Dominance": "Dominant",
+                "Order": 1,
+                "AlternativeNotations": []
+            },
+            {
+                "Symbol": "Dw",
+                "Name": "Normal Size",
+                "Description": "Normal sized rabbit.",
+                "Dominance": "Recessive",
+                "Order": 2,
+                "AlternativeNotations": []
+            }
+        ]
+    }
+]

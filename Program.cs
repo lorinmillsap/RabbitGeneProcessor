@@ -1,3 +1,5 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using RabbitGeneProcessor.Core;
 
-Console.WriteLine("Hello, World!");
+GeneticParser.Initialize(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "LociDefinitions.json"));
+
+Console.WriteLine("Rabbit Gene Processor Initialized.");
