@@ -183,13 +183,42 @@ public static class VarietyService
             }
         }
 
+        if (bestVariety == null)
+        {
+            // If no variety matches (e.g., cc or vv which are incomplete),
+            // try to find the variety that matches the MOST alleles.
+            maxVarietyMatches = -1;
+            foreach (var v in Varieties)
+            {
+                var varietyGenotype = RabbitGenotype.Parse(v.GenotypeString);
+                // Count how many loci in varietyGenotype are satisfied by the input genotype
+                int matches = 0;
+                foreach (var vLocus in varietyGenotype.Loci)
+                {
+                    if (genotype.Contains(new RabbitGenotype { Loci = { vLocus } }))
+                    {
+                        matches += CountSpecificity(new RabbitGenotype { Loci = { vLocus } });
+                    }
+                }
+
+                if (matches > maxVarietyMatches)
+                {
+                    maxVarietyMatches = matches;
+                    bestVariety = v;
+                }
+            }
+        }
+
         if (bestVariety == null) return "Unknown Variety";
 
         // 2. Identify Modifiers
         var baseGenotypeString = (breed?.GenotypeString ?? "") + "," + (bestVariety?.GenotypeString ?? "");
         var baseGenotype = RabbitGenotype.Parse(baseGenotypeString);
 
-        foreach (var modifier in Modifiers)
+        // Sort modifiers by specificity so we can skip redundant ones (e.g. MM vs M_)
+        var sortedModifiers = Modifiers.OrderByDescending(m => CountSpecificity(RabbitGenotype.Parse(m.GenotypeString))).ToList();
+
+        foreach (var modifier in sortedModifiers)
         {
             var modGenotype = RabbitGenotype.Parse(modifier.GenotypeString);
             
@@ -217,6 +246,16 @@ public static class VarietyService
                 // Also avoid including "Non-Vienna" if other Vienna genes are present.
                 if (appliedModifiers.Any(m => m.GenotypeString == modifier.GenotypeString))
                     continue;
+
+                // Avoid redundant modifiers if a more specific one on the same locus is already applied
+                if (appliedModifiers.Any(m => 
+                {
+                    var existingModGenotype = RabbitGenotype.Parse(m.GenotypeString);
+                    return existingModGenotype.Contains(modGenotype) && CountSpecificity(existingModGenotype) > CountSpecificity(modGenotype);
+                }))
+                {
+                    continue;
+                }
 
                 if (modifier.Name == "Non-Vienna" && genotype.Loci.Any(l => l.GetLocusSymbol() == "V" && (l.First.Symbol == "v" || l.Second.Symbol == "v")))
                     continue;

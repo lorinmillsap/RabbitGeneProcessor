@@ -60,13 +60,19 @@
   {
     "Name": "Single Mane",
     "GenotypeString": "Mm",
-    "Description": "Produces a single mane (Mm).",
+    "Description": "Produces a single mane (Mm).  Results in a weakened appearance compared to a double mane.",
     "Type": "Prefix"
   },
   {
     "Name": "Double Mane",
     "GenotypeString": "MM",
-    "Description": "Produces a double mane (MM).",
+    "Description": "Produces a double mane (MM).  Typically required for true Lionhead expression.",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Supersteel",
+    "GenotypeString": "EsEs",
+    "Description": "Homozygous Steel; extends Eumelanin expression to the absolute maximum, typically resulting in a solid color appearance in Agouti rabbits.",
     "Type": "Prefix"
   }
 ]

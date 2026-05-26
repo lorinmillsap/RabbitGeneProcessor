@@ -112,3 +112,9 @@ string g11Str = "A_,bb,C_,dd,EsE"; // Lilac Steel
 var g11 = RabbitGenotype.Parse(g11Str);
 string desc11 = VarietyService.IdentifyDescription(g11);
 Console.WriteLine($"Genotype: {g11} -> Description (No Breed): {desc11}");
+
+// Demonstrate Supersteel
+string g12Str = "A_,B_,C_,D_,EsEs"; // Supersteel Chestnut
+var g12 = RabbitGenotype.Parse(g12Str);
+string desc12 = VarietyService.IdentifyDescription(g12);
+Console.WriteLine($"Genotype: {g12} -> Description (No Breed): {desc12}");

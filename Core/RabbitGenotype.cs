@@ -106,10 +106,27 @@ public class RabbitGenotype
 
             // Check if thisLocus "contains" otherLocus alleles.
             // If otherLocus has 'En', thisLocus must have 'En'.
-            bool AllelePresent(Allele target, Locus source) => 
-                target.Symbol == "_" || source.First.Symbol == target.Symbol || source.Second.Symbol == target.Symbol;
+            bool AllelePresent(Allele target, Locus source, ref bool firstUsed, ref bool secondUsed)
+            {
+                if (target.Symbol == "_") return true;
+                if (!firstUsed && source.First.Symbol == target.Symbol)
+                {
+                    firstUsed = true;
+                    return true;
+                }
+                if (!secondUsed && source.Second.Symbol == target.Symbol)
+                {
+                    secondUsed = true;
+                    return true;
+                }
+                return false;
+            }
 
-            if (!AllelePresent(otherLocus.First, thisLocus) || !AllelePresent(otherLocus.Second, thisLocus))
+            bool fUsed = false;
+            bool sUsed = false;
+
+            if (!AllelePresent(otherLocus.First, thisLocus, ref fUsed, ref sUsed) || 
+                !AllelePresent(otherLocus.Second, thisLocus, ref fUsed, ref sUsed))
                 return false;
         }
         return true;
