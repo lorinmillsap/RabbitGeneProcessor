@@ -24,6 +24,7 @@
     "Name": "High Roufus",
     "GenotypeString": "ww",
     "Description": "Maximizes the expression of the intermediate band (Wide Band), often referred to as High Roufus in some contexts.",
+    "AlternateNames": ["HR", "Red"],
     "Type": "Prefix"
   },
   {
