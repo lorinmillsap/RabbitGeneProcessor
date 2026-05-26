@@ -132,5 +132,26 @@
         "Name": "Lilac Steel",
         "GenotypeString": "A_,bb,C_,dd,EsE",
         "Description": "The dilute brown version of Chocolate Steel."
+    },
+    {
+        "Name": "Black Magpie",
+        "GenotypeString": "A_,B_,cchd_,D_,ej_",
+        "Description": "Harlequin pattern with black pigment on a white background.",
+        "AlternateNames": [ "Magpie" ]
+    },
+    {
+        "Name": "Blue Magpie",
+        "GenotypeString": "A_,B_,cchd_,dd,ej_",
+        "Description": "The dilute version of Black Magpie."
+    },
+    {
+        "Name": "Chocolate Magpie",
+        "GenotypeString": "A_,bb,cchd_,D_,ej_",
+        "Description": "The brown version of Black Magpie."
+    },
+    {
+        "Name": "Lilac Magpie",
+        "GenotypeString": "A_,bb,cchd_,dd,ej_",
+        "Description": "The dilute brown version of Chocolate Magpie."
     }
 ]

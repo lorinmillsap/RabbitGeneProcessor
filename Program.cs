@@ -152,3 +152,14 @@ string g15Str = "aa,B_,C_,D_,ej_,En_"; // Black Tri
 var g15 = RabbitGenotype.Parse(g15Str);
 string desc15 = VarietyService.IdentifyDescription(g15);
 Console.WriteLine($"Genotype: {g15} -> Description (No Breed): {desc15}");
+
+// Demonstrate Magpie
+string g16Str = "A_,B_,cchd_,D_,ej_"; // Black Magpie
+var g16 = RabbitGenotype.Parse(g16Str);
+string desc16 = VarietyService.IdentifyDescription(g16);
+Console.WriteLine($"Genotype: {g16} -> Description (No Breed): {desc16}");
+
+string g17Str = "A_,bb,cchd_,dd,ej_"; // Lilac Magpie
+var g17 = RabbitGenotype.Parse(g17Str);
+string desc17 = VarietyService.IdentifyDescription(g17);
+Console.WriteLine($"Genotype: {g17} -> Description (No Breed): {desc17}");
