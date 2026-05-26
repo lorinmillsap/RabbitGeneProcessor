@@ -76,5 +76,11 @@
     "GenotypeString": "sasa",
     "Description": "Breed trait: satin sheen (sasa).",
     "Type": "Prefix"
+  },
+  {
+    "Name": "Mixed",
+    "GenotypeString": "",
+    "Description": "Generic mixed breed or unspecified breed.",
+    "Type": "Prefix"
   }
 ]

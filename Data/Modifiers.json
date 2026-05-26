@@ -74,5 +74,17 @@
     "GenotypeString": "EsEs",
     "Description": "Homozygous Steel; extends Eumelanin expression to the absolute maximum, typically resulting in a solid color appearance in Agouti rabbits.",
     "Type": "Prefix"
+  },
+  {
+    "Name": "Gold Tipped",
+    "GenotypeString": "C_",
+    "Description": "Specifies Gold Tipped expression, typically used with Steel varieties.",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Silver Tipped",
+    "GenotypeString": "cchd_",
+    "Description": "Specifies Silver Tipped expression (Dark Chinchilla), typically used with Steel varieties.",
+    "Type": "Prefix"
   }
 ]

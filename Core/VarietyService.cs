@@ -230,7 +230,16 @@ public static class VarietyService
                 {
                     // Special case: if the modifier is more specific than the base (e.g., MM vs M_)
                     if (CountSpecificity(modGenotype) <= CountSpecificity(baseGenotype, modGenotype))
-                        continue;
+                    {
+                        // EXCEPTION: "Gold Tipped" and "Silver Tipped" are intended to be explicit when 
+                        // used with Steel varieties, even if C_ or cchd_ is already in the base.
+                        if (modifier.Name != "Gold Tipped" && modifier.Name != "Silver Tipped")
+                            continue;
+                        
+                        // Only add them if Steel genes are present
+                        if (!genotype.Loci.Any(l => l.GetLocusSymbol() == "E" && l.ToString().Contains("Es")))
+                             continue;
+                    }
                 }
 
                 // 3. Special case: if the input genotype matches the EXCLUSION string of this modifier,

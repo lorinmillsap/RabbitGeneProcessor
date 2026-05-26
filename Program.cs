@@ -118,3 +118,23 @@ string g12Str = "A_,B_,C_,D_,EsEs"; // Supersteel Chestnut
 var g12 = RabbitGenotype.Parse(g12Str);
 string desc12 = VarietyService.IdentifyDescription(g12);
 Console.WriteLine($"Genotype: {g12} -> Description (No Breed): {desc12}");
+
+// Demonstrate Gold Tipped and Silver Tipped Steel
+string g13Str = "A_,B_,C_,D_,EsE"; // Gold Tipped Steel
+var g13 = RabbitGenotype.Parse(g13Str);
+string desc13 = VarietyService.IdentifyDescription(g13);
+Console.WriteLine($"Genotype: {g13} -> Description (No Breed): {desc13}");
+
+string g14Str = "A_,B_,cchd_,D_,EsE"; // Silver Tipped Steel
+var g14 = RabbitGenotype.Parse(g14Str);
+string desc14 = VarietyService.IdentifyDescription(g14);
+Console.WriteLine($"Genotype: {g14} -> Description (No Breed): {desc14}");
+
+// Demonstrate Gold Tipped Steel variety
+string description3 = "Gold Tipped Black Steel";
+var (pb3, pv3, pm3) = VarietyService.ParseDescription("Mixed " + description3); // Add dummy breed since ParseDescription requires one
+string pg3String = VarietyService.GetFullGenotypeString(pb3.Name, pv3.Name, pm3.Select(m => m.Name).ToList());
+var pg3 = RabbitGenotype.Parse(pg3String);
+Console.WriteLine($"\nDescription: {description3}");
+Console.WriteLine($"Parsed - Variety: {pv3.Name}, Modifiers: {string.Join(", ", pm3.Select(m => m.Name))}");
+Console.WriteLine($"Genotype: {pg3}");
