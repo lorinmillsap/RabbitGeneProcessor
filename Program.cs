@@ -84,3 +84,9 @@ string g6Str = "vv";
 var g6 = RabbitGenotype.Parse(g6Str);
 string desc6 = VarietyService.IdentifyDescription(g6);
 Console.WriteLine($"Genotype: {g6} -> Description (No Breed): {desc6}");
+
+// Demonstrate Pointed White
+string g7Str = "aa,bb,ch_,dd,E_"; // Lilac Pointed White
+var g7 = RabbitGenotype.Parse(g7Str);
+string desc7 = VarietyService.IdentifyDescription(g7);
+Console.WriteLine($"Genotype: {g7} -> Description (No Breed): {desc7}");

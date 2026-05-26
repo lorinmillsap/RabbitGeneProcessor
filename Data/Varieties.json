@@ -70,5 +70,25 @@
         "GenotypeString": "vv",
         "Description": "Total lack of pigment due to the Vienna gene, resulting in a white rabbit with blue eyes.",
         "AlternateNames": [ "BEW" ]
+    },
+    {
+        "Name": "Black Pointed White",
+        "GenotypeString": "aa,B_,ch_,D_,E_",
+        "Description": "Himalayan pattern with black points."
+    },
+    {
+        "Name": "Blue Pointed White",
+        "GenotypeString": "aa,B_,ch_,dd,E_",
+        "Description": "Himalayan pattern with blue points (dilute Black)."
+    },
+    {
+        "Name": "Chocolate Pointed White",
+        "GenotypeString": "aa,bb,ch_,D_,E_",
+        "Description": "Himalayan pattern with chocolate points."
+    },
+    {
+        "Name": "Lilac Pointed White",
+        "GenotypeString": "aa,bb,ch_,dd,E_",
+        "Description": "Himalayan pattern with lilac points (dilute Chocolate)."
     }
 ]
