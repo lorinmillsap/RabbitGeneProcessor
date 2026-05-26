@@ -90,3 +90,14 @@ string g7Str = "aa,bb,ch_,dd,E_"; // Lilac Pointed White
 var g7 = RabbitGenotype.Parse(g7Str);
 string desc7 = VarietyService.IdentifyDescription(g7);
 Console.WriteLine($"Genotype: {g7} -> Description (No Breed): {desc7}");
+
+// Demonstrate Chinchilla
+string g8Str = "A_,B_,cchd_,D_,E_";
+var g8 = RabbitGenotype.Parse(g8Str);
+string desc8 = VarietyService.IdentifyDescription(g8);
+Console.WriteLine($"Genotype: {g8} -> Description (No Breed): {desc8}");
+
+string g9Str = "A_,B_,cchd_,dd,E_"; // Squirrel
+var g9 = RabbitGenotype.Parse(g9Str);
+string desc9 = VarietyService.IdentifyDescription(g9);
+Console.WriteLine($"Genotype: {g9} -> Description (No Breed): {desc9}");

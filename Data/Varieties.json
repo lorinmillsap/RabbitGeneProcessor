@@ -90,5 +90,26 @@
         "Name": "Lilac Pointed White",
         "GenotypeString": "aa,bb,ch_,dd,E_",
         "Description": "Himalayan pattern with lilac points (dilute Chocolate)."
+    },
+    {
+        "Name": "Chinchilla",
+        "GenotypeString": "A_,B_,cchd_,D_,E_",
+        "Description": "Salt and pepper appearance with no yellow pigment.",
+        "AlternateNames": [ "Black Chinchilla" ]
+    },
+    {
+        "Name": "Squirrel",
+        "GenotypeString": "A_,B_,cchd_,dd,E_",
+        "Description": "The dilute version of Chinchilla."
+    },
+    {
+        "Name": "Chocolate Chinchilla",
+        "GenotypeString": "A_,bb,cchd_,D_,E_",
+        "Description": "The brown version of Chinchilla."
+    },
+    {
+        "Name": "Lilac Chinchilla",
+        "GenotypeString": "A_,bb,cchd_,dd,E_",
+        "Description": "The dilute brown version of Chocolate Chinchilla."
     }
 ]
