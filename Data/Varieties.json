@@ -64,5 +64,11 @@
         "GenotypeString": "cc",
         "Description": "Total lack of pigment, resulting in a white rabbit with ruby (pink) eyes.",
         "AlternateNames": [ "REW", "Red Eyed White" ]
+    },
+    {
+        "Name": "Blue Eyed White",
+        "GenotypeString": "vv",
+        "Description": "Total lack of pigment due to the Vienna gene, resulting in a white rabbit with blue eyes.",
+        "AlternateNames": [ "BEW" ]
     }
 ]

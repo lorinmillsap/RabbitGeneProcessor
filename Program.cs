@@ -78,3 +78,9 @@ string g5Str = "cc";
 var g5 = RabbitGenotype.Parse(g5Str);
 string desc5 = VarietyService.IdentifyDescription(g5);
 Console.WriteLine($"Genotype: {g5} -> Description (No Breed): {desc5}");
+
+// Demonstrate Blue Eyed White
+string g6Str = "vv";
+var g6 = RabbitGenotype.Parse(g6Str);
+string desc6 = VarietyService.IdentifyDescription(g6);
+Console.WriteLine($"Genotype: {g6} -> Description (No Breed): {desc6}");
