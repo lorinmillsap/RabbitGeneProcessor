@@ -86,5 +86,11 @@
     "GenotypeString": "cchd_",
     "Description": "Specifies Silver Tipped expression (Dark Chinchilla), typically used with Steel varieties.",
     "Type": "Prefix"
+  },
+  {
+    "Name": "Tri",
+    "GenotypeString": "ej_,En_",
+    "Description": "Produces a tri-color pattern (Harlequin + Broken).",
+    "Type": "Suffix"
   }
 ]

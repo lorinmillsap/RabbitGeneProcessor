@@ -138,3 +138,17 @@ var pg3 = RabbitGenotype.Parse(pg3String);
 Console.WriteLine($"\nDescription: {description3}");
 Console.WriteLine($"Parsed - Variety: {pv3.Name}, Modifiers: {string.Join(", ", pm3.Select(m => m.Name))}");
 Console.WriteLine($"Genotype: {pg3}");
+
+// Demonstrate Postfix Modifier: Tri
+string description4 = "Black Tri";
+var (pb4, pv4, pm4) = VarietyService.ParseDescription("Mixed " + description4);
+string pg4String = VarietyService.GetFullGenotypeString(pb4.Name, pv4.Name, pm4.Select(m => m.Name).ToList());
+var pg4 = RabbitGenotype.Parse(pg4String);
+Console.WriteLine($"\nDescription: {description4}");
+Console.WriteLine($"Parsed - Variety: {pv4.Name}, Modifiers: {string.Join(", ", pm4.Select(m => m.Name))}");
+Console.WriteLine($"Genotype: {pg4}");
+
+string g15Str = "aa,B_,C_,D_,ej_,En_"; // Black Tri
+var g15 = RabbitGenotype.Parse(g15Str);
+string desc15 = VarietyService.IdentifyDescription(g15);
+Console.WriteLine($"Genotype: {g15} -> Description (No Breed): {desc15}");

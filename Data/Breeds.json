@@ -78,9 +78,10 @@
     "Type": "Prefix"
   },
   {
-    "Name": "Mixed",
+    "Name": "Mixed Breed/Cross",
     "GenotypeString": "",
     "Description": "Generic mixed breed or unspecified breed.",
+    "AlternateNames": ["Mixed"],
     "Type": "Prefix"
   }
 ]
