@@ -1,0 +1,80 @@
+﻿[
+  {
+    "Name": "English Angora",
+    "GenotypeString": "ll",
+    "Description": "Angora breed trait: long wool (ll).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "French Angora",
+    "GenotypeString": "ll",
+    "Description": "Angora breed trait: long wool (ll).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Giant Angora",
+    "GenotypeString": "ll",
+    "Description": "Angora breed trait: long wool (ll).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "German Angora",
+    "GenotypeString": "ll",
+    "Description": "Angora breed trait: long wool (ll).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Jersey Wooly",
+    "GenotypeString": "ll",
+    "Description": "Breed trait: long wool (ll).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "American Fuzzy Lop",
+    "GenotypeString": "ll",
+    "Description": "Breed trait: long wool (ll).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Satin Angora",
+    "GenotypeString": "ll,sasa",
+    "Description": "Breed trait: long wool and satin sheen (ll, sasa).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Lionhead",
+    "GenotypeString": "M_",
+    "Description": "Breed trait: presence of a mane (M_).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Rex",
+    "GenotypeString": "rr",
+    "Description": "Breed trait: short, plush rex fur (rr).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Mini Rex",
+    "GenotypeString": "rr",
+    "Description": "Breed trait: short, plush rex fur (rr).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Velveteen Lop",
+    "GenotypeString": "rr",
+    "Description": "Breed trait: short, plush rex fur (rr).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Satin",
+    "GenotypeString": "sasa",
+    "Description": "Breed trait: satin sheen (sasa).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Mini Satin",
+    "GenotypeString": "sasa",
+    "Description": "Breed trait: satin sheen (sasa).",
+    "Type": "Prefix"
+  }
+]

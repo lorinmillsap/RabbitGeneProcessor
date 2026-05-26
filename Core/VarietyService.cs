@@ -9,8 +9,9 @@ public static class VarietyService
 {
     private static List<VarietyDefinition>? _varieties;
     private static List<VarietyDefinition>? _modifiers;
+    private static List<VarietyDefinition>? _breeds;
 
-    public static void Initialize(string varietiesPath, string modifiersPath)
+    public static void Initialize(string varietiesPath, string modifiersPath, string breedsPath)
     {
         var options = new JsonSerializerOptions
         {
@@ -25,23 +26,32 @@ public static class VarietyService
 
         var modifiersJson = File.ReadAllText(modifiersPath);
         _modifiers = JsonSerializer.Deserialize<List<VarietyDefinition>>(modifiersJson, options);
+
+        var breedsJson = File.ReadAllText(breedsPath);
+        _breeds = JsonSerializer.Deserialize<List<VarietyDefinition>>(breedsJson, options);
     }
 
     public static List<VarietyDefinition> Varieties => _varieties ?? throw new InvalidOperationException("VarietyService not initialized.");
     public static List<VarietyDefinition> Modifiers => _modifiers ?? throw new InvalidOperationException("VarietyService not initialized.");
+    public static List<VarietyDefinition> Breeds => _breeds ?? throw new InvalidOperationException("VarietyService not initialized.");
 
     /// <summary>
-    /// Gets the full genotype string for a variety, optionally applying modifiers.
+    /// Gets the full genotype string for a breed and variety, optionally applying modifiers.
     /// Uses ExclusionGenotypeStrings from modifiers to determine default values for omitted modifiers.
     /// </summary>
-    public static string GetFullGenotypeString(string varietyName, List<string>? modifierNames = null)
+    public static string GetFullGenotypeString(string breedName, string varietyName, List<string>? modifierNames = null)
     {
+        var breed = Breeds.FirstOrDefault(b => 
+            b.Name.Equals(breedName, StringComparison.OrdinalIgnoreCase) || 
+            (b.AlternateNames != null && b.AlternateNames.Any(a => a.Equals(breedName, StringComparison.OrdinalIgnoreCase))))
+                      ?? throw new ArgumentException($"Breed '{breedName}' not found.", nameof(breedName));
+
         var variety = Varieties.FirstOrDefault(v => 
             v.Name.Equals(varietyName, StringComparison.OrdinalIgnoreCase) || 
             (v.AlternateNames != null && v.AlternateNames.Any(a => a.Equals(varietyName, StringComparison.OrdinalIgnoreCase))))
                       ?? throw new ArgumentException($"Variety '{varietyName}' not found.", nameof(varietyName));
 
-        var genotypeParts = new List<string> { variety.GenotypeString };
+        var genotypeParts = new List<string> { breed.GenotypeString, variety.GenotypeString };
         var appliedModifiers = new List<VarietyDefinition>();
 
         if (modifierNames != null)
