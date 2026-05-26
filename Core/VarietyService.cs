@@ -147,4 +147,130 @@ public static class VarietyService
 
         return string.Join(",", combinedLoci.Values);
     }
+
+    /// <summary>
+    /// Attempts to identify the breed, variety, and modifiers for a given genotype.
+    /// </summary>
+    public static string IdentifyDescription(RabbitGenotype genotype)
+    {
+        VarietyDefinition? bestBreed = null;
+        VarietyDefinition? bestVariety = null;
+        var appliedModifiers = new List<VarietyDefinition>();
+
+        // 1. Identify Breed
+        // Breeds usually have specific genes (like ll for Angora).
+        // We look for the breed that has the most matching loci.
+        int maxBreedMatches = -1;
+        foreach (var breed in Breeds)
+        {
+            var breedGenotype = RabbitGenotype.Parse(breed.GenotypeString);
+            if (genotype.Contains(breedGenotype))
+            {
+                int specificity = CountSpecificity(breedGenotype);
+                if (specificity > maxBreedMatches)
+                {
+                    maxBreedMatches = specificity;
+                    bestBreed = breed;
+                }
+            }
+        }
+
+        // 2. Identify Variety
+        int maxVarietyMatches = -1;
+        foreach (var variety in Varieties)
+        {
+            var varietyGenotype = RabbitGenotype.Parse(variety.GenotypeString);
+            if (genotype.Contains(varietyGenotype))
+            {
+                // We want the most specific variety.
+                int specificity = CountSpecificity(varietyGenotype);
+                if (specificity > maxVarietyMatches)
+                {
+                    maxVarietyMatches = specificity;
+                    bestVariety = variety;
+                }
+            }
+        }
+
+        if (bestVariety == null) return "Unknown Variety";
+
+        // 3. Identify Modifiers
+        var baseGenotypeString = (bestBreed?.GenotypeString ?? "") + "," + (bestVariety?.GenotypeString ?? "");
+        var baseGenotype = RabbitGenotype.Parse(baseGenotypeString);
+
+        foreach (var modifier in Modifiers)
+        {
+            var modGenotype = RabbitGenotype.Parse(modifier.GenotypeString);
+            
+            // 1. Does the input genotype match this modifier?
+            if (genotype.Contains(modGenotype))
+            {
+                // 2. Is this modifier already "covered" by the base variety/breed?
+                if (baseGenotype.Contains(modGenotype))
+                {
+                    // Special case: if the modifier is more specific than the base (e.g., MM vs M_)
+                    if (CountSpecificity(modGenotype) <= CountSpecificity(baseGenotype, modGenotype))
+                        continue;
+                }
+
+                // 3. Special case: if the input genotype matches the EXCLUSION string of this modifier,
+                // we should NOT add the modifier name.
+                if (!string.IsNullOrEmpty(modifier.ExclusionGenotypeString))
+                {
+                    var exclusionGenotype = RabbitGenotype.Parse(modifier.ExclusionGenotypeString);
+                    if (genotype.Contains(exclusionGenotype))
+                        continue;
+                }
+
+                // 4. Avoid double counting identical genotypes (VM/VC)
+                if (appliedModifiers.Any(m => m.GenotypeString == modifier.GenotypeString))
+                    continue;
+
+                appliedModifiers.Add(modifier);
+            }
+        }
+
+        if (bestVariety == null) return "Unknown Variety";
+
+        var description = bestVariety.Name;
+        
+        // Apply prefix modifiers
+        foreach (var mod in appliedModifiers.Where(m => m.Type == ModifierType.Prefix))
+        {
+            if (!description.Contains(mod.Name))
+                description = mod.Name + " " + description;
+        }
+
+        // Apply breed as prefix (most common)
+        if (bestBreed != null)
+        {
+            if (!description.Contains(bestBreed.Name))
+                description = bestBreed.Name + " " + description;
+        }
+
+        // Apply suffix modifiers
+        foreach (var mod in appliedModifiers.Where(m => m.Type == ModifierType.Suffix))
+        {
+            if (!description.Contains(mod.Name))
+                description = description + " " + mod.Name;
+        }
+
+        return description;
+    }
+
+    private static int CountSpecificity(RabbitGenotype genotype, RabbitGenotype? filterBy = null)
+    {
+        int score = 0;
+        var filterLoci = filterBy?.Loci.ToDictionary(l => l.GetLocusSymbol()) ?? new Dictionary<string, Locus>();
+
+        foreach (var locus in genotype.Loci)
+        {
+            var symbol = locus.GetLocusSymbol();
+            if (filterBy != null && !filterLoci.ContainsKey(symbol)) continue;
+
+            if (locus.First.Symbol != "_") score++;
+            if (locus.Second.Symbol != "_") score++;
+        }
+        return score;
+    }
 }

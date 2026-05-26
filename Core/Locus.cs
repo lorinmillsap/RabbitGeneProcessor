@@ -22,6 +22,21 @@ public record Locus(Allele First, Allele Second)
         return GeneticParser.GetLocusSymbol(First.Symbol);
     }
 
+    /// <summary>
+    /// Checks if this locus matches another locus. 
+    /// Handles underscores as wildcards.
+    /// </summary>
+    public bool Matches(Locus other)
+    {
+        if (GetLocusSymbol() != other.GetLocusSymbol()) return false;
+
+        bool FirstMatch(Allele a1, Allele a2) => a1.Symbol == "_" || a2.Symbol == "_" || a1.Symbol == a2.Symbol;
+
+        // Try both combinations because Aat is the same as atA
+        return (FirstMatch(First, other.First) && FirstMatch(Second, other.Second)) ||
+               (FirstMatch(First, other.Second) && FirstMatch(Second, other.First));
+    }
+
     public override string ToString() => $"{First}{Second}";
 
     /// <summary>

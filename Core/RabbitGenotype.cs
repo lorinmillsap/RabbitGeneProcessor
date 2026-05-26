@@ -66,4 +66,52 @@ public class RabbitGenotype
     }
 
     public override string ToString() => string.Join(",", Loci);
+
+    /// <summary>
+    /// Checks if this genotype matches another genotype.
+    /// Handles wildcards in both.
+    /// </summary>
+    public bool Matches(RabbitGenotype other)
+    {
+        var thisLoci = Loci.ToDictionary(l => l.GetLocusSymbol());
+        var otherLoci = other.Loci.ToDictionary(l => l.GetLocusSymbol());
+
+        var allSymbols = thisLoci.Keys.Union(otherLoci.Keys);
+
+        foreach (var symbol in allSymbols)
+        {
+            if (thisLoci.TryGetValue(symbol, out var l1) && otherLoci.TryGetValue(symbol, out var l2))
+            {
+                if (!l1.Matches(l2)) return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Checks if this genotype "contains" the other genotype.
+    /// This is stricter than Match: the other's alleles must be present in this genotype,
+    /// and wildcards in the other do NOT match specific alleles in this unless they are also wildcards?
+    /// Actually, for modifiers: if mod is En_, and rabbit is enen, it does NOT contain En_.
+    /// If rabbit is Enen, it DOES contain En_.
+    /// </summary>
+    public bool Contains(RabbitGenotype other)
+    {
+        var thisLoci = Loci.ToDictionary(l => l.GetLocusSymbol());
+        foreach (var otherLocus in other.Loci)
+        {
+            var symbol = otherLocus.GetLocusSymbol();
+            if (!thisLoci.TryGetValue(symbol, out var thisLocus)) return false;
+
+            // Check if thisLocus "contains" otherLocus alleles.
+            // If otherLocus has 'En', thisLocus must have 'En'.
+            bool AllelePresent(Allele target, Locus source) => 
+                target.Symbol == "_" || source.First.Symbol == target.Symbol || source.Second.Symbol == target.Symbol;
+
+            if (!AllelePresent(otherLocus.First, thisLocus) || !AllelePresent(otherLocus.Second, thisLocus))
+                return false;
+        }
+        return true;
+    }
 }

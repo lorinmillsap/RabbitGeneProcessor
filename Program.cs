@@ -49,3 +49,20 @@ var pg2 = RabbitGenotype.Parse(pg2String);
 Console.WriteLine($"\nDescription: {description2}");
 Console.WriteLine($"Parsed - Breed: {pb2.Name}, Variety: {pv2.Name}, Modifiers: {string.Join(", ", pm2.Select(m => m.Name))}");
 Console.WriteLine($"Genotype: {pg2}");
+
+// Demonstrate converting genotype back to variety description
+Console.WriteLine("\n--- Genotype to Description ---");
+string g1Str = "aa,bb,C_,dd,E_,En_,Vv,rr"; // Broken VM Lilac Rex
+var g1 = RabbitGenotype.Parse(g1Str);
+string desc1 = VarietyService.IdentifyDescription(g1);
+Console.WriteLine($"Genotype: {g1} -> Description: {desc1}");
+
+string g2Str = "A_,B_,C_,D_,E_,ll"; // English Angora Chestnut
+var g2 = RabbitGenotype.Parse(g2Str);
+string desc2 = VarietyService.IdentifyDescription(g2);
+Console.WriteLine($"Genotype: {g2} -> Description: {desc2}");
+
+string g3Str = "aa,B_,C_,D_,E_,MM"; // Double Mane Black Lionhead
+var g3 = RabbitGenotype.Parse(g3Str);
+string desc3 = VarietyService.IdentifyDescription(g3);
+Console.WriteLine($"Genotype: {g3} -> Description: {desc3}");
