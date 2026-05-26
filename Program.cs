@@ -72,3 +72,9 @@ string g4Str = "A_,B_,C_,dd,E_,En_"; // Broken Opal
 var g4 = RabbitGenotype.Parse(g4Str);
 string desc4 = VarietyService.IdentifyDescription(g4);
 Console.WriteLine($"Genotype: {g4} -> Description (No Breed): {desc4}");
+
+// Demonstrate Ruby Eyed White
+string g5Str = "cc";
+var g5 = RabbitGenotype.Parse(g5Str);
+string desc5 = VarietyService.IdentifyDescription(g5);
+Console.WriteLine($"Genotype: {g5} -> Description (No Breed): {desc5}");

@@ -58,5 +58,11 @@
         "Name": "Lilac",
         "GenotypeString": "aa,bb,C_,dd,E_",
         "Description": "The dilute version of Chocolate."
+    },
+    {
+        "Name": "Ruby Eyed White",
+        "GenotypeString": "cc",
+        "Description": "Total lack of pigment, resulting in a white rabbit with ruby (pink) eyes.",
+        "AlternateNames": [ "REW", "Red Eyed White" ]
     }
 ]
