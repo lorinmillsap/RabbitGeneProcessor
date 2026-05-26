@@ -101,3 +101,14 @@ string g9Str = "A_,B_,cchd_,dd,E_"; // Squirrel
 var g9 = RabbitGenotype.Parse(g9Str);
 string desc9 = VarietyService.IdentifyDescription(g9);
 Console.WriteLine($"Genotype: {g9} -> Description (No Breed): {desc9}");
+
+// Demonstrate Steel
+string g10Str = "A_,B_,C_,D_,EsE"; // Black Steel
+var g10 = RabbitGenotype.Parse(g10Str);
+string desc10 = VarietyService.IdentifyDescription(g10);
+Console.WriteLine($"Genotype: {g10} -> Description (No Breed): {desc10}");
+
+string g11Str = "A_,bb,C_,dd,EsE"; // Lilac Steel
+var g11 = RabbitGenotype.Parse(g11Str);
+string desc11 = VarietyService.IdentifyDescription(g11);
+Console.WriteLine($"Genotype: {g11} -> Description (No Breed): {desc11}");

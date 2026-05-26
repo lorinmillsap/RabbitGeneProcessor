@@ -111,5 +111,26 @@
         "Name": "Lilac Chinchilla",
         "GenotypeString": "A_,bb,cchd_,dd,E_",
         "Description": "The dilute brown version of Chocolate Chinchilla."
+    },
+    {
+        "Name": "Black Steel",
+        "GenotypeString": "A_,B_,C_,D_,EsE",
+        "Description": "Steel version of Black, showing heavy ticking.",
+        "AlternateNames": [ "Steel" ]
+    },
+    {
+        "Name": "Blue Steel",
+        "GenotypeString": "A_,B_,C_,dd,EsE",
+        "Description": "The dilute version of Black Steel."
+    },
+    {
+        "Name": "Chocolate Steel",
+        "GenotypeString": "A_,bb,C_,D_,EsE",
+        "Description": "The brown version of Black Steel."
+    },
+    {
+        "Name": "Lilac Steel",
+        "GenotypeString": "A_,bb,C_,dd,EsE",
+        "Description": "The dilute brown version of Chocolate Steel."
     }
 ]
