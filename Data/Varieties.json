@@ -1,0 +1,62 @@
+﻿[
+    {
+        "Name": "Chestnut",
+        "GenotypeString": "A_,B_,C_,D_,E_",
+        "Description": "A standard wild-type agouti color."
+    },
+    {
+        "Name": "Opal",
+        "GenotypeString": "A_,B_,C_,dd,E_",
+        "Description": "The dilute version of Chestnut (Blue Agouti)."
+    },
+    {
+        "Name": "Chocolate Agouti",
+        "GenotypeString": "A_,bb,C_,D_,E_",
+        "Description": "The brown version of Chestnut."
+    },
+    {
+        "Name": "Lynx",
+        "GenotypeString": "A_,bb,C_,dd,E_",
+        "Description": "The dilute version of Chocolate Agouti (Lilac Agouti)."
+    },
+    {
+        "Name": "Black Otter",
+        "GenotypeString": "at_,B_,C_,D_,E_",
+        "Description": "Tan pattern with black pigment."
+    },
+    {
+        "Name": "Blue Otter",
+        "GenotypeString": "at_,B_,C_,dd,E_",
+        "Description": "The dilute version of Black Otter."
+    },
+    {
+        "Name": "Chocolate Otter",
+        "GenotypeString": "at_,bb,C_,D_,E_",
+        "Description": "The brown version of Black Otter."
+    },
+    {
+        "Name": "Lilac Otter",
+        "GenotypeString": "at_,bb,C_,dd,E_",
+        "Description": "The dilute brown version of Chocolate Otter."
+    },
+    {
+        "Name": "Black",
+        "GenotypeString": "aa,B_,C_,D_,E_",
+        "Description": "Solid black color."
+    },
+    {
+        "Name": "Blue",
+        "GenotypeString": "aa,B_,C_,dd,E_",
+        "Description": "The dilute version of Black."
+    },
+    {
+        "Name": "Chocolate",
+        "GenotypeString": "aa,bb,C_,D_,E_",
+        "Description": "Solid brown color."
+    },
+    {
+        "Name": "Lilac",
+        "GenotypeString": "aa,bb,C_,dd,E_",
+        "Description": "The dilute version of Chocolate."
+    }
+]

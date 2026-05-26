@@ -25,70 +25,130 @@ public static class GeneticParser
     public static List<LocusDefinition> Definitions => _definitions ?? throw new InvalidOperationException("Parser not initialized.");
 
     /// <summary>
-    /// Parses a single locus string (e.g., "Aat", "Enen", "A_").
+    /// Parses a single locus string (e.g., "Aat", "Enen", "A_", "A(ata)").
     /// </summary>
     public static Locus ParseLocus(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
             throw new ArgumentException("Input cannot be empty.", nameof(input));
 
-        // Try to match against known multi-character alleles from definitions
-        // We want to find the longest matching allele symbol at the start of the string
-        
-        var allAlleles = Definitions.SelectMany(l => l.Alleles)
+        var alleles = new List<Allele>();
+        int index = 0;
+
+        while (index < input.Length && alleles.Count < 2)
+        {
+            var alleleResult = ParseNextAllele(input, ref index);
+            alleles.Add(alleleResult);
+        }
+
+        if (alleles.Count == 1)
+        {
+            var first = alleles[0];
+            // If the first allele has suspected/excluded but is not unknown, 
+            // it's likely a shorthand for the recessive position: A(ata) -> A, _(ata)
+            if (!first.IsUnknown && (first.Suspected is { Count: > 0 } || first.Excluded is { Count: > 0 }))
+            {
+                alleles[0] = first with { Suspected = null, Excluded = null };
+                alleles.Add(new Allele("_", first.Suspected, first.Excluded));
+            }
+            else
+            {
+                alleles.Add(new Allele("_"));
+            }
+        }
+
+        return new Locus(alleles[0], alleles[1]);
+    }
+
+    private static Allele ParseNextAllele(string input, ref int index)
+    {
+        var allSymbols = Definitions.SelectMany(l => l.Alleles)
             .SelectMany(a => new[] { a.Symbol }.Concat(a.AlternativeNotations))
             .OrderByDescending(s => s.Length)
             .ToList();
+        allSymbols.Add("_");
 
-        // Also add the unknown marker
-        allAlleles.Add("_");
-
-        string? firstAllele = null;
-        string? secondAllele = null;
-
-        // Find first allele
-        foreach (var symbol in allAlleles)
+        string? baseSymbol = null;
+        foreach (var symbol in allSymbols)
         {
-            if (input.StartsWith(symbol))
+            if (input.AsSpan(index).StartsWith(symbol))
             {
-                firstAllele = symbol;
-                // Map back to standard symbol if it was an alternative
-                firstAllele = NormalizeAllele(firstAllele);
+                baseSymbol = symbol;
+                index += symbol.Length;
                 break;
             }
         }
 
-        if (firstAllele == null)
+        if (baseSymbol == null)
         {
-             // Fallback to first char if no match found (might be a new or undefined allele)
-             firstAllele = input[0].ToString();
+            baseSymbol = input[index].ToString();
+            index++;
         }
 
-        string remaining = input.Substring(MatchLength(input, firstAllele));
+        baseSymbol = NormalizeAllele(baseSymbol);
 
-        if (string.IsNullOrEmpty(remaining))
+        List<string>? suspected = null;
+        List<string>? excluded = null;
+
+        while (index < input.Length)
         {
-            secondAllele = "_";
-        }
-        else
-        {
-            foreach (var symbol in allAlleles)
+            if (input[index] == '(')
             {
-                if (remaining.StartsWith(symbol))
+                index++;
+                suspected = ParseAlleleList(input, ref index, ')');
+            }
+            else if (input[index] == '[')
+            {
+                index++;
+                excluded = ParseAlleleList(input, ref index, ']');
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return new Allele(baseSymbol, suspected, excluded);
+    }
+
+    private static List<string> ParseAlleleList(string input, ref int index, char endChar)
+    {
+        var list = new List<string>();
+        var allSymbols = Definitions.SelectMany(l => l.Alleles)
+            .SelectMany(a => new[] { a.Symbol }.Concat(a.AlternativeNotations))
+            .OrderByDescending(s => s.Length)
+            .ToList();
+
+        while (index < input.Length && input[index] != endChar)
+        {
+            string? foundSymbol = null;
+            foreach (var symbol in allSymbols)
+            {
+                if (input.AsSpan(index).StartsWith(symbol))
                 {
-                    secondAllele = symbol;
-                    secondAllele = NormalizeAllele(secondAllele);
+                    foundSymbol = symbol;
+                    index += symbol.Length;
                     break;
                 }
             }
-            
-            if (secondAllele == null)
+
+            if (foundSymbol != null)
             {
-                secondAllele = remaining; // Take whatever is left
+                list.Add(NormalizeAllele(foundSymbol));
+            }
+            else
+            {
+                list.Add(input[index].ToString());
+                index++;
             }
         }
 
-        return new Locus(new Allele(firstAllele), new Allele(secondAllele));
+        if (index < input.Length && input[index] == endChar)
+        {
+            index++;
+        }
+
+        return list;
     }
 
     private static string NormalizeAllele(string symbol)
@@ -105,26 +165,5 @@ public static class GeneticParser
             }
         }
         return symbol;
-    }
-
-    private static int MatchLength(string input, string normalizedSymbol)
-    {
-        // Find what actually matched in the input to know how much to skip
-        if (input.StartsWith(normalizedSymbol)) return normalizedSymbol.Length;
-        
-        foreach (var locus in Definitions)
-        {
-            foreach (var allele in locus.Alleles)
-            {
-                if (allele.Symbol == normalizedSymbol)
-                {
-                    foreach (var alt in allele.AlternativeNotations)
-                    {
-                        if (input.StartsWith(alt)) return alt.Length;
-                    }
-                }
-            }
-        }
-        return normalizedSymbol.Length;
     }
 }

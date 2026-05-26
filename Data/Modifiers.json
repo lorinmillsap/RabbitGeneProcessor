@@ -1,0 +1,149 @@
+﻿[
+  {
+    "Name": "Broken",
+    "GenotypeString": "En_",
+    "ExclusionGenotypeString": "enen",
+    "Description": "Adds broken pattern to the variety.",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Vienna Marked",
+    "GenotypeString": "Vv",
+    "Description": "Adds white spots and/or blaze pattern and/or blue eyes (Vienna Marked).",
+    "AlternateNames": ["VM"],
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Vienna Carrier",
+    "GenotypeString": "Vv",
+    "Description": "Carries the Vienna gene (v) but does not show white markings; visually identical to a non-carrier but can produce BEW or VM offspring.",
+    "AlternateNames": ["VC"],
+    "Type": "Prefix"
+  },
+  {
+    "Name": "High Roufus",
+    "GenotypeString": "ww",
+    "Description": "Maximizes the expression of the intermediate band (Wide Band), often referred to as High Roufus in some contexts.",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Steeled",
+    "GenotypeString": "Es_",
+    "Description": "Extends Eumelanin expression to the maximum; often results in a darker appearance with ticking.",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Harlequinized",
+    "GenotypeString": "_ej",
+    "Description": "Applies the harlequin pattern (patchy distribution of Eumalanin and Pheomelanin).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Martenized",
+    "GenotypeString": "cchd_",
+    "Description": "Applies the Marten pattern (Dark Chinchilla) as an override to the color locus.",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Self Chin",
+    "GenotypeString": "aa,cchd_",
+    "Description": "Applies both the Self (aa) and Dark Chinchilla (cchd) patterns as an override.",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Non-Vienna",
+    "GenotypeString": "VV",
+    "Description": "Denotes that the rabbit is clean from Vienna lines.",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "English Angora",
+    "GenotypeString": "ll",
+    "Description": "Angora breed trait: long wool (ll).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "French Angora",
+    "GenotypeString": "ll",
+    "Description": "Angora breed trait: long wool (ll).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Giant Angora",
+    "GenotypeString": "ll",
+    "Description": "Angora breed trait: long wool (ll).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "German Angora",
+    "GenotypeString": "ll",
+    "Description": "Angora breed trait: long wool (ll).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Jersey Wooly",
+    "GenotypeString": "ll",
+    "Description": "Breed trait: long wool (ll).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "American Fuzzy Lop",
+    "GenotypeString": "ll",
+    "Description": "Breed trait: long wool (ll).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Satin Angora",
+    "GenotypeString": "ll,sasa",
+    "Description": "Breed trait: long wool and satin sheen (ll, sasa).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Lionhead",
+    "GenotypeString": "M_",
+    "Description": "Breed trait: presence of a mane (M_).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Single Mane",
+    "GenotypeString": "Mm",
+    "Description": "Produces a single mane (Mm).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Double Mane",
+    "GenotypeString": "MM",
+    "Description": "Produces a double mane (MM).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Rex",
+    "GenotypeString": "rr",
+    "Description": "Breed trait: short, plush rex fur (rr).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Mini Rex",
+    "GenotypeString": "rr",
+    "Description": "Breed trait: short, plush rex fur (rr).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Velveteen Lop",
+    "GenotypeString": "rr",
+    "Description": "Breed trait: short, plush rex fur (rr).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Satin",
+    "GenotypeString": "sasa",
+    "Description": "Breed trait: satin sheen (sasa).",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Mini Satin",
+    "GenotypeString": "sasa",
+    "Description": "Breed trait: satin sheen (sasa).",
+    "Type": "Prefix"
+  }
+]
