@@ -31,3 +31,21 @@ string varietyName3 = "Blue Otter";
 string fullGenotypeString3 = VarietyService.GetFullGenotypeString(breedName3, varietyName3);
 var genotype3 = RabbitGenotype.Parse(fullGenotypeString3);
 Console.WriteLine($"Breed: {breedName3}, Variety: {varietyName3} -> Genotype: {genotype3}");
+
+// Demonstrate parsing a full description
+string description = "Broken VM Chestnut Rex";
+var (parsedBreed, parsedVariety, parsedModifiers) = VarietyService.ParseDescription(description);
+string parsedGenotypeString = VarietyService.GetFullGenotypeString(parsedBreed.Name, parsedVariety.Name, parsedModifiers.Select(m => m.Name).ToList());
+var parsedGenotype = RabbitGenotype.Parse(parsedGenotypeString);
+Console.WriteLine($"\nDescription: {description}");
+Console.WriteLine($"Parsed - Breed: {parsedBreed.Name}, Variety: {parsedVariety.Name}, Modifiers: {string.Join(", ", parsedModifiers.Select(m => m.Name))}");
+Console.WriteLine($"Genotype: {parsedGenotype}");
+
+// Demonstrate multiple modifiers and override order
+string description2 = "Self Chin Martenized Black Mini Rex";
+var (pb2, pv2, pm2) = VarietyService.ParseDescription(description2);
+string pg2String = VarietyService.GetFullGenotypeString(pb2.Name, pv2.Name, pm2.Select(m => m.Name).ToList());
+var pg2 = RabbitGenotype.Parse(pg2String);
+Console.WriteLine($"\nDescription: {description2}");
+Console.WriteLine($"Parsed - Breed: {pb2.Name}, Variety: {pv2.Name}, Modifiers: {string.Join(", ", pm2.Select(m => m.Name))}");
+Console.WriteLine($"Genotype: {pg2}");

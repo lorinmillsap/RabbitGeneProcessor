@@ -25,6 +25,22 @@ public static class GeneticParser
     public static List<LocusDefinition> Definitions => _definitions ?? throw new InvalidOperationException("Parser not initialized.");
 
     /// <summary>
+    /// Gets the locus symbol (e.g., "A", "C") for a given allele symbol (e.g., "at", "cchd").
+    /// </summary>
+    public static string GetLocusSymbol(string alleleSymbol)
+    {
+        if (alleleSymbol == "_") return "Unknown";
+        foreach (var locus in Definitions)
+        {
+            if (locus.Alleles.Any(a => a.Symbol == alleleSymbol))
+            {
+                return locus.Symbol;
+            }
+        }
+        return "Unknown";
+    }
+
+    /// <summary>
     /// Parses a single locus string (e.g., "Aat", "Enen", "A_", "A(ata)").
     /// </summary>
     public static Locus ParseLocus(string input)

@@ -14,6 +14,14 @@ public record Locus(Allele First, Allele Second)
         yield return Second;
     }
 
+    /// <summary>
+    /// Returns the symbol of the locus based on the first allele's symbol.
+    /// </summary>
+    public string GetLocusSymbol()
+    {
+        return GeneticParser.GetLocusSymbol(First.Symbol);
+    }
+
     public override string ToString() => $"{First}{Second}";
 
     /// <summary>
