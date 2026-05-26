@@ -54,15 +54,21 @@ Console.WriteLine($"Genotype: {pg2}");
 Console.WriteLine("\n--- Genotype to Description ---");
 string g1Str = "aa,bb,C_,dd,E_,En_,Vv,rr"; // Broken VM Lilac Rex
 var g1 = RabbitGenotype.Parse(g1Str);
-string desc1 = VarietyService.IdentifyDescription(g1);
-Console.WriteLine($"Genotype: {g1} -> Description: {desc1}");
+string desc1 = VarietyService.IdentifyDescription(g1, "Rex");
+Console.WriteLine($"Genotype: {g1} -> Description (Breed: Rex): {desc1}");
 
 string g2Str = "A_,B_,C_,D_,E_,ll"; // English Angora Chestnut
 var g2 = RabbitGenotype.Parse(g2Str);
-string desc2 = VarietyService.IdentifyDescription(g2);
-Console.WriteLine($"Genotype: {g2} -> Description: {desc2}");
+string desc2 = VarietyService.IdentifyDescription(g2, "English Angora");
+Console.WriteLine($"Genotype: {g2} -> Description (Breed: English Angora): {desc2}");
 
 string g3Str = "aa,B_,C_,D_,E_,MM"; // Double Mane Black Lionhead
 var g3 = RabbitGenotype.Parse(g3Str);
-string desc3 = VarietyService.IdentifyDescription(g3);
-Console.WriteLine($"Genotype: {g3} -> Description: {desc3}");
+string desc3 = VarietyService.IdentifyDescription(g3, "Lionhead");
+Console.WriteLine($"Genotype: {g3} -> Description (Breed: Lionhead): {desc3}");
+
+// Demonstrate identification without breed
+string g4Str = "A_,B_,C_,dd,E_,En_"; // Broken Opal
+var g4 = RabbitGenotype.Parse(g4Str);
+string desc4 = VarietyService.IdentifyDescription(g4);
+Console.WriteLine($"Genotype: {g4} -> Description (No Breed): {desc4}");

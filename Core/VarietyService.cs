@@ -149,37 +149,28 @@ public static class VarietyService
     }
 
     /// <summary>
-    /// Attempts to identify the breed, variety, and modifiers for a given genotype.
+    /// Attempts to identify the variety and modifiers for a given genotype.
+    /// A breed can be optionally provided to refine the identification, 
+    /// as breed cannot be determined from genotype alone.
     /// </summary>
-    public static string IdentifyDescription(RabbitGenotype genotype)
+    public static string IdentifyDescription(RabbitGenotype genotype, string? breedName = null)
     {
-        VarietyDefinition? bestBreed = null;
+        VarietyDefinition? breed = null;
+        if (!string.IsNullOrEmpty(breedName))
+        {
+            breed = Breeds.FirstOrDefault(b => 
+                b.Name.Equals(breedName, StringComparison.OrdinalIgnoreCase) || 
+                (b.AlternateNames != null && b.AlternateNames.Any(a => a.Equals(breedName, StringComparison.OrdinalIgnoreCase))));
+        }
+
         VarietyDefinition? bestVariety = null;
         var appliedModifiers = new List<VarietyDefinition>();
 
-        // 1. Identify Breed
-        // Breeds usually have specific genes (like ll for Angora).
-        // We look for the breed that has the most matching loci.
-        int maxBreedMatches = -1;
-        foreach (var breed in Breeds)
-        {
-            var breedGenotype = RabbitGenotype.Parse(breed.GenotypeString);
-            if (genotype.Contains(breedGenotype))
-            {
-                int specificity = CountSpecificity(breedGenotype);
-                if (specificity > maxBreedMatches)
-                {
-                    maxBreedMatches = specificity;
-                    bestBreed = breed;
-                }
-            }
-        }
-
-        // 2. Identify Variety
+        // 1. Identify Variety
         int maxVarietyMatches = -1;
-        foreach (var variety in Varieties)
+        foreach (var v in Varieties)
         {
-            var varietyGenotype = RabbitGenotype.Parse(variety.GenotypeString);
+            var varietyGenotype = RabbitGenotype.Parse(v.GenotypeString);
             if (genotype.Contains(varietyGenotype))
             {
                 // We want the most specific variety.
@@ -187,15 +178,15 @@ public static class VarietyService
                 if (specificity > maxVarietyMatches)
                 {
                     maxVarietyMatches = specificity;
-                    bestVariety = variety;
+                    bestVariety = v;
                 }
             }
         }
 
         if (bestVariety == null) return "Unknown Variety";
 
-        // 3. Identify Modifiers
-        var baseGenotypeString = (bestBreed?.GenotypeString ?? "") + "," + (bestVariety?.GenotypeString ?? "");
+        // 2. Identify Modifiers
+        var baseGenotypeString = (breed?.GenotypeString ?? "") + "," + (bestVariety?.GenotypeString ?? "");
         var baseGenotype = RabbitGenotype.Parse(baseGenotypeString);
 
         foreach (var modifier in Modifiers)
@@ -223,14 +214,16 @@ public static class VarietyService
                 }
 
                 // 4. Avoid double counting identical genotypes (VM/VC)
+                // Also avoid including "Non-Vienna" if other Vienna genes are present.
                 if (appliedModifiers.Any(m => m.GenotypeString == modifier.GenotypeString))
+                    continue;
+
+                if (modifier.Name == "Non-Vienna" && genotype.Loci.Any(l => l.GetLocusSymbol() == "V" && (l.First.Symbol == "v" || l.Second.Symbol == "v")))
                     continue;
 
                 appliedModifiers.Add(modifier);
             }
         }
-
-        if (bestVariety == null) return "Unknown Variety";
 
         var description = bestVariety.Name;
         
@@ -241,11 +234,11 @@ public static class VarietyService
                 description = mod.Name + " " + description;
         }
 
-        // Apply breed as prefix (most common)
-        if (bestBreed != null)
+        // Apply breed as prefix if provided
+        if (breed != null)
         {
-            if (!description.Contains(bestBreed.Name))
-                description = bestBreed.Name + " " + description;
+            if (!description.Contains(breed.Name))
+                description = breed.Name + " " + description;
         }
 
         // Apply suffix modifiers
