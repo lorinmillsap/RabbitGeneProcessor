@@ -157,25 +157,25 @@
     {
         "Name": "Black Tortoise",
         "GenotypeString": "aa,B_,C_,D_,ee",
-        "Description": "Self-based non-extension color with black shading.",
+        "Description": "Self-based non-extension color with black points.",
         "AlternateNames": [ "Black Tort", "Tort", "Tortoise" ]
     },
     {
         "Name": "Blue Tortoise",
         "GenotypeString": "aa,B_,C_,dd,ee",
-        "Description": "The dilute version of Black Tortoise.",
-        "AlternateNames": [ "Blue Tort" ]
+        "Description": "Self-based non-extension color with blue points.",
+        "AlternateNames": [ "Blue Tort", "Blue Tortoise" ]
     },
     {
         "Name": "Chocolate Tortoise",
         "GenotypeString": "aa,bb,C_,D_,ee",
-        "Description": "The brown version of Black Tortoise.",
-        "AlternateNames": [ "Chocolate Tort" ]
+        "Description": "Self-based non-extension color with chocolate points.",
+        "AlternateNames": [ "Chocolate Tort", "Chocolate Tortoise" ]
     },
     {
         "Name": "Lilac Tortoise",
         "GenotypeString": "aa,bb,C_,dd,ee",
-        "Description": "The dilute brown version of Chocolate Tortoise.",
-        "AlternateNames": [ "Lilac Tort" ]
+        "Description": "Self-based non-extension color with lilac points.",
+        "AlternateNames": [ "Lilac Tort", "Lilac Tortoise" ]
     }
 ]
