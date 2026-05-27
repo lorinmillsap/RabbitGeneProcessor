@@ -108,12 +108,23 @@ public static class VarietyService
             foreach (var locus in genotype.Loci)
             {
                 var symbol = locus.GetLocusSymbol();
-                combinedLoci[symbol] = locus;
+                if (combinedLoci.TryGetValue(symbol, out var existing))
+                {
+                    combinedLoci[symbol] = existing.Combine(locus);
+                }
+                else
+                {
+                    combinedLoci[symbol] = locus;
+                }
             }
         }
 
-        // 0. Initialize A, B, C, D, E, and En loci as blanks
-        ApplyGenotype("A_,B_,C_,D_,E_,En_");
+        // 0. Initialize A, B, C, D, E, and En loci as blanks (__)
+        var primaryLociSymbols = new[] { "A", "B", "C", "D", "E", "En" };
+        foreach (var symbol in primaryLociSymbols)
+        {
+            combinedLoci[symbol] = new Locus(new Allele("_"), new Allele("_"));
+        }
 
         // 1. Apply breed-specific genes first
         ApplyGenotype(breed.GenotypeString);

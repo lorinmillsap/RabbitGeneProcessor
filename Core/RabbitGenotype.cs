@@ -102,6 +102,7 @@ public class RabbitGenotype
         foreach (var otherLocus in other.Loci)
         {
             var symbol = otherLocus.GetLocusSymbol();
+            if (symbol == "Unknown") continue; // Skip unknown loci in comparison
             if (!thisLoci.TryGetValue(symbol, out var thisLocus)) return false;
 
             // Check if thisLocus "contains" otherLocus alleles.
@@ -109,6 +110,10 @@ public class RabbitGenotype
             bool AllelePresent(Allele target, Locus source, ref bool firstUsed, ref bool secondUsed)
             {
                 if (target.Symbol == "_") return true;
+                
+                // If target is specific (not _) and source has _, it does NOT contain it.
+                // A _ does not contain A.
+                
                 if (!firstUsed && source.First.Symbol == target.Symbol)
                 {
                     firstUsed = true;

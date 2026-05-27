@@ -30,7 +30,8 @@ public static class GeneticParser
     public static string GetLocusSymbol(string alleleSymbol)
     {
         if (alleleSymbol == "_") return "Unknown";
-        foreach (var locus in Definitions)
+        if (_definitions == null) return "Unknown";
+        foreach (var locus in _definitions)
         {
             if (locus.Alleles.Any(a => a.Symbol == alleleSymbol))
             {
@@ -41,7 +42,7 @@ public static class GeneticParser
     }
 
     /// <summary>
-    /// Parses a single locus string (e.g., "Aat", "Enen", "A_", "A(ata)").
+    /// Parses a single locus string (e.g., "Aat", "Enen", "A_", "__", "A(ata)").
     /// </summary>
     public static Locus ParseLocus(string input)
     {
@@ -71,6 +72,12 @@ public static class GeneticParser
             {
                 alleles.Add(new Allele("_"));
             }
+        }
+        
+        // Ensure we always have 2 alleles
+        while (alleles.Count < 2)
+        {
+            alleles.Add(new Allele("_"));
         }
 
         return new Locus(alleles[0], alleles[1]);
