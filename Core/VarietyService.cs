@@ -112,6 +112,9 @@ public static class VarietyService
             }
         }
 
+        // 0. Initialize A, B, C, D, E, and En loci as blanks
+        ApplyGenotype("A_,B_,C_,D_,E_,En_");
+
         // 1. Apply breed-specific genes first
         ApplyGenotype(breed.GenotypeString);
 
@@ -145,7 +148,9 @@ public static class VarietyService
             }
         }
 
-        return string.Join(",", combinedLoci.Values);
+        // Return sorted by locus symbol (optional but helpful for consistency)
+        var sortedLoci = combinedLoci.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value);
+        return string.Join(",", sortedLoci);
     }
 
     /// <summary>
