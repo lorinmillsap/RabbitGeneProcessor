@@ -92,5 +92,11 @@
     "GenotypeString": "ej_,En_",
     "Description": "Produces a tri-color pattern (Harlequin + Broken).",
     "Type": "Suffix"
+  },
+  {
+    "Name": "Chin",
+    "GenotypeString": "cchd_",
+    "Description": "Suffix modifier for Chinchilla pattern (Dark Chinchilla).",
+    "Type": "Suffix"
   }
 ]

@@ -180,3 +180,17 @@ string g20Str = "A_,bb,C_,D_,ee";
 var g20 = RabbitGenotype.Parse(g20Str);
 string desc20 = VarietyService.IdentifyDescription(g20);
 Console.WriteLine($"Genotype: {g20} -> Description (No Breed): {desc20}");
+
+// Demonstrate Postfix Modifier: Chin
+string description5 = "Black Chin";
+var (pb5, pv5, pm5) = VarietyService.ParseDescription("Mixed " + description5);
+string pg5String = VarietyService.GetFullGenotypeString(pb5.Name, pv5.Name, pm5.Select(m => m.Name).ToList());
+var pg5 = RabbitGenotype.Parse(pg5String);
+Console.WriteLine($"\nDescription: {description5}");
+Console.WriteLine($"Parsed - Variety: {pv5.Name}, Modifiers: {string.Join(", ", pm5.Select(m => m.Name))}");
+Console.WriteLine($"Genotype: {pg5}");
+
+string g21Str = "aa,B_,cchd_,D_,E_"; // Black Chin (Same as Black Chinchilla but uses modifier)
+var g21 = RabbitGenotype.Parse(g21Str);
+string desc21 = VarietyService.IdentifyDescription(g21);
+Console.WriteLine($"Genotype: {g21} -> Description (No Breed): {desc21}");
