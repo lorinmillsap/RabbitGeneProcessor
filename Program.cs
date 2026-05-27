@@ -184,3 +184,13 @@ string g21Str = "aa,B_,cchd_,D_,E_"; // Black Chin (Same as Black Chinchilla but
 var g21 = RabbitGenotype.Parse(g21Str);
 string desc21 = VarietyService.IdentifyDescription(g21);
 Console.WriteLine($"Genotype: {g21} -> Description (No Breed): {desc21}");
+
+// Simulation test: Broken Chestnut Tiddywider
+string simulationDesc = "Broken Chestnut Tiddywider";
+string simulationGenotype = VarietyService.CalculateGenotypeFromDescription(simulationDesc);
+Console.WriteLine($"\nSimulation: {simulationDesc}");
+Console.WriteLine($"Calculated Genotype: {simulationGenotype}");
+
+var parsedGenotype = RabbitGenotype.Parse(simulationGenotype);
+string identifiedDesc = VarietyService.IdentifyDescription(parsedGenotype);
+Console.WriteLine($"Identified Description: {identifiedDesc}");
