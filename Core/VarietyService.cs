@@ -9,7 +9,7 @@ public static class VarietyService
 {
     private static List<VarietyDefinition>? _varieties;
     private static List<VarietyDefinition>? _modifiers;
-    private static List<VarietyDefinition>? _breeds;
+    private static List<BreedDefinition>? _breeds;
 
     public static void Initialize(string varietiesPath, string modifiersPath, string breedsPath)
     {
@@ -28,42 +28,54 @@ public static class VarietyService
         _modifiers = JsonSerializer.Deserialize<List<VarietyDefinition>>(modifiersJson, options);
 
         var breedsJson = File.ReadAllText(breedsPath);
-        _breeds = JsonSerializer.Deserialize<List<VarietyDefinition>>(breedsJson, options);
+        _breeds = JsonSerializer.Deserialize<List<BreedDefinition>>(breedsJson, options);
     }
 
     public static List<VarietyDefinition> Varieties => _varieties ?? throw new InvalidOperationException("VarietyService not initialized.");
     public static List<VarietyDefinition> Modifiers => _modifiers ?? throw new InvalidOperationException("VarietyService not initialized.");
-    public static List<VarietyDefinition> Breeds => _breeds ?? throw new InvalidOperationException("VarietyService not initialized.");
+    public static List<BreedDefinition> Breeds => _breeds ?? throw new InvalidOperationException("VarietyService not initialized.");
 
     /// <summary>
     /// Parses a descriptive string into a breed, variety, and list of modifiers.
     /// Example: "Broken VM Chestnut Rex" -> Breed: Rex, Variety: Chestnut, Modifiers: [Broken, VM]
     /// </summary>
-    public static (VarietyDefinition? Breed, VarietyDefinition Variety, List<VarietyDefinition> Modifiers) ParseDescription(string description)
+    public static (BreedDefinition? Breed, VarietyDefinition Variety, List<VarietyDefinition> Modifiers) ParseDescription(string description)
     {
         var words = description.Split(new[] { ' ', '-' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var remainingWords = words.ToList();
 
-        VarietyDefinition? foundBreed = null;
+        BreedDefinition? foundBreed = null;
         VarietyDefinition? foundVariety = null;
         var foundModifiers = new List<VarietyDefinition>();
 
         // We need to match multi-word names too. Let's try matching from longest possible phrases down to single words.
         
-        void FindMatches<T>(List<T> definitions, Action<T> onFound) where T : VarietyDefinition
+        void FindMatches<T>(List<T> definitions, Action<T> onFound) where T : class
         {
             for (int length = remainingWords.Count; length > 0; length--)
             {
                 for (int start = 0; start <= remainingWords.Count - length; start++)
                 {
                     var phrase = string.Join(" ", remainingWords.Skip(start).Take(length));
-                    var match = definitions.FirstOrDefault(d => 
-                        d.Name.Equals(phrase, StringComparison.OrdinalIgnoreCase) || 
-                        (d.AlternateNames != null && d.AlternateNames.Any(a => a.Equals(phrase, StringComparison.OrdinalIgnoreCase))));
+                    
+                    // Match based on type
+                    object? match = null;
+                    if (typeof(T) == typeof(BreedDefinition))
+                    {
+                        match = ((List<BreedDefinition>)(object)definitions).FirstOrDefault(d => 
+                            d.Name.Equals(phrase, StringComparison.OrdinalIgnoreCase) || 
+                            (d.AlternateNames != null && d.AlternateNames.Any(a => a.Equals(phrase, StringComparison.OrdinalIgnoreCase))));
+                    }
+                    else if (typeof(T) == typeof(VarietyDefinition))
+                    {
+                        match = ((List<VarietyDefinition>)(object)definitions).FirstOrDefault(d => 
+                            d.Name.Equals(phrase, StringComparison.OrdinalIgnoreCase) || 
+                            (d.AlternateNames != null && d.AlternateNames.Any(a => a.Equals(phrase, StringComparison.OrdinalIgnoreCase))));
+                    }
 
                     if (match != null)
                     {
-                        onFound(match);
+                        onFound((T)match);
                         remainingWords.RemoveRange(start, length);
                         // Reset loops as remainingWords changed
                         length = remainingWords.Count + 1; 
@@ -76,16 +88,25 @@ public static class VarietyService
         // Search order: Breeds, then Varieties, then Modifiers
         FindMatches(Breeds, b => foundBreed = b);
         
-        // When searching for varieties, if a breed was found, prioritize varieties that include the breed name
-        if (foundBreed != null)
+        // When searching for varieties, if a breed was found, prioritize breed-specific varieties
+        if (foundBreed != null && foundBreed.Varieties != null)
         {
-            var breedSpecificVarieties = Varieties.Where(v => v.Name.Contains(foundBreed.Name, StringComparison.OrdinalIgnoreCase)).ToList();
-            FindMatches(breedSpecificVarieties, v => foundVariety = v);
+            FindMatches(foundBreed.Varieties, v => foundVariety = v);
         }
-        
+
         if (foundVariety == null)
         {
-            FindMatches(Varieties, v => foundVariety = v);
+            // Fallback to searching all varieties, but prioritize those containing the breed name if applicable
+            if (foundBreed != null)
+            {
+                var breedSpecificVarieties = Varieties.Where(v => v.Name.Contains(foundBreed.Name, StringComparison.OrdinalIgnoreCase)).ToList();
+                FindMatches(breedSpecificVarieties, v => foundVariety = v);
+            }
+            
+            if (foundVariety == null)
+            {
+                FindMatches(Varieties, v => foundVariety = v);
+            }
         }
         
         FindMatches(Modifiers, m => foundModifiers.Add(m));
@@ -129,14 +150,14 @@ public static class VarietyService
             combinedLoci[symbol] = new Locus(new Allele("_"), new Allele("_"));
         }
 
-        // 1. Apply breed-specific genes first (if available)
+        // 1. Apply default variety
+        ApplyGenotype(variety.GenotypeString);
+
+        // 2. Apply breed-specific genes (which override variety)
         if (breed != null)
         {
             ApplyGenotype(breed.GenotypeString);
         }
-
-        // 2. Apply default variety
-        ApplyGenotype(variety.GenotypeString);
 
         // 3. Apply modifiers (which will override)
         foreach (var modifier in modifiers)
@@ -200,11 +221,11 @@ public static class VarietyService
             combinedLoci[symbol] = new Locus(new Allele("_"), new Allele("_"));
         }
 
-        // 1. Apply breed-specific genes first
-        ApplyGenotype(breed.GenotypeString);
-
-        // 2. Apply default variety
+        // 1. Apply default variety
         ApplyGenotype(variety.GenotypeString);
+
+        // 2. Apply breed-specific genes (which override variety)
+        ApplyGenotype(breed.GenotypeString);
 
         // 3. Apply modifiers (which will override)
         var appliedModifiers = new List<VarietyDefinition>();
@@ -245,7 +266,7 @@ public static class VarietyService
     /// </summary>
     public static string IdentifyDescription(RabbitGenotype genotype, string? breedName = null)
     {
-        VarietyDefinition? breed = null;
+        BreedDefinition? breed = null;
         if (!string.IsNullOrEmpty(breedName))
         {
             breed = Breeds.FirstOrDefault(b => 
@@ -258,7 +279,13 @@ public static class VarietyService
 
         // 1. Identify Variety
         int maxVarietyMatches = -1;
-        foreach (var v in Varieties)
+        var varietiesToSearch = Varieties.ToList();
+        if (breed?.Varieties != null)
+        {
+            varietiesToSearch.AddRange(breed.Varieties);
+        }
+
+        foreach (var v in varietiesToSearch)
         {
             var varietyGenotype = RabbitGenotype.Parse(v.GenotypeString);
             if (genotype.Contains(varietyGenotype))
@@ -266,8 +293,8 @@ public static class VarietyService
                 // We want the most specific variety.
                 int specificity = CountSpecificity(varietyGenotype);
                 
-                // If a breed is provided, prioritize varieties that include the breed name
-                bool isBreedSpecific = breed != null && v.Name.Contains(breed.Name, StringComparison.OrdinalIgnoreCase);
+                // If a breed is provided, prioritize breed-specific varieties
+                bool isBreedSpecific = breed != null && (breed.Varieties?.Contains(v) == true || v.Name.Contains(breed.Name, StringComparison.OrdinalIgnoreCase));
                 if (isBreedSpecific) specificity += 100; // Boost specificity for breed-specific varieties
 
                 if (specificity > maxVarietyMatches)
@@ -283,7 +310,7 @@ public static class VarietyService
             // If no variety matches (e.g., cc or vv which are incomplete),
             // try to find the variety that matches the MOST alleles.
             maxVarietyMatches = -1;
-            foreach (var v in Varieties)
+            foreach (var v in varietiesToSearch)
             {
                 var varietyGenotype = RabbitGenotype.Parse(v.GenotypeString);
                 // Count how many loci in varietyGenotype are satisfied by the input genotype
@@ -368,7 +395,7 @@ public static class VarietyService
             }
         }
 
-        var description = bestVariety.Name;
+        var description = bestVariety?.Name ?? "Unknown Variety";
         
         // Apply prefix modifiers
         foreach (var mod in appliedModifiers.Where(m => m.Type == ModifierType.Prefix))

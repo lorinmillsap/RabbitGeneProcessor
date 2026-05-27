@@ -206,3 +206,8 @@ string rhinelanderBlue = "Blue Rhinelander";
 string rblGenotype = VarietyService.CalculateGenotypeFromDescription(rhinelanderBlue);
 Console.WriteLine($"Description: {rhinelanderBlue} -> Genotype: {rblGenotype}");
 Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(rblGenotype), "Rhinelander")}");
+
+string rhinelanderChocolate = "Chocolate Rhinelander";
+string rchGenotype = VarietyService.CalculateGenotypeFromDescription(rhinelanderChocolate);
+Console.WriteLine($"Description: {rhinelanderChocolate} -> Genotype: {rchGenotype}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(rchGenotype), "Rhinelander")}");

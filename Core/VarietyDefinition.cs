@@ -10,6 +10,17 @@ public enum ModifierType
 }
 
 /// <summary>
+/// Represents a rabbit breed definition.
+/// </summary>
+public record BreedDefinition(
+    string Name,
+    string GenotypeString,
+    string Description = "",
+    List<string>? AlternateNames = null,
+    ModifierType? Type = null,
+    List<VarietyDefinition>? Varieties = null);
+
+/// <summary>
 /// Represents a rabbit variety definition based on its genotype.
 /// </summary>
 public record VarietyDefinition(

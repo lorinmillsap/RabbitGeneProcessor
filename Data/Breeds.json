@@ -79,9 +79,26 @@
   },
   {
     "Name": "Rhinelander",
-    "GenotypeString": "A_,C_,ej_,EnEn",
-    "Description": "Rhinelander breed trait: Agouti-based, full color, Harlequin pattern, and homozygous Broken (A_,C_,ej_,EnEn).",
-    "Type": "Prefix"
+    "GenotypeString": "A_,C_,ejej,EnEn",
+    "Description": "Rhinelander breed trait: Agouti-based, full color, Harlequin pattern, and homozygous Broken (A_,C_,ejej,EnEn).",
+    "Type": "Prefix",
+    "Varieties": [
+      {
+        "Name": "Black",
+        "GenotypeString": "B_,D_",
+        "Description": "Rhinelander specific Black variety (B_, D_)."
+      },
+      {
+        "Name": "Blue",
+        "GenotypeString": "B_,dd",
+        "Description": "Rhinelander specific Blue variety (B_, dd)."
+      },
+      {
+        "Name": "Chocolate",
+        "GenotypeString": "bb,D_",
+        "Description": "Rhinelander specific Chocolate variety (bb, D_)."
+      }
+    ]
   },
   {
     "Name": "Mixed Breed/Cross",

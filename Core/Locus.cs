@@ -58,49 +58,63 @@ public record Locus(Allele First, Allele Second)
         if (thisSymbol != "Unknown" && otherSymbol != "Unknown" && thisSymbol != otherSymbol)
             return this;
 
-        // Collect all known alleles from both loci
-        var alleles = new List<Allele> { First, Second, other.First, other.Second }
-            .Where(a => !a.IsUnknown)
-            .ToList();
+        // If one is "higher priority" and overrides?
+        // Actually, for now we just want to fill in holes.
 
-        // Special handling for homozygous symbols in the same locus definition
-        // If we have "En", "En" it should stay "En", "En"
-        // But if we have "at" and "a" from different sources, they are distinct.
-        // Wait, DistinctBy(a => a.Symbol) might have been too aggressive if we want homozygous.
-        // Actually, if we have EnEn and we combine with enen, we should probably get Enen.
-        // But if we have EnEn and we combine with nothing (or _), we should keep EnEn.
+        // Determine if 'other' is more specific than 'this'
+        // or if we should just take 'other' if it has no underscores.
         
-        // Let's refine: group by symbol and keep max 2.
-        var groupedAlleles = alleles.GroupBy(a => a.Symbol)
-                                    .SelectMany(g => g.Take(2))
-                                    .ToList();
-        
-        // If no known alleles, return this (could be __ or __ + __)
-        if (groupedAlleles.Count == 0) return this;
+        // If 'other' has no unknowns, it is a complete definition, usually from a breed or specific variety.
+        // If it overrides, we should probably take it.
+        // But the requirement said "fill in".
 
-        // Sort by dominance if possible
-        var definitions = GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == GetLocusSymbol());
-        if (definitions != null)
+        // Let's use the fill-in logic but be careful about dominant normalization.
+        
+        var alleles = new List<Allele>();
+        
+        // Strategy: 
+        // 1. If other is homozygous known (e.g. ejej), it should likely overwrite heterozygous (e.g. E_).
+        // 2. If other is more specific, use it.
+        
+        // If both alleles in 'other' are known, it's a strong override.
+        if (!other.First.IsUnknown && !other.Second.IsUnknown)
         {
-            groupedAlleles = groupedAlleles.OrderBy(a => 
-            {
-                var def = definitions.Alleles.FirstOrDefault(ad => ad.Symbol == a.Symbol);
-                return def?.Order ?? int.MaxValue;
-            }).ThenBy(a => a.Symbol).ToList();
+            // Prefer the more specific one
+            return other;
         }
 
-        var resultFirst = groupedAlleles.Count > 0 ? groupedAlleles[0] : new Allele("_");
-        var resultSecond = groupedAlleles.Count > 1 ? groupedAlleles[1] : new Allele("_");
-        
-        // Ensure that if we have more than 2, we respect the combination logic.
-        // If 'other' specifically provided a homozygous pair, it should probably be respected if this was unknown.
-        // But currently we just take top 2.
+        // If 'this' is completely unknown, take 'other'.
+        if (First.IsUnknown && Second.IsUnknown)
+        {
+            return other;
+        }
 
-        // If other provided something but it was only 1 allele, and we had nothing, 
-        // we keep the second as _. 
-        // Example: other is "A_", we get "A_".
-        // If other is "Aa", we get "Aa".
+        // Fill in holes
+        var f = First;
+        var s = Second;
+
+        if (f.IsUnknown && !other.First.IsUnknown) f = other.First;
+        else if (s.IsUnknown && !other.First.IsUnknown && other.First.Symbol != f.Symbol) s = other.First;
+
+        if (s.IsUnknown && !other.Second.IsUnknown) s = other.Second;
+
+        // Sort by dominance
+        var resultFirst = f;
+        var resultSecond = s;
         
+        var definitions = GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == (thisSymbol != "Unknown" ? thisSymbol : otherSymbol));
+        if (definitions != null && !resultFirst.IsUnknown && !resultSecond.IsUnknown && resultFirst.Symbol != resultSecond.Symbol)
+        {
+            var def1 = definitions.Alleles.FirstOrDefault(ad => ad.Symbol == resultFirst.Symbol);
+            var def2 = definitions.Alleles.FirstOrDefault(ad => ad.Symbol == resultSecond.Symbol);
+            
+            if (def1 != null && def2 != null && def2.Order < def1.Order)
+            {
+                resultFirst = s;
+                resultSecond = f;
+            }
+        }
+
         return new Locus(resultFirst, resultSecond);
     }
 
