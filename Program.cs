@@ -163,3 +163,14 @@ string g17Str = "A_,bb,cchd_,dd,ej_"; // Lilac Magpie
 var g17 = RabbitGenotype.Parse(g17Str);
 string desc17 = VarietyService.IdentifyDescription(g17);
 Console.WriteLine($"Genotype: {g17} -> Description (No Breed): {desc17}");
+
+// Demonstrate Tortoise
+string g18Str = "aa,B_,C_,D_,ee"; // Black Tortoise
+var g18 = RabbitGenotype.Parse(g18Str);
+string desc18 = VarietyService.IdentifyDescription(g18);
+Console.WriteLine($"Genotype: {g18} -> Description (No Breed): {desc18}");
+
+string g19Str = "aa,bb,C_,dd,ee"; // Lilac Tortoise
+var g19 = RabbitGenotype.Parse(g19Str);
+string desc19 = VarietyService.IdentifyDescription(g19);
+Console.WriteLine($"Genotype: {g19} -> Description (No Breed): {desc19}");

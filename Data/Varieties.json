@@ -153,5 +153,29 @@
         "Name": "Lilac Magpie",
         "GenotypeString": "A_,bb,cchd_,dd,ej_",
         "Description": "The dilute brown version of Chocolate Magpie."
+    },
+    {
+        "Name": "Black Tortoise",
+        "GenotypeString": "aa,B_,C_,D_,ee",
+        "Description": "Self-based non-extension color with black shading.",
+        "AlternateNames": [ "Black Tort", "Tort", "Tortoise" ]
+    },
+    {
+        "Name": "Blue Tortoise",
+        "GenotypeString": "aa,B_,C_,dd,ee",
+        "Description": "The dilute version of Black Tortoise.",
+        "AlternateNames": [ "Blue Tort" ]
+    },
+    {
+        "Name": "Chocolate Tortoise",
+        "GenotypeString": "aa,bb,C_,D_,ee",
+        "Description": "The brown version of Black Tortoise.",
+        "AlternateNames": [ "Chocolate Tort" ]
+    },
+    {
+        "Name": "Lilac Tortoise",
+        "GenotypeString": "aa,bb,C_,dd,ee",
+        "Description": "The dilute brown version of Chocolate Tortoise.",
+        "AlternateNames": [ "Lilac Tort" ]
     }
 ]
