@@ -32,23 +32,19 @@ string fullGenotypeString3 = VarietyService.GetFullGenotypeString(breedName3, va
 var genotype3 = RabbitGenotype.Parse(fullGenotypeString3);
 Console.WriteLine($"Breed: {breedName3}, Variety: {varietyName3} -> Genotype: {genotype3}");
 
-// Demonstrate parsing a full description
-string description = "Broken VM Chestnut Rex";
-var (parsedBreed, parsedVariety, parsedModifiers) = VarietyService.ParseDescription(description);
-string parsedGenotypeString = VarietyService.GetFullGenotypeString(parsedBreed.Name, parsedVariety.Name, parsedModifiers.Select(m => m.Name).ToList());
-var parsedGenotype = RabbitGenotype.Parse(parsedGenotypeString);
-Console.WriteLine($"\nDescription: {description}");
-Console.WriteLine($"Parsed - Breed: {parsedBreed.Name}, Variety: {parsedVariety.Name}, Modifiers: {string.Join(", ", parsedModifiers.Select(m => m.Name))}");
-Console.WriteLine($"Genotype: {parsedGenotype}");
+// Demonstrate new CalculateGenotypeFromDescription method
+Console.WriteLine("\n--- CalculateGenotypeFromDescription ---");
+string descWithBreed = "Broken VM Chestnut Rex";
+string genotypeFromDesc1 = VarietyService.CalculateGenotypeFromDescription(descWithBreed);
+Console.WriteLine($"Description: {descWithBreed} -> Genotype: {genotypeFromDesc1}");
 
-// Demonstrate multiple modifiers and override order
-string description2 = "Self Chin Martenized Black Mini Rex";
-var (pb2, pv2, pm2) = VarietyService.ParseDescription(description2);
-string pg2String = VarietyService.GetFullGenotypeString(pb2.Name, pv2.Name, pm2.Select(m => m.Name).ToList());
-var pg2 = RabbitGenotype.Parse(pg2String);
-Console.WriteLine($"\nDescription: {description2}");
-Console.WriteLine($"Parsed - Breed: {pb2.Name}, Variety: {pv2.Name}, Modifiers: {string.Join(", ", pm2.Select(m => m.Name))}");
-Console.WriteLine($"Genotype: {pg2}");
+string descWithoutBreed = "Broken VM Chestnut";
+string genotypeFromDesc2 = VarietyService.CalculateGenotypeFromDescription(descWithoutBreed);
+Console.WriteLine($"Description: {descWithoutBreed} -> Genotype: {genotypeFromDesc2}");
+
+string complexDesc = "Self Chin Martenized Black Mini Rex";
+string genotypeFromDesc3 = VarietyService.CalculateGenotypeFromDescription(complexDesc);
+Console.WriteLine($"Description: {complexDesc} -> Genotype: {genotypeFromDesc3}");
 
 // Demonstrate converting genotype back to variety description
 Console.WriteLine("\n--- Genotype to Description ---");
@@ -132,20 +128,16 @@ Console.WriteLine($"Genotype: {g14} -> Description (No Breed): {desc14}");
 
 // Demonstrate Gold Tipped Steel variety
 string description3 = "Gold Tipped Black Steel";
-var (pb3, pv3, pm3) = VarietyService.ParseDescription("Mixed " + description3); // Add dummy breed since ParseDescription requires one
-string pg3String = VarietyService.GetFullGenotypeString(pb3.Name, pv3.Name, pm3.Select(m => m.Name).ToList());
+string pg3String = VarietyService.CalculateGenotypeFromDescription(description3);
 var pg3 = RabbitGenotype.Parse(pg3String);
 Console.WriteLine($"\nDescription: {description3}");
-Console.WriteLine($"Parsed - Variety: {pv3.Name}, Modifiers: {string.Join(", ", pm3.Select(m => m.Name))}");
 Console.WriteLine($"Genotype: {pg3}");
 
 // Demonstrate Postfix Modifier: Tri
 string description4 = "Black Tri";
-var (pb4, pv4, pm4) = VarietyService.ParseDescription("Mixed " + description4);
-string pg4String = VarietyService.GetFullGenotypeString(pb4.Name, pv4.Name, pm4.Select(m => m.Name).ToList());
+string pg4String = VarietyService.CalculateGenotypeFromDescription(description4);
 var pg4 = RabbitGenotype.Parse(pg4String);
 Console.WriteLine($"\nDescription: {description4}");
-Console.WriteLine($"Parsed - Variety: {pv4.Name}, Modifiers: {string.Join(", ", pm4.Select(m => m.Name))}");
 Console.WriteLine($"Genotype: {pg4}");
 
 string g15Str = "aa,B_,C_,D_,ej_,En_"; // Black Tri
@@ -183,11 +175,9 @@ Console.WriteLine($"Genotype: {g20} -> Description (No Breed): {desc20}");
 
 // Demonstrate Postfix Modifier: Chin
 string description5 = "Black Chin";
-var (pb5, pv5, pm5) = VarietyService.ParseDescription("Mixed " + description5);
-string pg5String = VarietyService.GetFullGenotypeString(pb5.Name, pv5.Name, pm5.Select(m => m.Name).ToList());
+string pg5String = VarietyService.CalculateGenotypeFromDescription(description5);
 var pg5 = RabbitGenotype.Parse(pg5String);
 Console.WriteLine($"\nDescription: {description5}");
-Console.WriteLine($"Parsed - Variety: {pv5.Name}, Modifiers: {string.Join(", ", pm5.Select(m => m.Name))}");
 Console.WriteLine($"Genotype: {pg5}");
 
 string g21Str = "aa,B_,cchd_,D_,E_"; // Black Chin (Same as Black Chinchilla but uses modifier)

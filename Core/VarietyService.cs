@@ -39,7 +39,7 @@ public static class VarietyService
     /// Parses a descriptive string into a breed, variety, and list of modifiers.
     /// Example: "Broken VM Chestnut Rex" -> Breed: Rex, Variety: Chestnut, Modifiers: [Broken, VM]
     /// </summary>
-    public static (VarietyDefinition Breed, VarietyDefinition Variety, List<VarietyDefinition> Modifiers) ParseDescription(string description)
+    public static (VarietyDefinition? Breed, VarietyDefinition Variety, List<VarietyDefinition> Modifiers) ParseDescription(string description)
     {
         var words = description.Split(new[] { ' ', '-' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var remainingWords = words.ToList();
@@ -78,10 +78,72 @@ public static class VarietyService
         FindMatches(Varieties, v => foundVariety = v);
         FindMatches(Modifiers, m => foundModifiers.Add(m));
 
-        if (foundBreed == null) throw new ArgumentException($"Could not identify breed in description: {description}");
         if (foundVariety == null) throw new ArgumentException($"Could not identify variety in description: {description}");
 
         return (foundBreed, foundVariety, foundModifiers);
+    }
+
+    /// <summary>
+    /// Calculates the genotype from a descriptive string.
+    /// Example: "Broken VM Chestnut Rex" -> Returns calculated genotype string.
+    /// </summary>
+    public static string CalculateGenotypeFromDescription(string description)
+    {
+        var (breed, variety, modifiers) = ParseDescription(description);
+        
+        var combinedLoci = new Dictionary<string, Locus>();
+
+        void ApplyGenotype(string genotypeString)
+        {
+            var genotype = RabbitGenotype.Parse(genotypeString);
+            foreach (var locus in genotype.Loci)
+            {
+                var symbol = locus.GetLocusSymbol();
+                if (combinedLoci.TryGetValue(symbol, out var existing))
+                {
+                    combinedLoci[symbol] = existing.Combine(locus);
+                }
+                else
+                {
+                    combinedLoci[symbol] = locus;
+                }
+            }
+        }
+
+        // 0. Initialize A, B, C, D, E, and En loci as blanks (__)
+        var primaryLociSymbols = new[] { "A", "B", "C", "D", "E", "En" };
+        foreach (var symbol in primaryLociSymbols)
+        {
+            combinedLoci[symbol] = new Locus(new Allele("_"), new Allele("_"));
+        }
+
+        // 1. Apply breed-specific genes first (if available)
+        if (breed != null)
+        {
+            ApplyGenotype(breed.GenotypeString);
+        }
+
+        // 2. Apply default variety
+        ApplyGenotype(variety.GenotypeString);
+
+        // 3. Apply modifiers (which will override)
+        foreach (var modifier in modifiers)
+        {
+            ApplyGenotype(modifier.GenotypeString);
+        }
+
+        // 4. Apply exclusion strings for modifiers that are NOT present (passive filters)
+        foreach (var modifier in Modifiers)
+        {
+            if (!modifiers.Contains(modifier) && !string.IsNullOrEmpty(modifier.ExclusionGenotypeString))
+            {
+                ApplyGenotype(modifier.ExclusionGenotypeString);
+            }
+        }
+
+        // Return sorted by locus symbol
+        var sortedLoci = combinedLoci.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value);
+        return string.Join(",", sortedLoci);
     }
 
     /// <summary>
