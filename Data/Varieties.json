@@ -182,5 +182,17 @@
         "Name": "Orange",
         "GenotypeString": "A_,bb,C_,D_,ee",
         "Description": "Agouti-based non-extension color."
+    },
+    {
+        "Name": "Rhinelander Black",
+        "GenotypeString": "B_,D_,ej_,EnEn",
+        "Description": "The black variety of the Rhinelander breed.",
+        "AlternateNames": [ "Black" ]
+    },
+    {
+        "Name": "Rhinelander Blue",
+        "GenotypeString": "B_,dd,ej_,EnEn",
+        "Description": "The blue variety of the Rhinelander breed.",
+        "AlternateNames": [ "Blue" ]
     }
 ]

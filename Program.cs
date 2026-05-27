@@ -194,3 +194,15 @@ Console.WriteLine($"Calculated Genotype: {simulationGenotype}");
 var parsedGenotype = RabbitGenotype.Parse(simulationGenotype);
 string identifiedDesc = VarietyService.IdentifyDescription(parsedGenotype);
 Console.WriteLine($"Identified Description: {identifiedDesc}");
+
+// Rhinelander test
+Console.WriteLine("\n--- Rhinelander Breed-Specific Varieties ---");
+string rhinelanderBlack = "Black Rhinelander";
+string rbGenotype = VarietyService.CalculateGenotypeFromDescription(rhinelanderBlack);
+Console.WriteLine($"Description: {rhinelanderBlack} -> Genotype: {rbGenotype}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(rbGenotype), "Rhinelander")}");
+
+string rhinelanderBlue = "Blue Rhinelander";
+string rblGenotype = VarietyService.CalculateGenotypeFromDescription(rhinelanderBlue);
+Console.WriteLine($"Description: {rhinelanderBlue} -> Genotype: {rblGenotype}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(rblGenotype), "Rhinelander")}");

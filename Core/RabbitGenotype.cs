@@ -73,8 +73,8 @@ public class RabbitGenotype
     /// </summary>
     public bool Matches(RabbitGenotype other)
     {
-        var thisLoci = Loci.ToDictionary(l => l.GetLocusSymbol());
-        var otherLoci = other.Loci.ToDictionary(l => l.GetLocusSymbol());
+        var thisLoci = Loci.GroupBy(l => l.GetLocusSymbol()).ToDictionary(g => g.Key, g => g.First());
+        var otherLoci = other.Loci.GroupBy(l => l.GetLocusSymbol()).ToDictionary(g => g.Key, g => g.First());
 
         var allSymbols = thisLoci.Keys.Union(otherLoci.Keys);
 
@@ -91,14 +91,11 @@ public class RabbitGenotype
 
     /// <summary>
     /// Checks if this genotype "contains" the other genotype.
-    /// This is stricter than Match: the other's alleles must be present in this genotype,
-    /// and wildcards in the other do NOT match specific alleles in this unless they are also wildcards?
-    /// Actually, for modifiers: if mod is En_, and rabbit is enen, it does NOT contain En_.
-    /// If rabbit is Enen, it DOES contain En_.
+    /// This is stricter than Match: the other's alleles must be present in this genotype.
     /// </summary>
     public bool Contains(RabbitGenotype other)
     {
-        var thisLoci = Loci.ToDictionary(l => l.GetLocusSymbol());
+        var thisLoci = Loci.GroupBy(l => l.GetLocusSymbol()).ToDictionary(g => g.Key, g => g.First());
         foreach (var otherLocus in other.Loci)
         {
             var symbol = otherLocus.GetLocusSymbol();

@@ -61,34 +61,40 @@ public record Locus(Allele First, Allele Second)
         // Collect all known alleles from both loci
         var alleles = new List<Allele> { First, Second, other.First, other.Second }
             .Where(a => !a.IsUnknown)
-            .DistinctBy(a => a.Symbol) // Avoid duplicates like A, A
             .ToList();
 
+        // Special handling for homozygous symbols in the same locus definition
+        // If we have "En", "En" it should stay "En", "En"
+        // But if we have "at" and "a" from different sources, they are distinct.
+        // Wait, DistinctBy(a => a.Symbol) might have been too aggressive if we want homozygous.
+        // Actually, if we have EnEn and we combine with enen, we should probably get Enen.
+        // But if we have EnEn and we combine with nothing (or _), we should keep EnEn.
+        
+        // Let's refine: group by symbol and keep max 2.
+        var groupedAlleles = alleles.GroupBy(a => a.Symbol)
+                                    .SelectMany(g => g.Take(2))
+                                    .ToList();
+        
         // If no known alleles, return this (could be __ or __ + __)
-        if (alleles.Count == 0) return this;
+        if (groupedAlleles.Count == 0) return this;
 
         // Sort by dominance if possible
         var definitions = GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == GetLocusSymbol());
         if (definitions != null)
         {
-            alleles = alleles.OrderBy(a => 
+            groupedAlleles = groupedAlleles.OrderBy(a => 
             {
                 var def = definitions.Alleles.FirstOrDefault(ad => ad.Symbol == a.Symbol);
                 return def?.Order ?? int.MaxValue;
-            }).ToList();
+            }).ThenBy(a => a.Symbol).ToList();
         }
 
-        // We take the top 2 known alleles. 
-        // If we have more than 2, it means an override happened. 
-        // Usually, the 'other' (more specific) should win if it provides specific alleles.
-        // But the user said: "The first _ is filled with the most dominant known gene, the second is filled with the next known gene."
+        var resultFirst = groupedAlleles.Count > 0 ? groupedAlleles[0] : new Allele("_");
+        var resultSecond = groupedAlleles.Count > 1 ? groupedAlleles[1] : new Allele("_");
         
-        // Wait, if I have A_ and I combine with at_, I should get Aat.
-        // Current 'alleles' would have A and at.
-        // If I have __ and combine with A_, I get A_.
-        
-        var resultFirst = alleles.Count > 0 ? alleles[0] : new Allele("_");
-        var resultSecond = alleles.Count > 1 ? alleles[1] : new Allele("_");
+        // Ensure that if we have more than 2, we respect the combination logic.
+        // If 'other' specifically provided a homozygous pair, it should probably be respected if this was unknown.
+        // But currently we just take top 2.
 
         // If other provided something but it was only 1 allele, and we had nothing, 
         // we keep the second as _. 

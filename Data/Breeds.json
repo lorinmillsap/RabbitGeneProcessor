@@ -78,6 +78,12 @@
     "Type": "Prefix"
   },
   {
+    "Name": "Rhinelander",
+    "GenotypeString": "A_,C_,ej_,EnEn",
+    "Description": "Rhinelander breed trait: Agouti-based, full color, Harlequin pattern, and homozygous Broken (A_,C_,ej_,EnEn).",
+    "Type": "Prefix"
+  },
+  {
     "Name": "Mixed Breed/Cross",
     "GenotypeString": "",
     "Description": "Generic mixed breed or unspecified breed.",

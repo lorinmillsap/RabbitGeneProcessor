@@ -75,7 +75,19 @@ public static class VarietyService
 
         // Search order: Breeds, then Varieties, then Modifiers
         FindMatches(Breeds, b => foundBreed = b);
-        FindMatches(Varieties, v => foundVariety = v);
+        
+        // When searching for varieties, if a breed was found, prioritize varieties that include the breed name
+        if (foundBreed != null)
+        {
+            var breedSpecificVarieties = Varieties.Where(v => v.Name.Contains(foundBreed.Name, StringComparison.OrdinalIgnoreCase)).ToList();
+            FindMatches(breedSpecificVarieties, v => foundVariety = v);
+        }
+        
+        if (foundVariety == null)
+        {
+            FindMatches(Varieties, v => foundVariety = v);
+        }
+        
         FindMatches(Modifiers, m => foundModifiers.Add(m));
 
         if (foundVariety == null) throw new ArgumentException($"Could not identify variety in description: {description}");
@@ -253,6 +265,11 @@ public static class VarietyService
             {
                 // We want the most specific variety.
                 int specificity = CountSpecificity(varietyGenotype);
+                
+                // If a breed is provided, prioritize varieties that include the breed name
+                bool isBreedSpecific = breed != null && v.Name.Contains(breed.Name, StringComparison.OrdinalIgnoreCase);
+                if (isBreedSpecific) specificity += 100; // Boost specificity for breed-specific varieties
+
                 if (specificity > maxVarietyMatches)
                 {
                     maxVarietyMatches = specificity;
