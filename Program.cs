@@ -174,3 +174,9 @@ string g19Str = "aa,bb,C_,dd,ee"; // Lilac Tortoise
 var g19 = RabbitGenotype.Parse(g19Str);
 string desc19 = VarietyService.IdentifyDescription(g19);
 Console.WriteLine($"Genotype: {g19} -> Description (No Breed): {desc19}");
+
+// Demonstrate Orange
+string g20Str = "A_,bb,C_,D_,ee";
+var g20 = RabbitGenotype.Parse(g20Str);
+string desc20 = VarietyService.IdentifyDescription(g20);
+Console.WriteLine($"Genotype: {g20} -> Description (No Breed): {desc20}");

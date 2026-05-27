@@ -177,5 +177,10 @@
         "GenotypeString": "aa,bb,C_,dd,ee",
         "Description": "Self-based non-extension color with lilac points.",
         "AlternateNames": [ "Lilac Tort", "Lilac Tortoise" ]
+    },
+    {
+        "Name": "Orange",
+        "GenotypeString": "A_,bb,C_,D_,ee",
+        "Description": "Agouti-based non-extension color."
     }
 ]
