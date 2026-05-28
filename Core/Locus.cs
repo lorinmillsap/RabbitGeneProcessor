@@ -133,8 +133,11 @@ public record Locus(Allele First, Allele Second)
     {
         if (Second.Symbol == "_")
         {
-            // If the first also has extras, they will be handled by First.ToString()
-            // But we need to ensure we don't duplicate the underscore if we just want "A_"
+            // Special handling for suspected/excluded alleles on an unknown recessive
+            if (Second.Suspected is { Count: > 0 } || Second.Excluded is { Count: > 0 })
+            {
+                return $"{First}{Second}";
+            }
             return $"{First}_";
         }
         return $"{First}{Second}";

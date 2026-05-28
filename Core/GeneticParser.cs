@@ -114,18 +114,19 @@ public static class GeneticParser
 
         List<string>? suspected = null;
         List<string>? excluded = null;
+        bool useSlashInSuspected = false;
 
         while (index < input.Length)
         {
             if (input[index] == '(')
             {
                 index++;
-                suspected = ParseAlleleList(input, ref index, ')');
+                suspected = ParseAlleleList(input, ref index, ')', out useSlashInSuspected);
             }
             else if (input[index] == '[')
             {
                 index++;
-                excluded = ParseAlleleList(input, ref index, ']');
+                excluded = ParseAlleleList(input, ref index, ']', out _);
             }
             else
             {
@@ -133,11 +134,12 @@ public static class GeneticParser
             }
         }
 
-        return new Allele(baseSymbol, suspected, excluded);
+        return new Allele(baseSymbol, suspected, excluded, useSlashInSuspected);
     }
 
-    private static List<string> ParseAlleleList(string input, ref int index, char endChar)
+    private static List<string> ParseAlleleList(string input, ref int index, char endChar, out bool detectedSlash)
     {
+        detectedSlash = false;
         var list = new List<string>();
         var allSymbols = Definitions.SelectMany(l => l.Alleles)
             .SelectMany(a => new[] { a.Symbol }.Concat(a.AlternativeNotations))
@@ -149,6 +151,7 @@ public static class GeneticParser
             if (input[index] == '/')
             {
                 index++;
+                detectedSlash = true;
                 continue; // Skip the slash separator
             }
 

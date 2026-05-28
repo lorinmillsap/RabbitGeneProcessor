@@ -205,7 +205,7 @@
     },
     {
         "Name": "Sable Point",
-        "GenotypeString": "aa,B_,cchl(chc),D_,ee",
+        "GenotypeString": "aa,B_,cchl(ch/c),D_,ee",
         "Description": "A shaded variety with creamy white body and sepia brown points. The non-extension gene increases contrast."
     }
 ]

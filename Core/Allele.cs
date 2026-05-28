@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents a single allele at a genetic locus.
 /// </summary>
-public record Allele(string Symbol, List<string>? Suspected = null, List<string>? Excluded = null)
+public record Allele(string Symbol, List<string>? Suspected = null, List<string>? Excluded = null, bool UseSlashInSuspected = false)
 {
     /// <summary>
     /// Gets a value indicating whether this allele represents an unknown or masked value.
@@ -21,7 +21,8 @@ public record Allele(string Symbol, List<string>? Suspected = null, List<string>
         var result = Symbol;
         if (Suspected is { Count: > 0 })
         {
-            result += $"({string.Join("", Suspected)})";
+            var separator = UseSlashInSuspected ? "/" : "";
+            result += $"({string.Join(separator, Suspected)})";
         }
         if (Excluded is { Count: > 0 })
         {
