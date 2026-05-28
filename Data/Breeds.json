@@ -80,7 +80,7 @@
   {
     "Name": "Rhinelander",
     "GenotypeString": "A_,C_,ejej,EnEn",
-    "Description": "Rhinelander breed trait: Agouti-based, full color, Harlequin pattern, and homozygous Broken (A_,C_,ejej,EnEn).",
+    "Description": "Rhinelander breed trait: Agouti-based, full color, Harlequin pattern, and broken.  Rhinlanders are not charlies, and while homozygous haliquin is desirable, it is not a guarantee.",
     "Type": "Prefix",
     "Varieties": [
       {
