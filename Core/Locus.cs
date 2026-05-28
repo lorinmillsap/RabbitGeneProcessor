@@ -20,6 +20,7 @@ public record Locus(Allele First, Allele Second)
     /// </summary>
     public string GetLocusSymbol()
     {
+        if (OverrideLocusSymbol != null) return OverrideLocusSymbol;
         var symbol = GeneticParser.GetLocusSymbol(First.Symbol);
         if (symbol == "Unknown")
         {
@@ -27,6 +28,11 @@ public record Locus(Allele First, Allele Second)
         }
         return symbol;
     }
+
+    /// <summary>
+    /// Gets or sets an optional locus symbol that overrides detection.
+    /// </summary>
+    public string? OverrideLocusSymbol { get; set; }
 
     /// <summary>
     /// Checks if this locus matches another locus. 

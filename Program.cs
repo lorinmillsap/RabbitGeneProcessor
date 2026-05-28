@@ -245,3 +245,15 @@ string harlequinizedChestnut = "Harlequinized Chestnut";
 string hcGenotype = VarietyService.CalculateGenotypeFromDescription(harlequinizedChestnut);
 Console.WriteLine($"Description: {harlequinizedChestnut} -> Genotype: {hcGenotype}");
 Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(hcGenotype))}");
+
+// American Breed test
+Console.WriteLine("\n--- American Breed Tests ---");
+string americanBlue = "Blue American";
+string abGenotype = VarietyService.CalculateGenotypeFromDescription(americanBlue);
+Console.WriteLine($"Description: {americanBlue} -> Genotype: {abGenotype}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(abGenotype), "American")}");
+
+string americanWhite = "White American";
+string awGenotype = VarietyService.CalculateGenotypeFromDescription(americanWhite);
+Console.WriteLine($"Description: {americanWhite} -> Genotype: {awGenotype}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(awGenotype), "American")}");

@@ -8,7 +8,7 @@ public class RabbitGenotype
     public List<Locus> Loci { get; } = new();
 
     /// <summary>
-    /// Parses a genotype string (e.g., "A_,B_,C_,D_,E,enen").
+    /// Parses a genotype string (e.g., "A_,B_,C_,D_,E,enen", "{A}__").
     /// </summary>
     public static RabbitGenotype Parse(string input)
     {
@@ -16,6 +16,25 @@ public class RabbitGenotype
         var parts = input.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         foreach (var part in parts)
         {
+            if (part.StartsWith('{'))
+            {
+                var endBraceIndex = part.IndexOf('}');
+                if (endBraceIndex > 1)
+                {
+                    var locusSymbol = part.Substring(1, endBraceIndex - 1);
+                    var allelesString = part.Substring(endBraceIndex + 1);
+                    var locus = Locus.Parse(allelesString);
+                    locus.OverrideLocusSymbol = locusSymbol;
+                    // If the input was something like "__", and we forced an override to A,
+                    // we need to make sure the alleles are just unknown alleles, not tied to a locus yet.
+                    if (allelesString == "__" || allelesString == "_")
+                    {
+                         locus = new Locus(new Allele("_"), new Allele("_")) { OverrideLocusSymbol = locusSymbol };
+                    }
+                    genotype.Loci.Add(locus);
+                    continue;
+                }
+            }
             genotype.Loci.Add(Locus.Parse(part));
         }
         return genotype;

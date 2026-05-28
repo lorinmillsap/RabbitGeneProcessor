@@ -325,6 +325,10 @@ public static class VarietyService
                     }
                 }
 
+                // Boost breed-specific fallback matches too
+                bool isBreedSpecific = breed != null && breed.Varieties != null && breed.Varieties.Any(bv => bv.Name == v.Name && bv.GenotypeString == v.GenotypeString);
+                if (isBreedSpecific) matches += 100;
+
                 if (matches > maxVarietyMatches)
                 {
                     maxVarietyMatches = matches;

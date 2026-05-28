@@ -96,6 +96,25 @@
     ]
   },
   {
+    "Name": "American",
+    "GenotypeString": "enen",
+    "Description": "American breed trait: mandated non-broken (enen).",
+    "Type": "Prefix",
+    "Varieties": [
+      {
+        "Name": "Blue",
+        "GenotypeString": "aa,B_,C_,dd,E_",
+        "Description": "American specific Blue variety (aa, B_, C_, dd, E_)."
+      },
+      {
+        "Name": "White",
+        "AlternateNames": ["Ruby Eyed White", "REW"],
+        "GenotypeString": "{A}__,{B}__,cc,{D}__,{E}__",
+        "Description": "American specific White variety (Ruby Eyed White). Hides true color genetics."
+      }
+    ]
+  },
+  {
     "Name": "Mixed Breed/Cross",
     "GenotypeString": "",
     "Description": "Generic mixed breed or unspecified breed.",
