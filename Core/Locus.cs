@@ -46,10 +46,29 @@ public record Locus(Allele First, Allele Second)
     /// <summary>
     /// Combines this locus with another locus, where the other locus provides known alleles 
     /// that fill in any unknown underscores ('_') in this locus.
-    /// The most dominant alleles are prioritized in the first position.
+    /// If forceOverride is true, the 'other' locus alleles will replace 'this' locus alleles.
     /// </summary>
-    public Locus Combine(Locus other)
+    public Locus Combine(Locus other, bool forceOverride = false)
     {
+        if (forceOverride)
+        {
+            // Hard override: Take the alleles from 'other', but don't lose specificity 
+            // if 'other' has unknowns and 'this' has knowns, UNLESS the user wants a strict override.
+            // For Breed requirements, if a breed says A_, it means A must be present. 
+            // If variety says aa, then A_ combined with aa should probably be A_ (as breed requirement).
+            // Actually, if we return other, then Rhinelander A_ + Chocolate aa = A_. This is what user wants.
+            
+            // BUT for EnEn (Breed) + enen (Passive filter), we want EnEn to win.
+            // If we apply Passive Filter LAST with forceOverride=false:
+            // this = EnEn, other = enen.
+            // Combine(enen, false):
+            // Locus.Combine(enen, false):
+            // if (!other.First.IsUnknown && !other.Second.IsUnknown) return other; -> Returns enen.
+            // THIS IS THE PROBLEM. The non-force combine is TOO aggressive in replacing with homozygous knowns.
+            
+            return other; 
+        }
+
         var thisSymbol = GetLocusSymbol();
         var otherSymbol = other.GetLocusSymbol();
         
@@ -58,28 +77,23 @@ public record Locus(Allele First, Allele Second)
         if (thisSymbol != "Unknown" && otherSymbol != "Unknown" && thisSymbol != otherSymbol)
             return this;
 
-        // If one is "higher priority" and overrides?
-        // Actually, for now we just want to fill in holes.
-
         // Determine if 'other' is more specific than 'this'
         // or if we should just take 'other' if it has no underscores.
         
-        // If 'other' has no unknowns, it is a complete definition, usually from a breed or specific variety.
-        // If it overrides, we should probably take it.
-        // But the requirement said "fill in".
-
-        // Let's use the fill-in logic but be careful about dominant normalization.
-        
-        var alleles = new List<Allele>();
-        
-        // Strategy: 
-        // 1. If other is homozygous known (e.g. ejej), it should likely overwrite heterozygous (e.g. E_).
-        // 2. If other is more specific, use it.
-        
-        // If both alleles in 'other' are known, it's a strong override.
+        // If 'other' has no unknowns, it is a complete definition.
         if (!other.First.IsUnknown && !other.Second.IsUnknown)
         {
-            // Prefer the more specific one
+            // FILL-IN LOGIC: If 'this' is also complete, we don't automatically overwrite 
+            // if we are doing a soft combine, unless 'this' was just a default.
+            // Actually, if we are here, forceOverride is false. 
+            // If 'this' is EnEn and 'other' is enen, we should probably keep EnEn if it's already set?
+            // Or maybe the other way around?
+            
+            if (!First.IsUnknown && !Second.IsUnknown)
+            {
+                // Both are complete. In a soft combine, keep 'this'.
+                return this;
+            }
             return other;
         }
 

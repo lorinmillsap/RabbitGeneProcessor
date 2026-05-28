@@ -126,7 +126,7 @@ public static class VarietyService
         
         var combinedLoci = new Dictionary<string, Locus>();
 
-        void ApplyGenotype(string genotypeString)
+        void ApplyGenotype(string genotypeString, bool forceOverride = false)
         {
             var genotype = RabbitGenotype.Parse(genotypeString);
             foreach (var locus in genotype.Loci)
@@ -134,7 +134,7 @@ public static class VarietyService
                 var symbol = locus.GetLocusSymbol();
                 if (combinedLoci.TryGetValue(symbol, out var existing))
                 {
-                    combinedLoci[symbol] = existing.Combine(locus);
+                    combinedLoci[symbol] = existing.Combine(locus, forceOverride);
                 }
                 else
                 {
@@ -156,13 +156,13 @@ public static class VarietyService
         // 2. Apply breed-specific genes (which override variety)
         if (breed != null)
         {
-            ApplyGenotype(breed.GenotypeString);
+            ApplyGenotype(breed.GenotypeString, forceOverride: true);
         }
 
         // 3. Apply modifiers (which will override)
         foreach (var modifier in modifiers)
         {
-            ApplyGenotype(modifier.GenotypeString);
+            ApplyGenotype(modifier.GenotypeString, forceOverride: true);
         }
 
         // 4. Apply exclusion strings for modifiers that are NOT present (passive filters)
@@ -170,6 +170,8 @@ public static class VarietyService
         {
             if (!modifiers.Contains(modifier) && !string.IsNullOrEmpty(modifier.ExclusionGenotypeString))
             {
+                // Passive filters should NOT override breed-specific requirements
+                // We'll apply them without forceOverride
                 ApplyGenotype(modifier.ExclusionGenotypeString);
             }
         }
@@ -197,7 +199,7 @@ public static class VarietyService
 
         var combinedLoci = new Dictionary<string, Locus>();
 
-        void ApplyGenotype(string genotypeString)
+        void ApplyGenotype(string genotypeString, bool forceOverride = false)
         {
             var genotype = RabbitGenotype.Parse(genotypeString);
             foreach (var locus in genotype.Loci)
@@ -205,7 +207,7 @@ public static class VarietyService
                 var symbol = locus.GetLocusSymbol();
                 if (combinedLoci.TryGetValue(symbol, out var existing))
                 {
-                    combinedLoci[symbol] = existing.Combine(locus);
+                    combinedLoci[symbol] = existing.Combine(locus, forceOverride);
                 }
                 else
                 {
@@ -225,7 +227,7 @@ public static class VarietyService
         ApplyGenotype(variety.GenotypeString);
 
         // 2. Apply breed-specific genes (which override variety)
-        ApplyGenotype(breed.GenotypeString);
+        ApplyGenotype(breed.GenotypeString, forceOverride: true);
 
         // 3. Apply modifiers (which will override)
         var appliedModifiers = new List<VarietyDefinition>();
@@ -239,7 +241,7 @@ public static class VarietyService
                 
                 if (modifier != null)
                 {
-                    ApplyGenotype(modifier.GenotypeString);
+                    ApplyGenotype(modifier.GenotypeString, forceOverride: true);
                     appliedModifiers.Add(modifier);
                 }
             }
