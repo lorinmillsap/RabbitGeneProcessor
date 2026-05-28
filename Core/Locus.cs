@@ -110,7 +110,7 @@ public record Locus(Allele First, Allele Second)
         if (f.IsUnknown && !other.First.IsUnknown) f = other.First;
         else if (s.IsUnknown && !other.First.IsUnknown && other.First.Symbol != f.Symbol) s = other.First;
 
-        if (s.IsUnknown && !other.Second.IsUnknown) s = other.Second;
+        if (s.IsUnknown && !other.Second.IsUnknown && other.Second.Symbol != f.Symbol) s = other.Second;
 
         // Sort by dominance
         var resultFirst = f;
