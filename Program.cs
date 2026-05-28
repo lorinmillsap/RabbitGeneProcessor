@@ -283,3 +283,17 @@ string seal = "Seal";
 string sealGenotype = VarietyService.CalculateGenotypeFromDescription(seal);
 Console.WriteLine($"Description: {seal} -> Genotype: {sealGenotype}");
 Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(sealGenotype))}");
+
+// Smoke Pearl test
+Console.WriteLine("\n--- Smoke Pearl Tests ---");
+string smokePearl = "Smoke Pearl";
+string spGenotype = VarietyService.CalculateGenotypeFromDescription(smokePearl);
+Console.WriteLine($"Description: {smokePearl} -> Genotype: {spGenotype}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(spGenotype))}");
+
+// Heterozygous Sable test
+Console.WriteLine("\n--- Heterozygous Sable Tests ---");
+string heterozygousSable = "Sable";
+string hsGenotype = VarietyService.CalculateGenotypeFromDescription(heterozygousSable);
+Console.WriteLine($"Description: {heterozygousSable} -> Genotype: {hsGenotype}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(hsGenotype))}");

@@ -185,13 +185,22 @@
     },
     {
         "Name": "Siamese Sable",
-        "GenotypeString": "aa,cchlcchl,B_,D_,E_",
-        "Description": "A shaded variety with a sepia brown color and darker points.",
-        "AlternateNames": [ "Sable" ]
+        "GenotypeString": "aa,B_,cchlcchl,D_,E_",
+        "Description": "A shaded variety with a sepia brown color and darker points."
     },
     {
         "Name": "Seal",
-        "GenotypeString": "aa,cchlcchl,B_,D_,E_",
+        "GenotypeString": "aa,B_,cchlcchl,D_,E_",
         "Description": "A shaded variety that is genetically identical to Siamese Sable but appears much darker, almost black."
+    },
+    {
+        "Name": "Smoke Pearl",
+        "GenotypeString": "aa,B_,cchlcchl,dd,E_",
+        "Description": "The dilute version of Siamese Sable."
+    },
+    {
+        "Name": "Sable",
+        "GenotypeString": "aa,B_,cchl_,D_,E_",
+        "Description": "A shaded variety with a rich sepia brown color, specifically the heterozygous form of Siamese Sable."
     }
 ]
