@@ -33,6 +33,7 @@
     "Name": "American Fuzzy Lop",
     "GenotypeString": "ll",
     "Description": "Breed trait: long wool (ll).",
+    "AlternateNames": ["AFL"],
     "Type": "Prefix"
   },
   {

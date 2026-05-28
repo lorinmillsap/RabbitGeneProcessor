@@ -257,3 +257,10 @@ string americanWhite = "White American";
 string awGenotype = VarietyService.CalculateGenotypeFromDescription(americanWhite);
 Console.WriteLine($"Description: {americanWhite} -> Genotype: {awGenotype}");
 Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(awGenotype), "American")}");
+
+// American Fuzzy Lop test
+Console.WriteLine("\n--- American Fuzzy Lop Breed Tests ---");
+string aflChestnut = "Chestnut American Fuzzy Lop";
+string aflGenotype = VarietyService.CalculateGenotypeFromDescription(aflChestnut);
+Console.WriteLine($"Description: {aflChestnut} -> Genotype: {aflGenotype}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(aflGenotype), "American Fuzzy Lop")}");
