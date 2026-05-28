@@ -34,8 +34,20 @@
     "Type": "Prefix"
   },
   {
+    "Name": "Booted",
+    "GenotypeString": "Enen",
+    "Description": "A broken pattern showing too much color, resulting in minimal white pattern usually mostly on the underside and at the feet.",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Blanketed",
+    "GenotypeString": "Enen",
+    "Description": "A broken pattern that is more than the typical broken pattern, but not as extreme as booted.",
+    "Type": "Prefix"
+  },
+  {
     "Name": "Harlequinized",
-    "GenotypeString": "_ej",
+    "GenotypeString": "*ej",
     "Description": "Applies the harlequin pattern (patchy distribution of Eumalanin and Pheomelanin).",
     "Type": "Prefix"
   },

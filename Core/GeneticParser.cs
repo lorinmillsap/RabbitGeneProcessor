@@ -90,6 +90,8 @@ public static class GeneticParser
             .OrderByDescending(s => s.Length)
             .ToList();
         allSymbols.Add("_");
+        allSymbols.Add("*");
+        allSymbols.Add("?");
 
         string? baseSymbol = null;
         foreach (var symbol in allSymbols)

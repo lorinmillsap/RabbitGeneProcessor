@@ -228,3 +228,20 @@ string falseCharlie = "False Charlie Black";
 string fcGenotype = VarietyService.CalculateGenotypeFromDescription(falseCharlie);
 Console.WriteLine($"Description: {falseCharlie} -> Genotype: {fcGenotype}");
 Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(fcGenotype))}");
+
+// Booted, Blanketed and Wildcard tests
+Console.WriteLine("\n--- Booted, Blanketed and Wildcard Tests ---");
+string bootedChestnut = "Booted Chestnut";
+string btcGenotype = VarietyService.CalculateGenotypeFromDescription(bootedChestnut);
+Console.WriteLine($"Description: {bootedChestnut} -> Genotype: {btcGenotype}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(btcGenotype))}");
+
+string blanketedBlack = "Blanketed Black";
+string blbGenotype = VarietyService.CalculateGenotypeFromDescription(blanketedBlack);
+Console.WriteLine($"Description: {blanketedBlack} -> Genotype: {blbGenotype}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(blbGenotype))}");
+
+string harlequinizedChestnut = "Harlequinized Chestnut";
+string hcGenotype = VarietyService.CalculateGenotypeFromDescription(harlequinizedChestnut);
+Console.WriteLine($"Description: {harlequinizedChestnut} -> Genotype: {hcGenotype}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(hcGenotype))}");

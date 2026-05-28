@@ -8,10 +8,16 @@ public record Allele(string Symbol, List<string>? Suspected = null, List<string>
     /// <summary>
     /// Gets a value indicating whether this allele represents an unknown or masked value.
     /// </summary>
-    public bool IsUnknown => Symbol == "_";
+    public bool IsUnknown => Symbol == "_" || Symbol == "*" || Symbol == "?";
+
+    /// <summary>
+    /// Gets a value indicating whether this allele represents a preservation wildcard.
+    /// </summary>
+    public bool IsPreserveWildcard => Symbol == "*" || Symbol == "?";
 
     public override string ToString()
     {
+        if (Symbol == "*" || Symbol == "?") return Symbol;
         var result = Symbol;
         if (Suspected is { Count: > 0 })
         {

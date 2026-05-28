@@ -52,21 +52,9 @@ public record Locus(Allele First, Allele Second)
     {
         if (forceOverride)
         {
-            // Hard override: Take the alleles from 'other', but don't lose specificity 
-            // if 'other' has unknowns and 'this' has knowns, UNLESS the user wants a strict override.
-            // For Breed requirements, if a breed says A_, it means A must be present. 
-            // If variety says aa, then A_ combined with aa should probably be A_ (as breed requirement).
-            // Actually, if we return other, then Rhinelander A_ + Chocolate aa = A_. This is what user wants.
-            
-            // BUT for EnEn (Breed) + enen (Passive filter), we want EnEn to win.
-            // If we apply Passive Filter LAST with forceOverride=false:
-            // this = EnEn, other = enen.
-            // Combine(enen, false):
-            // Locus.Combine(enen, false):
-            // if (!other.First.IsUnknown && !other.Second.IsUnknown) return other; -> Returns enen.
-            // THIS IS THE PROBLEM. The non-force combine is TOO aggressive in replacing with homozygous knowns.
-            
-            return other; 
+            var resF = other.First.IsPreserveWildcard ? First : other.First;
+            var resS = other.Second.IsPreserveWildcard ? Second : other.Second;
+            return new Locus(resF, resS);
         }
 
         var thisSymbol = GetLocusSymbol();
@@ -107,10 +95,13 @@ public record Locus(Allele First, Allele Second)
         var f = First;
         var s = Second;
 
-        if (f.IsUnknown && !other.First.IsUnknown) f = other.First;
-        else if (s.IsUnknown && !other.First.IsUnknown && other.First.Symbol != f.Symbol) s = other.First;
+        var otherF = other.First;
+        var otherS = other.Second;
 
-        if (s.IsUnknown && !other.Second.IsUnknown && other.Second.Symbol != f.Symbol) s = other.Second;
+        if (f.IsUnknown && !otherF.IsUnknown && !otherF.IsPreserveWildcard) f = otherF;
+        else if (s.IsUnknown && !otherF.IsUnknown && !otherF.IsPreserveWildcard && otherF.Symbol != f.Symbol) s = otherF;
+
+        if (s.IsUnknown && !otherS.IsUnknown && !otherS.IsPreserveWildcard && otherS.Symbol != f.Symbol) s = otherS;
 
         // Sort by dominance
         var resultFirst = f;
