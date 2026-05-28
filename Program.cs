@@ -297,3 +297,10 @@ string heterozygousSable = "Sable";
 string hsGenotype = VarietyService.CalculateGenotypeFromDescription(heterozygousSable);
 Console.WriteLine($"Description: {heterozygousSable} -> Genotype: {hsGenotype}");
 Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(hsGenotype))}");
+
+// Sable Point test
+Console.WriteLine("\n--- Sable Point Tests ---");
+string sablePoint = "Sable Point";
+string spGenotype2 = VarietyService.CalculateGenotypeFromDescription(sablePoint);
+Console.WriteLine($"Description: {sablePoint} -> Genotype: {spGenotype2}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(spGenotype2))}");

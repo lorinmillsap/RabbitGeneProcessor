@@ -202,5 +202,10 @@
         "Name": "Sable",
         "GenotypeString": "aa,B_,cchl_,D_,E_",
         "Description": "A shaded variety with a rich sepia brown color, specifically the heterozygous form of Siamese Sable."
+    },
+    {
+        "Name": "Sable Point",
+        "GenotypeString": "aa,B_,cchl(chc),D_,ee",
+        "Description": "A shaded variety with creamy white body and sepia brown points. The non-extension gene increases contrast."
     }
 ]

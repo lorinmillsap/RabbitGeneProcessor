@@ -146,6 +146,12 @@ public static class GeneticParser
 
         while (index < input.Length && input[index] != endChar)
         {
+            if (input[index] == '/')
+            {
+                index++;
+                continue; // Skip the slash separator
+            }
+
             string? foundSymbol = null;
             foreach (var symbol in allSymbols)
             {
