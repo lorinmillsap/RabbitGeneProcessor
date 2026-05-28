@@ -182,5 +182,11 @@
         "Name": "Orange",
         "GenotypeString": "A_,bb,C_,D_,ee",
         "Description": "Agouti-based non-extension color."
+    },
+    {
+        "Name": "Siamese Sable",
+        "GenotypeString": "aa,cchlcchl,B_,D_,E_",
+        "Description": "A shaded variety with a sepia brown color and darker points.",
+        "AlternateNames": [ "Sable" ]
     }
 ]

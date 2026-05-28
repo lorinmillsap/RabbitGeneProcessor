@@ -264,3 +264,15 @@ string aflChestnut = "Chestnut American Fuzzy Lop";
 string aflGenotype = VarietyService.CalculateGenotypeFromDescription(aflChestnut);
 Console.WriteLine($"Description: {aflChestnut} -> Genotype: {aflGenotype}");
 Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(aflGenotype), "American Fuzzy Lop")}");
+
+// Sable/Siamese Sable test
+Console.WriteLine("\n--- Sable and Siamese Sable Tests ---");
+string siameseSable = "Siamese Sable";
+string ssGenotype = VarietyService.CalculateGenotypeFromDescription(siameseSable);
+Console.WriteLine($"Description: {siameseSable} -> Genotype: {ssGenotype}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(ssGenotype))}");
+
+string sableAlt = "Sable";
+string sAltGenotype = VarietyService.CalculateGenotypeFromDescription(sableAlt);
+Console.WriteLine($"Description: {sableAlt} -> Genotype: {sAltGenotype}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(sAltGenotype))}");
