@@ -98,5 +98,20 @@
     "GenotypeString": "cchd_",
     "Description": "Suffix modifier for Chinchilla pattern (Dark Chinchilla).",
     "Type": "Suffix"
+  },
+  {
+    "Name": "True Charlie",
+    "GenotypeString": "EnEn",
+    "Description": "Genetically homozygous broken (EnEn), often resulting in very little color.",
+    "AlternateNames": [
+      "Charlie"
+    ],
+    "Type": "Prefix"
+  },
+  {
+    "Name": "False Charlie",
+    "GenotypeString": "Enen",
+    "Description": "A rabbit that resembles a Charlie but is genetically heterozygous broken (Enen).",
+    "Type": "Prefix"
   }
 ]

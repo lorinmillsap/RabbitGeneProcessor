@@ -211,3 +211,20 @@ string rhinelanderChocolate = "Chocolate Rhinelander";
 string rchGenotype = VarietyService.CalculateGenotypeFromDescription(rhinelanderChocolate);
 Console.WriteLine($"Description: {rhinelanderChocolate} -> Genotype: {rchGenotype}");
 Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(rchGenotype), "Rhinelander")}");
+
+// Charlie tests
+Console.WriteLine("\n--- Charlie Modifier Tests ---");
+string trueCharlie = "True Charlie Chestnut";
+string tcGenotype = VarietyService.CalculateGenotypeFromDescription(trueCharlie);
+Console.WriteLine($"Description: {trueCharlie} -> Genotype: {tcGenotype}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(tcGenotype))}");
+
+string charlieAlt = "Charlie Black";
+string caGenotype = VarietyService.CalculateGenotypeFromDescription(charlieAlt);
+Console.WriteLine($"Description: {charlieAlt} -> Genotype: {caGenotype}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(caGenotype))}");
+
+string falseCharlie = "False Charlie Black";
+string fcGenotype = VarietyService.CalculateGenotypeFromDescription(falseCharlie);
+Console.WriteLine($"Description: {falseCharlie} -> Genotype: {fcGenotype}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(fcGenotype))}");
