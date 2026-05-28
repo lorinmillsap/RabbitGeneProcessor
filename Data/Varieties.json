@@ -188,5 +188,10 @@
         "GenotypeString": "aa,cchlcchl,B_,D_,E_",
         "Description": "A shaded variety with a sepia brown color and darker points.",
         "AlternateNames": [ "Sable" ]
+    },
+    {
+        "Name": "Seal",
+        "GenotypeString": "aa,cchlcchl,B_,D_,E_",
+        "Description": "A shaded variety that is genetically identical to Siamese Sable but appears much darker, almost black."
     }
 ]

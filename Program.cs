@@ -276,3 +276,10 @@ string sableAlt = "Sable";
 string sAltGenotype = VarietyService.CalculateGenotypeFromDescription(sableAlt);
 Console.WriteLine($"Description: {sableAlt} -> Genotype: {sAltGenotype}");
 Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(sAltGenotype))}");
+
+// Seal test
+Console.WriteLine("\n--- Seal Tests ---");
+string seal = "Seal";
+string sealGenotype = VarietyService.CalculateGenotypeFromDescription(seal);
+Console.WriteLine($"Description: {seal} -> Genotype: {sealGenotype}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(sealGenotype))}");
