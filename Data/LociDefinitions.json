@@ -479,7 +479,7 @@
         "Symbol": "Me",
         "Name": "Moon Eye Locus",
         "Description": "A simple recessive genetic defect causing blindness.",
-        "Category": "Body",
+        "Category": "Health",
         "Alleles": [
             {
                 "Symbol": "Me",
