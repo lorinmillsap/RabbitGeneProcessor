@@ -474,5 +474,29 @@
                 "AlternativeNotations": []
             }
         ]
+    },
+    {
+        "Symbol": "Me",
+        "Name": "Moon Eye Locus",
+        "Description": "A simple recessive genetic defect causing blindness.",
+        "Category": "Body",
+        "Alleles": [
+            {
+                "Symbol": "Me",
+                "Name": "Normal",
+                "Description": "Standard dominant gene for normal vision.",
+                "Dominance": "Dominant",
+                "Order": 1,
+                "AlternativeNotations": []
+            },
+            {
+                "Symbol": "me",
+                "Name": "Moon Eye",
+                "Description": "Recessive gene; two copies cause blindness by 6 months.",
+                "Dominance": "Recessive",
+                "Order": 2,
+                "AlternativeNotations": []
+            }
+        ]
     }
 ]

@@ -304,3 +304,15 @@ string sablePoint = "Sable Point";
 string spGenotype2 = VarietyService.CalculateGenotypeFromDescription(sablePoint);
 Console.WriteLine($"Description: {sablePoint} -> Genotype: {spGenotype2}");
 Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(spGenotype2))}");
+
+// Moon Eye tests
+Console.WriteLine("\n--- Moon Eye Modifier Tests ---");
+string moonEyeBlack = "Moon Eye Black";
+string mebGenotype = VarietyService.CalculateGenotypeFromDescription(moonEyeBlack);
+Console.WriteLine($"Description: {moonEyeBlack} -> Genotype: {mebGenotype}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(mebGenotype))}");
+
+string meCarrierChestnut = "ME Carrier Chestnut";
+string mecGenotype = VarietyService.CalculateGenotypeFromDescription(meCarrierChestnut);
+Console.WriteLine($"Description: {meCarrierChestnut} -> Genotype: {mecGenotype}");
+Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(mecGenotype))}");

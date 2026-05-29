@@ -125,5 +125,20 @@
     "GenotypeString": "Enen",
     "Description": "A rabbit that resembles a Charlie but is genetically heterozygous broken (Enen).",
     "Type": "Prefix"
+  },
+  {
+    "Name": "Moon Eye",
+    "GenotypeString": "meme",
+    "Description": "A genetic defect that causes blindness, usually by 6 months of age.",
+    "Type": "Prefix"
+  },
+  {
+    "Name": "Moon Eye Carrier",
+    "GenotypeString": "Meme",
+    "Description": "Carries the moon eye gene (me) but has normal vision.",
+    "AlternateNames": [
+      "ME Carrier"
+    ],
+    "Type": "Prefix"
   }
 ]
