@@ -39,17 +39,17 @@ class Program
 
         // Command: solve-offspring
         var solveOffspringCommand = new Command("solve-offspring", "Resolves unknown alleles in an offspring based on parents.");
-        var targetArg = new Argument<string>("target", "The target offspring genotype or description.");
-        var p1Arg = new Argument<string>("parent1", "Parent 1 genotype or description.");
-        var p2Arg = new Argument<string>("parent2", "Parent 2 genotype or description.");
+        var targetArg = new Argument<string>("target", "The target offspring genotype string.");
+        var p1Arg = new Argument<string>("parent1", "Parent 1 genotype string.");
+        var p2Arg = new Argument<string>("parent2", "Parent 2 genotype string.");
         solveOffspringCommand.AddArgument(targetArg);
         solveOffspringCommand.AddArgument(p1Arg);
         solveOffspringCommand.AddArgument(p2Arg);
         solveOffspringCommand.SetHandler((target, p1, p2) =>
         {
-            var targetG = ParseGenotypeOrDescription(target);
-            var p1G = ParseGenotypeOrDescription(p1);
-            var p2G = ParseGenotypeOrDescription(p2);
+            var targetG = RabbitGenotype.Parse(target);
+            var p1G = RabbitGenotype.Parse(p1);
+            var p2G = RabbitGenotype.Parse(p2);
 
             var solved = GenotypeSolver.Solve(targetG, p1G, p2G);
             Console.WriteLine($"Parent 1: {p1G}");
@@ -60,17 +60,17 @@ class Program
 
         // Command: solve-parents
         var solveParentsCommand = new Command("solve-parents", "Resolves unknown alleles in parents based on offspring.");
-        var sp1Arg = new Argument<string>("parent1", "Parent 1 genotype or description.");
-        var sp2Arg = new Argument<string>("parent2", "Parent 2 genotype or description.");
-        var offspringArg = new Argument<string[]>("offspring", "One or more offspring genotypes or descriptions.");
+        var sp1Arg = new Argument<string>("parent1", "Parent 1 genotype string.");
+        var sp2Arg = new Argument<string>("parent2", "Parent 2 genotype string.");
+        var offspringArg = new Argument<string[]>("offspring", "One or more offspring genotype strings.");
         solveParentsCommand.AddArgument(sp1Arg);
         solveParentsCommand.AddArgument(sp2Arg);
         solveParentsCommand.AddArgument(offspringArg);
         solveParentsCommand.SetHandler((p1, p2, offspring) =>
         {
-            var p1G = ParseGenotypeOrDescription(p1);
-            var p2G = ParseGenotypeOrDescription(p2);
-            var offspringGs = offspring.Select(ParseGenotypeOrDescription).ToArray();
+            var p1G = RabbitGenotype.Parse(p1);
+            var p2G = RabbitGenotype.Parse(p2);
+            var offspringGs = offspring.Select(RabbitGenotype.Parse).ToArray();
 
             var (solvedP1, solvedP2) = GenotypeSolver.SolveParents(p1G, p2G, offspringGs);
             Console.WriteLine($"Original Parent 1: {p1G}");
@@ -104,29 +104,6 @@ class Program
             Path.Combine(baseDir, "Data", "Varieties.json"),
             Path.Combine(baseDir, "Data", "Modifiers.json"),
             Path.Combine(baseDir, "Data", "Breeds.json"));
-    }
-
-    private static RabbitGenotype ParseGenotypeOrDescription(string input)
-    {
-        // Try parsing as description first - if it matches a known variety, use it
-        var calculated = VarietyService.CalculateGenotypeFromDescription(input);
-        
-        // If the calculation returned a valid genotype (not just __ for all loci)
-        // or if it successfully found a variety/breed in the string, use it.
-        // But the CalculateGenotypeFromDescription always returns a genotype.
-        // Let's check if the input string contains any known breed, variety or modifier names.
-        if (VarietyService.Breeds.Any(b => input.Contains(b.Name, StringComparison.OrdinalIgnoreCase)) ||
-            VarietyService.Varieties.Any(v => input.Contains(v.Name, StringComparison.OrdinalIgnoreCase)) ||
-            VarietyService.Modifiers.Any(m => input.Contains(m.Name, StringComparison.OrdinalIgnoreCase)))
-        {
-            return RabbitGenotype.Parse(calculated);
-        }
-
-        // If no names were found, try parsing as a raw genotype string
-        try { return RabbitGenotype.Parse(input); } catch { }
-
-        // Fallback to whatever description parsing gives
-        return RabbitGenotype.Parse(calculated);
     }
 
     private static void RunDemonstration()
