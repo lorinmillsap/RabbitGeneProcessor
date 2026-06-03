@@ -1,442 +1,195 @@
-﻿using RabbitGeneProcessor.Core;
-
-GeneticParser.Initialize(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "LociDefinitions.json"));
-VarietyService.Initialize(
-    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Varieties.json"),
-    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Modifiers.json"),
-    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Breeds.json"));
-
-Console.WriteLine("Rabbit Gene Processor Initialized.");
-Console.WriteLine($"Loaded {GeneticParser.Definitions.Count} loci definitions.");
-Console.WriteLine($"Loaded {VarietyService.Breeds.Count} breed definitions.");
-Console.WriteLine($"Loaded {VarietyService.Varieties.Count} variety definitions.");
-Console.WriteLine($"Loaded {VarietyService.Modifiers.Count} modifier definitions.");
-
-// Example using a breed and variety
-string breedName = "Rex";
-string varietyName = "Chestnut";
-string fullGenotypeString = VarietyService.GetFullGenotypeString(breedName, varietyName);
-var genotype = RabbitGenotype.Parse(fullGenotypeString);
-Console.WriteLine($"Breed: {breedName}, Variety: {varietyName} -> Genotype: {genotype}");
-
-string breedName2 = "Lionhead";
-string varietyName2 = "Black";
-string fullGenotypeString2 = VarietyService.GetFullGenotypeString(breedName2, varietyName2, new List<string> { "Double Mane" });
-var genotype2 = RabbitGenotype.Parse(fullGenotypeString2);
-Console.WriteLine($"Breed: {breedName2}, Variety: {varietyName2}, Modifiers: Double Mane -> Genotype: {genotype2}");
-
-// Demonstrate English Angora Blue Otter
-string breedName3 = "English Angora";
-string varietyName3 = "Blue Otter";
-string fullGenotypeString3 = VarietyService.GetFullGenotypeString(breedName3, varietyName3);
-var genotype3 = RabbitGenotype.Parse(fullGenotypeString3);
-Console.WriteLine($"Breed: {breedName3}, Variety: {varietyName3} -> Genotype: {genotype3}");
-
-// Demonstrate new CalculateGenotypeFromDescription method
-Console.WriteLine("\n--- CalculateGenotypeFromDescription ---");
-string descWithBreed = "Broken VM Chestnut Rex";
-string genotypeFromDesc1 = VarietyService.CalculateGenotypeFromDescription(descWithBreed);
-Console.WriteLine($"Description: {descWithBreed} -> Genotype: {genotypeFromDesc1}");
-
-string descWithoutBreed = "Broken VM Chestnut";
-string genotypeFromDesc2 = VarietyService.CalculateGenotypeFromDescription(descWithoutBreed);
-Console.WriteLine($"Description: {descWithoutBreed} -> Genotype: {genotypeFromDesc2}");
-
-string complexDesc = "Self Chin Martenized Black Mini Rex";
-string genotypeFromDesc3 = VarietyService.CalculateGenotypeFromDescription(complexDesc);
-Console.WriteLine($"Description: {complexDesc} -> Genotype: {genotypeFromDesc3}");
-
-// Demonstrate converting genotype back to variety description
-Console.WriteLine("\n--- Genotype to Description ---");
-string g1Str = "aa,bb,C_,dd,E_,En_,Vv,rr"; // Broken VM Lilac Rex
-var g1 = RabbitGenotype.Parse(g1Str);
-string desc1 = VarietyService.IdentifyDescription(g1, "Rex");
-Console.WriteLine($"Genotype: {g1} -> Description (Breed: Rex): {desc1}");
-
-string g2Str = "A_,B_,C_,D_,E_,ll"; // English Angora Chestnut
-var g2 = RabbitGenotype.Parse(g2Str);
-string desc2 = VarietyService.IdentifyDescription(g2, "English Angora");
-Console.WriteLine($"Genotype: {g2} -> Description (Breed: English Angora): {desc2}");
-
-string g3Str = "aa,B_,C_,D_,E_,MM"; // Double Mane Black Lionhead
-var g3 = RabbitGenotype.Parse(g3Str);
-string desc3 = VarietyService.IdentifyDescription(g3, "Lionhead");
-Console.WriteLine($"Genotype: {g3} -> Description (Breed: Lionhead): {desc3}");
-
-// Demonstrate identification without breed
-string g4Str = "A_,B_,C_,dd,E_,En_"; // Broken Opal
-var g4 = RabbitGenotype.Parse(g4Str);
-string desc4 = VarietyService.IdentifyDescription(g4);
-Console.WriteLine($"Genotype: {g4} -> Description (No Breed): {desc4}");
-
-// Demonstrate Ruby Eyed White
-string g5Str = "cc";
-var g5 = RabbitGenotype.Parse(g5Str);
-string desc5 = VarietyService.IdentifyDescription(g5);
-Console.WriteLine($"Genotype: {g5} -> Description (No Breed): {desc5}");
-
-// Demonstrate Blue Eyed White
-string g6Str = "vv";
-var g6 = RabbitGenotype.Parse(g6Str);
-string desc6 = VarietyService.IdentifyDescription(g6);
-Console.WriteLine($"Genotype: {g6} -> Description (No Breed): {desc6}");
-
-// Demonstrate Pointed White
-string g7Str = "aa,bb,ch_,dd,E_"; // Lilac Pointed White
-var g7 = RabbitGenotype.Parse(g7Str);
-string desc7 = VarietyService.IdentifyDescription(g7);
-Console.WriteLine($"Genotype: {g7} -> Description (No Breed): {desc7}");
-
-// Demonstrate Chinchilla
-string g8Str = "A_,B_,cchd_,D_,E_";
-var g8 = RabbitGenotype.Parse(g8Str);
-string desc8 = VarietyService.IdentifyDescription(g8);
-Console.WriteLine($"Genotype: {g8} -> Description (No Breed): {desc8}");
-
-string g9Str = "A_,B_,cchd_,dd,E_"; // Squirrel
-var g9 = RabbitGenotype.Parse(g9Str);
-string desc9 = VarietyService.IdentifyDescription(g9);
-Console.WriteLine($"Genotype: {g9} -> Description (No Breed): {desc9}");
-
-// Demonstrate Steel
-string g10Str = "A_,B_,C_,D_,EsE"; // Black Steel
-var g10 = RabbitGenotype.Parse(g10Str);
-string desc10 = VarietyService.IdentifyDescription(g10);
-Console.WriteLine($"Genotype: {g10} -> Description (No Breed): {desc10}");
-
-string g11Str = "A_,bb,C_,dd,EsE"; // Lilac Steel
-var g11 = RabbitGenotype.Parse(g11Str);
-string desc11 = VarietyService.IdentifyDescription(g11);
-Console.WriteLine($"Genotype: {g11} -> Description (No Breed): {desc11}");
-
-// Demonstrate Supersteel
-string g12Str = "A_,B_,C_,D_,EsEs"; // Supersteel Chestnut
-var g12 = RabbitGenotype.Parse(g12Str);
-string desc12 = VarietyService.IdentifyDescription(g12);
-Console.WriteLine($"Genotype: {g12} -> Description (No Breed): {desc12}");
-
-// Demonstrate Gold Tipped and Silver Tipped Steel
-string g13Str = "A_,B_,C_,D_,EsE"; // Gold Tipped Steel
-var g13 = RabbitGenotype.Parse(g13Str);
-string desc13 = VarietyService.IdentifyDescription(g13);
-Console.WriteLine($"Genotype: {g13} -> Description (No Breed): {desc13}");
-
-string g14Str = "A_,B_,cchd_,D_,EsE"; // Silver Tipped Steel
-var g14 = RabbitGenotype.Parse(g14Str);
-string desc14 = VarietyService.IdentifyDescription(g14);
-Console.WriteLine($"Genotype: {g14} -> Description (No Breed): {desc14}");
-
-// Demonstrate Gold Tipped Steel variety
-string description3 = "Gold Tipped Black Steel";
-string pg3String = VarietyService.CalculateGenotypeFromDescription(description3);
-var pg3 = RabbitGenotype.Parse(pg3String);
-Console.WriteLine($"\nDescription: {description3}");
-Console.WriteLine($"Genotype: {pg3}");
-
-// Demonstrate Postfix Modifier: Tri
-string description4 = "Black Tri";
-string pg4String = VarietyService.CalculateGenotypeFromDescription(description4);
-var pg4 = RabbitGenotype.Parse(pg4String);
-Console.WriteLine($"\nDescription: {description4}");
-Console.WriteLine($"Genotype: {pg4}");
-
-string g15Str = "aa,B_,C_,D_,ej_,En_"; // Black Tri
-var g15 = RabbitGenotype.Parse(g15Str);
-string desc15 = VarietyService.IdentifyDescription(g15);
-Console.WriteLine($"Genotype: {g15} -> Description (No Breed): {desc15}");
-
-// Demonstrate Magpie
-string g16Str = "A_,B_,cchd_,D_,ej_"; // Black Magpie
-var g16 = RabbitGenotype.Parse(g16Str);
-string desc16 = VarietyService.IdentifyDescription(g16);
-Console.WriteLine($"Genotype: {g16} -> Description (No Breed): {desc16}");
-
-string g17Str = "A_,bb,cchd_,dd,ej_"; // Lilac Magpie
-var g17 = RabbitGenotype.Parse(g17Str);
-string desc17 = VarietyService.IdentifyDescription(g17);
-Console.WriteLine($"Genotype: {g17} -> Description (No Breed): {desc17}");
-
-// Demonstrate Tortoise
-string g18Str = "aa,B_,C_,D_,ee"; // Black Tortoise
-var g18 = RabbitGenotype.Parse(g18Str);
-string desc18 = VarietyService.IdentifyDescription(g18);
-Console.WriteLine($"Genotype: {g18} -> Description (No Breed): {desc18}");
-
-string g19Str = "aa,bb,C_,dd,ee"; // Lilac Tortoise
-var g19 = RabbitGenotype.Parse(g19Str);
-string desc19 = VarietyService.IdentifyDescription(g19);
-Console.WriteLine($"Genotype: {g19} -> Description (No Breed): {desc19}");
-
-// Demonstrate Orange
-string g20Str = "A_,bb,C_,D_,ee";
-var g20 = RabbitGenotype.Parse(g20Str);
-string desc20 = VarietyService.IdentifyDescription(g20);
-Console.WriteLine($"Genotype: {g20} -> Description (No Breed): {desc20}");
-
-// Demonstrate Postfix Modifier: Chin
-string description5 = "Black Chin";
-string pg5String = VarietyService.CalculateGenotypeFromDescription(description5);
-var pg5 = RabbitGenotype.Parse(pg5String);
-Console.WriteLine($"\nDescription: {description5}");
-Console.WriteLine($"Genotype: {pg5}");
-
-string g21Str = "aa,B_,cchd_,D_,E_"; // Black Chin (Same as Black Chinchilla but uses modifier)
-var g21 = RabbitGenotype.Parse(g21Str);
-string desc21 = VarietyService.IdentifyDescription(g21);
-Console.WriteLine($"Genotype: {g21} -> Description (No Breed): {desc21}");
-
-// Simulation test: Broken Chestnut Tiddywider
-string simulationDesc = "Broken Chestnut Tiddywider";
-string simulationGenotype = VarietyService.CalculateGenotypeFromDescription(simulationDesc);
-Console.WriteLine($"\nSimulation: {simulationDesc}");
-Console.WriteLine($"Calculated Genotype: {simulationGenotype}");
-
-var parsedGenotype = RabbitGenotype.Parse(simulationGenotype);
-string identifiedDesc = VarietyService.IdentifyDescription(parsedGenotype);
-Console.WriteLine($"Identified Description: {identifiedDesc}");
-
-// Rhinelander test
-Console.WriteLine("\n--- Rhinelander Breed-Specific Varieties ---");
-string rhinelanderBlack = "Black Rhinelander";
-string rbGenotype = VarietyService.CalculateGenotypeFromDescription(rhinelanderBlack);
-Console.WriteLine($"Description: {rhinelanderBlack} -> Genotype: {rbGenotype}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(rbGenotype), "Rhinelander")}");
-
-string rhinelanderBlue = "Blue Rhinelander";
-string rblGenotype = VarietyService.CalculateGenotypeFromDescription(rhinelanderBlue);
-Console.WriteLine($"Description: {rhinelanderBlue} -> Genotype: {rblGenotype}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(rblGenotype), "Rhinelander")}");
-
-string rhinelanderChocolate = "Chocolate Rhinelander";
-string rchGenotype = VarietyService.CalculateGenotypeFromDescription(rhinelanderChocolate);
-Console.WriteLine($"Description: {rhinelanderChocolate} -> Genotype: {rchGenotype}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(rchGenotype), "Rhinelander")}");
-
-// Charlie tests
-Console.WriteLine("\n--- Charlie Modifier Tests ---");
-string trueCharlie = "True Charlie Chestnut";
-string tcGenotype = VarietyService.CalculateGenotypeFromDescription(trueCharlie);
-Console.WriteLine($"Description: {trueCharlie} -> Genotype: {tcGenotype}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(tcGenotype))}");
-
-string charlieAlt = "Charlie Black";
-string caGenotype = VarietyService.CalculateGenotypeFromDescription(charlieAlt);
-Console.WriteLine($"Description: {charlieAlt} -> Genotype: {caGenotype}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(caGenotype))}");
-
-string falseCharlie = "False Charlie Black";
-string fcGenotype = VarietyService.CalculateGenotypeFromDescription(falseCharlie);
-Console.WriteLine($"Description: {falseCharlie} -> Genotype: {fcGenotype}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(fcGenotype))}");
-
-// Booted, Blanketed and Wildcard tests
-Console.WriteLine("\n--- Booted, Blanketed and Wildcard Tests ---");
-string bootedChestnut = "Booted Chestnut";
-string btcGenotype = VarietyService.CalculateGenotypeFromDescription(bootedChestnut);
-Console.WriteLine($"Description: {bootedChestnut} -> Genotype: {btcGenotype}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(btcGenotype))}");
-
-string blanketedBlack = "Blanketed Black";
-string blbGenotype = VarietyService.CalculateGenotypeFromDescription(blanketedBlack);
-Console.WriteLine($"Description: {blanketedBlack} -> Genotype: {blbGenotype}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(blbGenotype))}");
-
-string harlequinizedChestnut = "Harlequinized Chestnut";
-string hcGenotype = VarietyService.CalculateGenotypeFromDescription(harlequinizedChestnut);
-Console.WriteLine($"Description: {harlequinizedChestnut} -> Genotype: {hcGenotype}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(hcGenotype))}");
-
-// American Breed test
-Console.WriteLine("\n--- American Breed Tests ---");
-string americanBlue = "Blue American";
-string abGenotype = VarietyService.CalculateGenotypeFromDescription(americanBlue);
-Console.WriteLine($"Description: {americanBlue} -> Genotype: {abGenotype}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(abGenotype), "American")}");
-
-string americanWhite = "White American";
-string awGenotype = VarietyService.CalculateGenotypeFromDescription(americanWhite);
-Console.WriteLine($"Description: {americanWhite} -> Genotype: {awGenotype}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(awGenotype), "American")}");
-
-// American Fuzzy Lop test
-Console.WriteLine("\n--- American Fuzzy Lop Breed Tests ---");
-string aflChestnut = "Chestnut American Fuzzy Lop";
-string aflGenotype = VarietyService.CalculateGenotypeFromDescription(aflChestnut);
-Console.WriteLine($"Description: {aflChestnut} -> Genotype: {aflGenotype}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(aflGenotype), "American Fuzzy Lop")}");
-
-// Sable/Siamese Sable test
-Console.WriteLine("\n--- Sable and Siamese Sable Tests ---");
-string siameseSable = "Siamese Sable";
-string ssGenotype = VarietyService.CalculateGenotypeFromDescription(siameseSable);
-Console.WriteLine($"Description: {siameseSable} -> Genotype: {ssGenotype}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(ssGenotype))}");
-
-string sableAlt = "Sable";
-string sAltGenotype = VarietyService.CalculateGenotypeFromDescription(sableAlt);
-Console.WriteLine($"Description: {sableAlt} -> Genotype: {sAltGenotype}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(sAltGenotype))}");
-
-// Seal test
-Console.WriteLine("\n--- Seal Tests ---");
-string seal = "Seal";
-string sealGenotype = VarietyService.CalculateGenotypeFromDescription(seal);
-Console.WriteLine($"Description: {seal} -> Genotype: {sealGenotype}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(sealGenotype))}");
-
-// Smoke Pearl test
-Console.WriteLine("\n--- Smoke Pearl Tests ---");
-string smokePearl = "Smoke Pearl";
-string spGenotype = VarietyService.CalculateGenotypeFromDescription(smokePearl);
-Console.WriteLine($"Description: {smokePearl} -> Genotype: {spGenotype}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(spGenotype))}");
-
-// Heterozygous Sable test
-Console.WriteLine("\n--- Heterozygous Sable Tests ---");
-string heterozygousSable = "Sable";
-string hsGenotype = VarietyService.CalculateGenotypeFromDescription(heterozygousSable);
-Console.WriteLine($"Description: {heterozygousSable} -> Genotype: {hsGenotype}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(hsGenotype))}");
-
-// Sable Point test
-Console.WriteLine("\n--- Sable Point Tests ---");
-string sablePoint = "Sable Point";
-string spGenotype2 = VarietyService.CalculateGenotypeFromDescription(sablePoint);
-Console.WriteLine($"Description: {sablePoint} -> Genotype: {spGenotype2}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(spGenotype2))}");
-
-// Moon Eye tests
-Console.WriteLine("\n--- Moon Eye Modifier Tests ---");
-string moonEyeBlack = "Moon Eye Black";
-string mebGenotype = VarietyService.CalculateGenotypeFromDescription(moonEyeBlack);
-Console.WriteLine($"Description: {moonEyeBlack} -> Genotype: {mebGenotype}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(mebGenotype))}");
-
-string meCarrierChestnut = "ME Carrier Chestnut";
-string mecGenotype = VarietyService.CalculateGenotypeFromDescription(meCarrierChestnut);
-Console.WriteLine($"Description: {meCarrierChestnut} -> Genotype: {mecGenotype}");
-Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(mecGenotype))}");
-
-// Parental Resolution / Solving test
-Console.WriteLine("\n--- Parental Genotype Resolution (Solver) ---");
-string p1Desc = "Black"; // aa,B_,C_,D_,E_,enen
-string p2Desc = "Chestnut"; // A_,B_,C_,D_,E_,enen
-string targetDesc = "Chestnut"; // A_,B_,C_,D_,E_,enen
-
-var p1G = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(p1Desc));
-var p2G = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(p2Desc));
-var targetG = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(targetDesc));
-
-Console.WriteLine($"Parent 1 (Black): {p1G}");
-Console.WriteLine($"Parent 2 (Chestnut): {p2G}");
-Console.WriteLine($"Target (Chestnut): {targetG}");
-
-var solvedG = GenotypeSolver.Solve(targetG, p1G, p2G);
-Console.WriteLine($"Solved Target: {solvedG}");
-
-// Another example: Solving dd from parents
-string p1Desc2 = "Blue"; // aa,B_,C_,dd,E_,enen
-string p2Desc2 = "Chestnut"; // A_,B_,C_,D_,E_,enen
-string targetDesc2 = "Chestnut"; // A_,B_,C_,D_,E_,enen
-
-var p1G2 = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(p1Desc2));
-var p2G2 = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(p2Desc2));
-var targetG2 = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(targetDesc2));
-
-Console.WriteLine($"\nParent 1 (Blue): {p1G2}");
-Console.WriteLine($"Parent 2 (Chestnut): {p2G2}");
-Console.WriteLine($"Target (Chestnut): {targetG2}");
-
-var solvedG2 = GenotypeSolver.Solve(targetG2, p1G2, p2G2);
-Console.WriteLine($"Solved Target: {solvedG2}");
-
-// Complex Solving Test: Suspected alleles and exclusions
-Console.WriteLine("\n--- Advanced Genetic Solving (Suspects & Exclusions) ---");
-// Parent 1 is homozygous for suspected 'at' (actually just using A(at) for demonstration of propagation)
-string p1AdvancedStr = "A(at),B_,C_,D_,E_,enen"; 
-string p2AdvancedStr = "aa,B_,C_,D_,E_,enen";
-string targetAdvancedStr = "A_,B_,C_,D_,E_,enen";
-
-var p1G3 = RabbitGenotype.Parse(p1AdvancedStr);
-var p2G3 = RabbitGenotype.Parse(p2AdvancedStr);
-var targetG3 = RabbitGenotype.Parse(targetAdvancedStr);
-
-Console.WriteLine($"Parent 1: {p1G3}");
-Console.WriteLine($"Parent 2: {p2G3}");
-Console.WriteLine($"Target: {targetG3}");
-
-var solvedG3 = GenotypeSolver.Solve(targetG3, p1G3, p2G3);
-Console.WriteLine($"Solved Target (Expect Aa): {solvedG3}");
-
-// Test suspect propagation when multiple options exist
-string p1G4Str = "A_,B_,C_,D_,E_,enen";
-string p2G4Str = "A(at),B_,C_,D_,E_,enen"; // Parent 2 is A with at as suspect
-string targetG4Str = "A_,B_,C_,D_,E_,enen";
-
-var p1G4 = RabbitGenotype.Parse(p1G4Str);
-var p2G4 = RabbitGenotype.Parse(p2G4Str);
-var targetG4 = RabbitGenotype.Parse(targetG4Str);
-
-Console.WriteLine($"\nParent 1: {p1G4}");
-Console.WriteLine($"Parent 2: {p2G4}");
-Console.WriteLine($"Target: {targetG4}");
-
-var solvedG4 = GenotypeSolver.Solve(targetG4, p1G4, p2G4);
-Console.WriteLine($"Solved Target (Expect Suspects): {solvedG4}");
-
-// Test exclusion propagation
-string targetExclusionStr = "A_[at],B_,C_,D_,E_,enen"; // Offspring known NOT to have 'at'
-string p1ExclusionStr = "Aat,B_,C_,D_,E_,enen"; // Parent 1 is Aat
-string p2ExclusionStr = "Aa,B_,C_,D_,E_,enen"; // Parent 2 is Aa
-
-var p1G5 = RabbitGenotype.Parse(p1ExclusionStr);
-var p2G5 = RabbitGenotype.Parse(p2ExclusionStr);
-var targetG5 = RabbitGenotype.Parse(targetExclusionStr);
-
-Console.WriteLine($"\nParent 1: {p1G5}");
-Console.WriteLine($"Parent 2: {p2G5}");
-Console.WriteLine($"Target (Excluded [at]): {targetG5}");
-
-var solvedG5 = GenotypeSolver.Solve(targetG5, p1G5, p2G5);
-Console.WriteLine($"Solved Target (Should exclude Aat option): {solvedG5}");
-
-// Reverse Solving: Deducing parents from offspring
-Console.WriteLine("\n--- Reverse Genetic Solving (Parents from Offspring) ---");
-string parent1Start = "Chestnut"; // A_,B_,C_,D_,E_,enen
-string parent2Start = "Chestnut"; // A_,B_,C_,D_,E_,enen
-string child1Desc = "Black"; // aa,B_,C_,D_,E_,enen
-string child2Desc = "Blue"; // A_,B_,C_,dd,E_,enen
-
-var p1Source = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(parent1Start));
-var p2Source = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(parent2Start));
-var child1 = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(child1Desc));
-var child2 = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(child2Desc));
-
-Console.WriteLine($"Initial Parent 1: {p1Source}");
-Console.WriteLine($"Initial Parent 2: {p2Source}");
-Console.WriteLine($"Offspring 1 (Black): {child1}");
-Console.WriteLine($"Offspring 2 (Blue): {child2}");
-
-var (solvedP1, solvedP2) = GenotypeSolver.SolveParents(p1Source, p2Source, new[] { child1, child2 });
-Console.WriteLine($"Solved Parent 1: {solvedP1}");
-Console.WriteLine($"Solved Parent 2: {solvedP2}");
-
-// Complex reverse solving
-Console.WriteLine("\n--- Complex Reverse Genetic Solving ---");
-string p1Start3 = "Chestnut"; // A_,B_,C_,D_,E_
-string p2Start3 = "Chestnut"; // A_,B_,C_,D_,E_
-var p1S3 = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(p1Start3));
-var p2S3 = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(p2Start3));
-
-// Offspring: Black (aa), Black Otter (at_), and Chestnut (A_)
-var c1 = RabbitGenotype.Parse("aa,B_,C_,D_,E_,enen");
-var c2 = RabbitGenotype.Parse("at_,B_,C_,D_,E_,enen");
-var c3 = RabbitGenotype.Parse("A_,B_,C_,D_,E_,enen");
-
-Console.WriteLine($"Parent 1 (Chestnut): {p1S3}");
-Console.WriteLine($"Parent 2 (Chestnut): {p2S3}");
-Console.WriteLine($"Offspring: {c1}, {c2}, {c3}");
-
-var (sp1, sp2) = GenotypeSolver.SolveParents(p1S3, p2S3, new[] { c1, c2, c3 });
-Console.WriteLine($"Solved Parent 1: {sp1}");
-Console.WriteLine($"Solved Parent 2: {sp2}");
+﻿using System.CommandLine;
+using RabbitGeneProcessor.Core;
+
+namespace RabbitGeneProcessor;
+
+class Program
+{
+    static async Task<int> Main(string[] args)
+    {
+        InitializeServices();
+
+        var rootCommand = new RootCommand("Rabbit Gene Processor CLI");
+
+        // Command: calculate
+        var calculateCommand = new Command("calculate", "Calculates a genotype from a variety/breed description.");
+        var descriptionArg = new Argument<string>("description", "The rabbit description (e.g., 'Broken VM Chestnut Rex').");
+        calculateCommand.AddArgument(descriptionArg);
+        calculateCommand.SetHandler((description) =>
+        {
+            var genotype = VarietyService.CalculateGenotypeFromDescription(description);
+            Console.WriteLine($"Description: {description}");
+            Console.WriteLine($"Calculated Genotype: {genotype}");
+        }, descriptionArg);
+
+        // Command: identify
+        var identifyCommand = new Command("identify", "Identifies a variety description from a genotype string.");
+        var genotypeArg = new Argument<string>("genotype", "The genetic string (e.g., 'aa,B_,C_,D_,E_').");
+        var breedOption = new Option<string?>("--breed", "Optional breed name to refine identification.");
+        identifyCommand.AddArgument(genotypeArg);
+        identifyCommand.AddOption(breedOption);
+        identifyCommand.SetHandler((genotypeStr, breed) =>
+        {
+            var genotype = RabbitGenotype.Parse(genotypeStr);
+            var description = VarietyService.IdentifyDescription(genotype, breed);
+            Console.WriteLine($"Genotype: {genotype}");
+            if (!string.IsNullOrEmpty(breed)) Console.WriteLine($"Breed: {breed}");
+            Console.WriteLine($"Identified Description: {description}");
+        }, genotypeArg, breedOption);
+
+        // Command: solve-offspring
+        var solveOffspringCommand = new Command("solve-offspring", "Resolves unknown alleles in an offspring based on parents.");
+        var targetArg = new Argument<string>("target", "The target offspring genotype or description.");
+        var p1Arg = new Argument<string>("parent1", "Parent 1 genotype or description.");
+        var p2Arg = new Argument<string>("parent2", "Parent 2 genotype or description.");
+        solveOffspringCommand.AddArgument(targetArg);
+        solveOffspringCommand.AddArgument(p1Arg);
+        solveOffspringCommand.AddArgument(p2Arg);
+        solveOffspringCommand.SetHandler((target, p1, p2) =>
+        {
+            var targetG = ParseGenotypeOrDescription(target);
+            var p1G = ParseGenotypeOrDescription(p1);
+            var p2G = ParseGenotypeOrDescription(p2);
+
+            var solved = GenotypeSolver.Solve(targetG, p1G, p2G);
+            Console.WriteLine($"Parent 1: {p1G}");
+            Console.WriteLine($"Parent 2: {p2G}");
+            Console.WriteLine($"Original Target: {targetG}");
+            Console.WriteLine($"Solved Target: {solved}");
+        }, targetArg, p1Arg, p2Arg);
+
+        // Command: solve-parents
+        var solveParentsCommand = new Command("solve-parents", "Resolves unknown alleles in parents based on offspring.");
+        var sp1Arg = new Argument<string>("parent1", "Parent 1 genotype or description.");
+        var sp2Arg = new Argument<string>("parent2", "Parent 2 genotype or description.");
+        var offspringArg = new Argument<string[]>("offspring", "One or more offspring genotypes or descriptions.");
+        solveParentsCommand.AddArgument(sp1Arg);
+        solveParentsCommand.AddArgument(sp2Arg);
+        solveParentsCommand.AddArgument(offspringArg);
+        solveParentsCommand.SetHandler((p1, p2, offspring) =>
+        {
+            var p1G = ParseGenotypeOrDescription(p1);
+            var p2G = ParseGenotypeOrDescription(p2);
+            var offspringGs = offspring.Select(ParseGenotypeOrDescription).ToArray();
+
+            var (solvedP1, solvedP2) = GenotypeSolver.SolveParents(p1G, p2G, offspringGs);
+            Console.WriteLine($"Original Parent 1: {p1G}");
+            Console.WriteLine($"Original Parent 2: {p2G}");
+            Console.WriteLine("Offspring Evidence:");
+            foreach (var o in offspringGs) Console.WriteLine($" - {o}");
+            Console.WriteLine($"Solved Parent 1: {solvedP1}");
+            Console.WriteLine($"Solved Parent 2: {solvedP2}");
+        }, sp1Arg, sp2Arg, offspringArg);
+
+        rootCommand.AddCommand(calculateCommand);
+        rootCommand.AddCommand(identifyCommand);
+        rootCommand.AddCommand(solveOffspringCommand);
+        rootCommand.AddCommand(solveParentsCommand);
+
+        // Default: Run existing demonstration if no args provided
+        if (args.Length == 0)
+        {
+            RunDemonstration();
+            return 0;
+        }
+
+        return await rootCommand.InvokeAsync(args);
+    }
+
+    private static void InitializeServices()
+    {
+        string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+        GeneticParser.Initialize(Path.Combine(baseDir, "Data", "LociDefinitions.json"));
+        VarietyService.Initialize(
+            Path.Combine(baseDir, "Data", "Varieties.json"),
+            Path.Combine(baseDir, "Data", "Modifiers.json"),
+            Path.Combine(baseDir, "Data", "Breeds.json"));
+    }
+
+    private static RabbitGenotype ParseGenotypeOrDescription(string input)
+    {
+        // Try parsing as description first - if it matches a known variety, use it
+        var calculated = VarietyService.CalculateGenotypeFromDescription(input);
+        
+        // If the calculation returned a valid genotype (not just __ for all loci)
+        // or if it successfully found a variety/breed in the string, use it.
+        // But the CalculateGenotypeFromDescription always returns a genotype.
+        // Let's check if the input string contains any known breed, variety or modifier names.
+        if (VarietyService.Breeds.Any(b => input.Contains(b.Name, StringComparison.OrdinalIgnoreCase)) ||
+            VarietyService.Varieties.Any(v => input.Contains(v.Name, StringComparison.OrdinalIgnoreCase)) ||
+            VarietyService.Modifiers.Any(m => input.Contains(m.Name, StringComparison.OrdinalIgnoreCase)))
+        {
+            return RabbitGenotype.Parse(calculated);
+        }
+
+        // If no names were found, try parsing as a raw genotype string
+        try { return RabbitGenotype.Parse(input); } catch { }
+
+        // Fallback to whatever description parsing gives
+        return RabbitGenotype.Parse(calculated);
+    }
+
+    private static void RunDemonstration()
+    {
+        Console.WriteLine("Rabbit Gene Processor Initialized.");
+        Console.WriteLine($"Loaded {GeneticParser.Definitions.Count} loci definitions.");
+        Console.WriteLine($"Loaded {VarietyService.Breeds.Count} breed definitions.");
+        Console.WriteLine($"Loaded {VarietyService.Varieties.Count} variety definitions.");
+        Console.WriteLine($"Loaded {VarietyService.Modifiers.Count} modifier definitions.");
+
+        // Example using a breed and variety
+        string breedName = "Rex";
+        string varietyName = "Chestnut";
+        string fullGenotypeString = VarietyService.GetFullGenotypeString(breedName, varietyName);
+        var genotype = RabbitGenotype.Parse(fullGenotypeString);
+        Console.WriteLine($"Breed: {breedName}, Variety: {varietyName} -> Genotype: {genotype}");
+
+        // Demonstrate new CalculateGenotypeFromDescription method
+        Console.WriteLine("\n--- CalculateGenotypeFromDescription ---");
+        string descWithBreed = "Broken VM Chestnut Rex";
+        string genotypeFromDesc1 = VarietyService.CalculateGenotypeFromDescription(descWithBreed);
+        Console.WriteLine($"Description: {descWithBreed} -> Genotype: {genotypeFromDesc1}");
+
+        // Demonstrate converting genotype back to variety description
+        Console.WriteLine("\n--- Genotype to Description ---");
+        string g1Str = "aa,bb,C_,dd,E_,En_,Vv,rr"; // Broken VM Lilac Rex
+        var g1 = RabbitGenotype.Parse(g1Str);
+        string desc1 = VarietyService.IdentifyDescription(g1, "Rex");
+        Console.WriteLine($"Genotype: {g1} -> Description (Breed: Rex): {desc1}");
+
+        // Rhinelander test
+        Console.WriteLine("\n--- Rhinelander Breed-Specific Varieties ---");
+        string rhinelanderBlack = "Black Rhinelander";
+        string rbGenotype = VarietyService.CalculateGenotypeFromDescription(rhinelanderBlack);
+        Console.WriteLine($"Description: {rhinelanderBlack} -> Genotype: {rbGenotype}");
+        Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(rbGenotype), "Rhinelander")}");
+
+        // Parental Resolution / Solving test
+        Console.WriteLine("\n--- Parental Genotype Resolution (Solver) ---");
+        var p1G = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription("Black"));
+        var p2G = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription("Chestnut"));
+        var targetG = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription("Chestnut"));
+
+        var solvedG = GenotypeSolver.Solve(targetG, p1G, p2G);
+        Console.WriteLine($"Parent 1 (Black): {p1G}");
+        Console.WriteLine($"Parent 2 (Chestnut): {p2G}");
+        Console.WriteLine($"Target (Chestnut): {targetG}");
+        Console.WriteLine($"Solved Target: {solvedG}");
+
+        // Reverse Solving
+        Console.WriteLine("\n--- Reverse Genetic Solving (Parents from Offspring) ---");
+        var p1Source = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription("Chestnut"));
+        var p2Source = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription("Chestnut"));
+        var child1 = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription("Black"));
+        var child2 = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription("Blue"));
+
+        var (solvedP1, solvedP2) = GenotypeSolver.SolveParents(p1Source, p2Source, new[] { child1, child2 });
+        Console.WriteLine($"Initial Parent 1: {p1Source}");
+        Console.WriteLine($"Initial Parent 2: {p2Source}");
+        Console.WriteLine($"Offspring: {child1}, {child2}");
+        Console.WriteLine($"Solved Parent 1: {solvedP1}");
+        Console.WriteLine($"Solved Parent 2: {solvedP2}");
+
+        Console.WriteLine("\nUse command line arguments for specific tasks. Try '--help' for more information.");
+    }
+}
