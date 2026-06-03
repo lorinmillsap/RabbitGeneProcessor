@@ -52,35 +52,114 @@ public static class GenotypeSolver
         var s = target.Second;
 
         // If target is already fully known, return it
-        if (!f.IsUnknown && !s.IsUnknown) return target;
+        if (!f.IsUnknown && !s.IsUnknown && (f.Suspected == null || f.Suspected.Count == 0) && (s.Suspected == null || s.Suspected.Count == 0)) 
+            return target;
 
-        // Parent resolution logic:
-        // If a parent is homozygous (e.g., aa), the offspring MUST have inherited 'a'.
-        
-        void ApplyParentalRule(Locus? parent, ref Allele first, ref Allele second)
+        if (p1 == null || p2 == null) return target;
+
+        // Punnett Square Analysis
+        var p1Gametes = GetExpandedGametes(p1);
+        var p2Gametes = GetExpandedGametes(p2);
+
+        var possibleOffspring = new List<Locus>();
+        foreach (var g1 in p1Gametes)
         {
-            if (parent == null) return;
-            
-            // homozygous rule
-            if (!parent.First.IsUnknown && parent.First.Symbol == parent.Second.Symbol)
+            foreach (var g2 in p2Gametes)
             {
-                var inherited = parent.First;
-                
-                // If target doesn't have this allele yet, fill one underscore
-                if (first.Symbol != inherited.Symbol && second.Symbol != inherited.Symbol)
-                {
-                    if (first.IsUnknown) first = inherited;
-                    else if (second.IsUnknown) second = inherited;
-                }
+                possibleOffspring.Add(SortLocus(new Locus(g1, g2) { OverrideLocusSymbol = target.GetLocusSymbol() }));
             }
         }
 
-        ApplyParentalRule(p1, ref f, ref s);
-        ApplyParentalRule(p2, ref f, ref s);
+        // Filter possible offspring by what matches the target
+        var consistent = possibleOffspring.Where(o => target.Matches(o)).ToList();
+        
+        // Further filter by target's exclusions
+        consistent = consistent.Where(o => !IsExcluded(o, target)).ToList();
 
-        // Sorting by dominance to keep it consistent
-        var result = new Locus(f, s) { OverrideLocusSymbol = target.GetLocusSymbol() };
-        return SortLocus(result);
+        if (consistent.Count == 0) return target;
+
+        // If all consistent offspring have the same genotype, we solved it
+        if (consistent.All(o => o.First.Symbol == consistent[0].First.Symbol && o.Second.Symbol == consistent[0].Second.Symbol))
+        {
+            return consistent[0];
+        }
+
+        // Otherwise, we have multiple possibilities. Try to find commonalities or suspects.
+        // We assume target is like A_ or aa.
+        // If target is A_, we are trying to solve the second slot.
+        if (!f.IsUnknown && s.IsUnknown)
+        {
+            var possibleSeconds = consistent
+                .SelectMany(o => new[] { o.First.Symbol, o.Second.Symbol })
+                .Where(sym => sym != f.Symbol || consistent.Any(o => o.First.Symbol == f.Symbol && o.Second.Symbol == f.Symbol)) // Keep f if homozygous is possible
+                .Distinct()
+                .ToList();
+
+            // Refined logic: the possible second alleles are those that, when paired with 'f', match 'target'
+            // and are present in the consistent list.
+            var actualPossibleSeconds = new List<string>();
+            foreach (var sym in possibleSeconds)
+            {
+                var potentialLocus = SortLocus(new Locus(f, new Allele(sym)) { OverrideLocusSymbol = target.GetLocusSymbol() });
+                if (consistent.Any(o => o.First.Symbol == potentialLocus.First.Symbol && o.Second.Symbol == potentialLocus.Second.Symbol))
+                {
+                    if (sym != "_" || actualPossibleSeconds.Count == 0) // Avoid adding _ if we have better options
+                        actualPossibleSeconds.Add(sym);
+                }
+            }
+
+            // If we have concrete options and an underscore, remove the underscore if there are multiple concrete ones?
+            // Actually, if we have A and a, then _ is redundant.
+            if (actualPossibleSeconds.Count > 1 && actualPossibleSeconds.Contains("_"))
+            {
+                actualPossibleSeconds.Remove("_");
+            }
+            
+            if (actualPossibleSeconds.Count == 1)
+            {
+                return SortLocus(new Locus(f, new Allele(actualPossibleSeconds[0])) { OverrideLocusSymbol = target.GetLocusSymbol() });
+            }
+            
+            if (actualPossibleSeconds.Count > 1)
+            {
+                var newS = new Allele("_", Suspected: actualPossibleSeconds.OrderBy(x => x).ToList(), UseSlashInSuspected: true);
+                return new Locus(f, newS) { OverrideLocusSymbol = target.GetLocusSymbol() };
+            }
+        }
+
+        return target;
+    }
+
+    private static List<Allele> GetExpandedGametes(Locus locus)
+    {
+        var gametes = new List<Allele> { locus.First, locus.Second };
+        var expanded = new List<Allele>();
+        foreach (var g in gametes)
+        {
+            if (g.IsUnknown && g.Suspected is { Count: > 0 })
+            {
+                foreach (var s in g.Suspected)
+                {
+                    expanded.Add(new Allele(s));
+                }
+            }
+            else
+            {
+                expanded.Add(g);
+            }
+        }
+        return expanded;
+    }
+
+    private static bool IsExcluded(Locus offspring, Locus target)
+    {
+        var excluded = new List<string>();
+        if (target.First.Excluded != null) excluded.AddRange(target.First.Excluded);
+        if (target.Second.Excluded != null) excluded.AddRange(target.Second.Excluded);
+        
+        if (excluded.Count == 0) return false;
+        
+        return excluded.Contains(offspring.First.Symbol) || excluded.Contains(offspring.Second.Symbol);
     }
 
     private static Locus SortLocus(Locus locus)

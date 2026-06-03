@@ -349,3 +349,53 @@ Console.WriteLine($"Target (Chestnut): {targetG2}");
 
 var solvedG2 = GenotypeSolver.Solve(targetG2, p1G2, p2G2);
 Console.WriteLine($"Solved Target: {solvedG2}");
+
+// Complex Solving Test: Suspected alleles and exclusions
+Console.WriteLine("\n--- Advanced Genetic Solving (Suspects & Exclusions) ---");
+// Parent 1 is homozygous for suspected 'at' (actually just using A(at) for demonstration of propagation)
+string p1AdvancedStr = "A(at),B_,C_,D_,E_,enen"; 
+string p2AdvancedStr = "aa,B_,C_,D_,E_,enen";
+string targetAdvancedStr = "A_,B_,C_,D_,E_,enen";
+
+var p1G3 = RabbitGenotype.Parse(p1AdvancedStr);
+var p2G3 = RabbitGenotype.Parse(p2AdvancedStr);
+var targetG3 = RabbitGenotype.Parse(targetAdvancedStr);
+
+Console.WriteLine($"Parent 1: {p1G3}");
+Console.WriteLine($"Parent 2: {p2G3}");
+Console.WriteLine($"Target: {targetG3}");
+
+var solvedG3 = GenotypeSolver.Solve(targetG3, p1G3, p2G3);
+Console.WriteLine($"Solved Target (Expect Aa): {solvedG3}");
+
+// Test suspect propagation when multiple options exist
+string p1G4Str = "A_,B_,C_,D_,E_,enen";
+string p2G4Str = "A(at),B_,C_,D_,E_,enen"; // Parent 2 is A with at as suspect
+string targetG4Str = "A_,B_,C_,D_,E_,enen";
+
+var p1G4 = RabbitGenotype.Parse(p1G4Str);
+var p2G4 = RabbitGenotype.Parse(p2G4Str);
+var targetG4 = RabbitGenotype.Parse(targetG4Str);
+
+Console.WriteLine($"\nParent 1: {p1G4}");
+Console.WriteLine($"Parent 2: {p2G4}");
+Console.WriteLine($"Target: {targetG4}");
+
+var solvedG4 = GenotypeSolver.Solve(targetG4, p1G4, p2G4);
+Console.WriteLine($"Solved Target (Expect Suspects): {solvedG4}");
+
+// Test exclusion propagation
+string targetExclusionStr = "A_[at],B_,C_,D_,E_,enen"; // Offspring known NOT to have 'at'
+string p1ExclusionStr = "Aat,B_,C_,D_,E_,enen"; // Parent 1 is Aat
+string p2ExclusionStr = "Aa,B_,C_,D_,E_,enen"; // Parent 2 is Aa
+
+var p1G5 = RabbitGenotype.Parse(p1ExclusionStr);
+var p2G5 = RabbitGenotype.Parse(p2ExclusionStr);
+var targetG5 = RabbitGenotype.Parse(targetExclusionStr);
+
+Console.WriteLine($"\nParent 1: {p1G5}");
+Console.WriteLine($"Parent 2: {p2G5}");
+Console.WriteLine($"Target (Excluded [at]): {targetG5}");
+
+var solvedG5 = GenotypeSolver.Solve(targetG5, p1G5, p2G5);
+Console.WriteLine($"Solved Target (Should exclude Aat option): {solvedG5}");

@@ -138,6 +138,11 @@ public record Locus(Allele First, Allele Second)
             {
                 return $"{First}{Second}";
             }
+            // If the first allele has suspects/exclusions, we should also show them clearly
+            if (First.Suspected is { Count: > 0 } || First.Excluded is { Count: > 0 })
+            {
+                return $"{First}{Second}";
+            }
             return $"{First}_";
         }
         return $"{First}{Second}";
