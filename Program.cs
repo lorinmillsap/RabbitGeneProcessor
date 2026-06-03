@@ -316,3 +316,36 @@ string meCarrierChestnut = "ME Carrier Chestnut";
 string mecGenotype = VarietyService.CalculateGenotypeFromDescription(meCarrierChestnut);
 Console.WriteLine($"Description: {meCarrierChestnut} -> Genotype: {mecGenotype}");
 Console.WriteLine($"Identified: {VarietyService.IdentifyDescription(RabbitGenotype.Parse(mecGenotype))}");
+
+// Parental Resolution / Solving test
+Console.WriteLine("\n--- Parental Genotype Resolution (Solver) ---");
+string p1Desc = "Black"; // aa,B_,C_,D_,E_,enen
+string p2Desc = "Chestnut"; // A_,B_,C_,D_,E_,enen
+string targetDesc = "Chestnut"; // A_,B_,C_,D_,E_,enen
+
+var p1G = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(p1Desc));
+var p2G = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(p2Desc));
+var targetG = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(targetDesc));
+
+Console.WriteLine($"Parent 1 (Black): {p1G}");
+Console.WriteLine($"Parent 2 (Chestnut): {p2G}");
+Console.WriteLine($"Target (Chestnut): {targetG}");
+
+var solvedG = GenotypeSolver.Solve(targetG, p1G, p2G);
+Console.WriteLine($"Solved Target: {solvedG}");
+
+// Another example: Solving dd from parents
+string p1Desc2 = "Blue"; // aa,B_,C_,dd,E_,enen
+string p2Desc2 = "Chestnut"; // A_,B_,C_,D_,E_,enen
+string targetDesc2 = "Chestnut"; // A_,B_,C_,D_,E_,enen
+
+var p1G2 = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(p1Desc2));
+var p2G2 = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(p2Desc2));
+var targetG2 = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(targetDesc2));
+
+Console.WriteLine($"\nParent 1 (Blue): {p1G2}");
+Console.WriteLine($"Parent 2 (Chestnut): {p2G2}");
+Console.WriteLine($"Target (Chestnut): {targetG2}");
+
+var solvedG2 = GenotypeSolver.Solve(targetG2, p1G2, p2G2);
+Console.WriteLine($"Solved Target: {solvedG2}");
