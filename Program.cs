@@ -39,12 +39,12 @@ class Program
 
         // Command: solve-offspring
         var solveOffspringCommand = new Command("solve-offspring", "Resolves unknown alleles in an offspring based on parents.");
-        var targetArg = new Argument<string>("target", "The target offspring genotype string.");
-        var p1Arg = new Argument<string>("parent1", "Parent 1 genotype string.");
-        var p2Arg = new Argument<string>("parent2", "Parent 2 genotype string.");
-        solveOffspringCommand.AddArgument(targetArg);
-        solveOffspringCommand.AddArgument(p1Arg);
-        solveOffspringCommand.AddArgument(p2Arg);
+        var targetOption = new Option<string>("--target", "The target offspring genotype string.") { IsRequired = true };
+        var p1Option = new Option<string>("--p1", "Parent 1 genotype string.") { IsRequired = true };
+        var p2Option = new Option<string>("--p2", "Parent 2 genotype string.") { IsRequired = true };
+        solveOffspringCommand.AddOption(targetOption);
+        solveOffspringCommand.AddOption(p1Option);
+        solveOffspringCommand.AddOption(p2Option);
         solveOffspringCommand.SetHandler((target, p1, p2) =>
         {
             var targetG = RabbitGenotype.Parse(target);
@@ -56,16 +56,16 @@ class Program
             Console.WriteLine($"Parent 2: {p2G}");
             Console.WriteLine($"Original Target: {targetG}");
             Console.WriteLine($"Solved Target: {solved}");
-        }, targetArg, p1Arg, p2Arg);
+        }, targetOption, p1Option, p2Option);
 
         // Command: solve-parents
         var solveParentsCommand = new Command("solve-parents", "Resolves unknown alleles in parents based on offspring.");
-        var sp1Arg = new Argument<string>("parent1", "Parent 1 genotype string.");
-        var sp2Arg = new Argument<string>("parent2", "Parent 2 genotype string.");
-        var offspringArg = new Argument<string[]>("offspring", "One or more offspring genotype strings.");
-        solveParentsCommand.AddArgument(sp1Arg);
-        solveParentsCommand.AddArgument(sp2Arg);
-        solveParentsCommand.AddArgument(offspringArg);
+        var sp1Option = new Option<string>("--p1", "Parent 1 genotype string.") { IsRequired = true };
+        var sp2Option = new Option<string>("--p2", "Parent 2 genotype string.") { IsRequired = true };
+        var offspringOption = new Option<string[]>("--offspring", "One or more offspring genotype strings.") { IsRequired = true, Arity = ArgumentArity.OneOrMore };
+        solveParentsCommand.AddOption(sp1Option);
+        solveParentsCommand.AddOption(sp2Option);
+        solveParentsCommand.AddOption(offspringOption);
         solveParentsCommand.SetHandler((p1, p2, offspring) =>
         {
             var p1G = RabbitGenotype.Parse(p1);
@@ -79,7 +79,7 @@ class Program
             foreach (var o in offspringGs) Console.WriteLine($" - {o}");
             Console.WriteLine($"Solved Parent 1: {solvedP1}");
             Console.WriteLine($"Solved Parent 2: {solvedP2}");
-        }, sp1Arg, sp2Arg, offspringArg);
+        }, sp1Option, sp2Option, offspringOption);
 
         rootCommand.AddCommand(calculateCommand);
         rootCommand.AddCommand(identifyCommand);

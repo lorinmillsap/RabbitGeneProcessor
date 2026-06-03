@@ -16,11 +16,11 @@ RabbitGeneProcessor is a robust and efficient tool for processing rabbit genetic
 
 ## Genetic Representation
 
-Genes are represented as allele pairs, with each locus separated by a comma.
+Genes are represented as allele pairs, with each locus separated by a comma (`,`) or a space (` `).
 
 ### Rules:
 - **Case Sensitivity**: Case sensitivity is critical (e.g., `En` vs `en`).
-- **Separators**: Each locus is separated by a comma (`,`).
+- **Separators**: Each locus is separated by a comma (`,`) or a space (` `).
 - **Unknowns**: An underscore (`_`) indicates an unknown or masked allele. `__` indicates a completely unknown locus.
 - **Suspects**: Alleles in parentheses `()` are suspected or likely possibilities (e.g., `A(at)`). Slashes can be used for "or" conditions (e.g., `cchl(ch/c)`).
 - **Exclusions**: Alleles in square brackets `[]` are known exclusions (e.g., `A_[at]`).
@@ -46,13 +46,13 @@ dotnet run -- identify "aa,bb,C_,dd,E_,En_,Vv,rr" --breed Rex
 ### Solve Offspring
 Deduce unknown alleles in a target offspring using its parents.
 ```bash
-dotnet run -- solve-offspring "A_,B_,C_,D_,E_" "aa,B_,C_,D_,E_" "A_,B_,C_,D_,E_"
+dotnet run -- solve-offspring --target "A_,B_,C_,D_,E_" --p1 "aa,B_,C_,D_,E_" --p2 "A_,B_,C_,D_,E_"
 ```
 
 ### Solve Parents
 Deduce carrier alleles in parents using evidence from their offspring.
 ```bash
-dotnet run -- solve-parents "A_,B_,C_,D_,E_" "A_,B_,C_,D_,E_" "aa,B_,C_,D_,E_" "A_,B_,C_,dd,E_"
+dotnet run -- solve-parents --p1 "A_,B_,C_,D_,E_" --p2 "A_,B_,C_,D_,E_" --offspring "aa,B_,C_,D_,E_" "A_,B_,C_,dd,E_"
 ```
 
 ## Project Structure

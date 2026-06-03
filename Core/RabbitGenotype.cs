@@ -13,7 +13,7 @@ public class RabbitGenotype
     public static RabbitGenotype Parse(string input)
     {
         var genotype = new RabbitGenotype();
-        var parts = input.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var parts = input.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         foreach (var part in parts)
         {
             if (part.StartsWith('{'))
