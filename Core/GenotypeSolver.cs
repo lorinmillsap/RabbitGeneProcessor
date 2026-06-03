@@ -162,6 +162,234 @@ public static class GenotypeSolver
         return excluded.Contains(offspring.First.Symbol) || excluded.Contains(offspring.Second.Symbol);
     }
 
+    /// <summary>
+    /// Resolves unknown alleles ('_') in two target parents by analyzing the genotypes of their offspring.
+    /// This generates new genotype layers for the parents without modifying the original inputs.
+    /// </summary>
+    public static (RabbitGenotype SolvedParent1, RabbitGenotype SolvedParent2) SolveParents(
+        RabbitGenotype parent1, 
+        RabbitGenotype parent2, 
+        IEnumerable<RabbitGenotype> offspring)
+    {
+        var solvedP1 = new RabbitGenotype();
+        var solvedP2 = new RabbitGenotype();
+        
+        var p1Loci = parent1.Loci.ToDictionary(l => l.GetLocusSymbol());
+        var p2Loci = parent2.Loci.ToDictionary(l => l.GetLocusSymbol());
+        
+        // Collect all symbols involved
+        var allSymbols = p1Loci.Keys.Union(p2Loci.Keys).Distinct().ToList();
+        foreach (var child in offspring)
+        {
+            foreach (var l in child.Loci)
+            {
+                var sym = l.GetLocusSymbol();
+                if (!allSymbols.Contains(sym)) allSymbols.Add(sym);
+            }
+        }
+
+        foreach (var symbol in allSymbols)
+        {
+            p1Loci.TryGetValue(symbol, out var p1Locus);
+            p2Loci.TryGetValue(symbol, out var p2Locus);
+            
+            p1Locus ??= new Locus(new Allele("_"), new Allele("_")) { OverrideLocusSymbol = symbol };
+            p2Locus ??= new Locus(new Allele("_"), new Allele("_")) { OverrideLocusSymbol = symbol };
+
+            var childrenLoci = offspring
+                .Select(c => c.Loci.FirstOrDefault(l => l.GetLocusSymbol() == symbol))
+                .Where(l => l != null)
+                .ToList();
+
+            var (newP1, newP2) = SolveParentLocus(p1Locus, p2Locus, childrenLoci!);
+            solvedP1.Loci.Add(newP1);
+            solvedP2.Loci.Add(newP2);
+        }
+
+        return (solvedP1, solvedP2);
+    }
+
+    private static (Locus NewP1, Locus NewP2) SolveParentLocus(Locus p1, Locus p2, List<Locus> children)
+    {
+        // If no children, can't solve anything new
+        if (children.Count == 0) return (p1, p2);
+
+        // Generate all possible expanded allele combinations for both parents
+        var p1AlleleOptions = GetExpandedGametes(p1);
+        var p2AlleleOptions = GetExpandedGametes(p2);
+
+        // We are looking for pairs of parental loci (P1, P2) that are consistent with ALL children.
+        // A parental locus pair is consistent if for every child, it's possible for that child
+        // to have been produced by those parents.
+        
+        // First, let's identify what possible alleles exist in the population for this locus
+        // to fill in any truly unknown underscores if needed.
+        var knownAlleles = children
+            .SelectMany(c => new[] { c.First, c.Second })
+            .Union(new[] { p1.First, p1.Second, p2.First, p2.Second })
+            .Where(a => !a.IsUnknown)
+            .Select(a => a.Symbol)
+            .Distinct()
+            .ToList();
+
+        // If a parent has _, it could be any of the known alleles in the population 
+        // OR it could be something else (represented by _).
+        List<Allele> ExpandParent(Locus p)
+        {
+            var options = new HashSet<string>();
+            if (!p.First.IsUnknown) options.Add(p.First.Symbol);
+            if (!p.Second.IsUnknown) options.Add(p.Second.Symbol);
+            
+            // Add suspects
+            if (p.First.Suspected != null) foreach (var s in p.First.Suspected) options.Add(s);
+            if (p.Second.Suspected != null) foreach (var s in p.Second.Suspected) options.Add(s);
+            
+            // If there's an underscore, it could be any allele seen in children or the other parent
+            if (p.First.IsUnknown || p.Second.IsUnknown)
+            {
+                foreach (var ka in knownAlleles) options.Add(ka);
+                options.Add("_");
+            }
+            
+            return options.Select(s => new Allele(s)).ToList();
+        }
+
+        var p1Options = ExpandParent(p1);
+        var p2Options = ExpandParent(p2);
+
+        var validParentPairs = new List<(Locus P1, Locus P2)>();
+
+        foreach (var a1 in p1Options)
+        {
+            foreach (var b1 in p1Options)
+            {
+                var potP1 = SortLocus(new Locus(a1, b1) { OverrideLocusSymbol = p1.GetLocusSymbol() });
+                // Check if potP1 is consistent with p1 (matches and doesn't have excluded)
+                if (!p1.Matches(potP1) || IsExcluded(potP1, p1)) continue;
+
+                foreach (var a2 in p2Options)
+                {
+                    foreach (var b2 in p2Options)
+                    {
+                        var potP2 = SortLocus(new Locus(a2, b2) { OverrideLocusSymbol = p2.GetLocusSymbol() });
+                        if (!p2.Matches(potP2) || IsExcluded(potP2, p2)) continue;
+
+                        // Now check if this PAIR of parents can produce ALL children
+                        if (CanProduceAll(potP1, potP2, children))
+                        {
+                            if (!validParentPairs.Any(pair => 
+                                pair.P1.First.Symbol == potP1.First.Symbol && pair.P1.Second.Symbol == potP1.Second.Symbol &&
+                                pair.P2.First.Symbol == potP2.First.Symbol && pair.P2.Second.Symbol == potP2.Second.Symbol))
+                            {
+                                validParentPairs.Add((potP1, potP2));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (validParentPairs.Count == 0) return (p1, p2);
+
+        // Analyze validParentPairs to see what we can deduce
+        var resP1 = ResolveCommonality(p1, validParentPairs.Select(pair => pair.P1).ToList());
+        var resP2 = ResolveCommonality(p2, validParentPairs.Select(pair => pair.P2).ToList());
+
+        return (resP1, resP2);
+    }
+
+    private static bool CanProduceAll(Locus p1, Locus p2, List<Locus> children)
+    {
+        var p1G = new[] { p1.First.Symbol, p1.Second.Symbol };
+        var p2G = new[] { p2.First.Symbol, p2.Second.Symbol };
+
+        // Possible child genotypes from these specific parents
+        var possible = new List<(string, string)>();
+        foreach (var g1 in p1G)
+        {
+            foreach (var g2 in p2G)
+            {
+                if (g1 == "_" || g2 == "_") continue; // If parent has _, we can't be sure, but usually we expanded parents to concrete alleles
+                possible.Add(g1.CompareTo(g2) <= 0 ? (g1, g2) : (g2, g1));
+            }
+        }
+
+        foreach (var child in children)
+        {
+            // If child is fully known, it must be in 'possible'
+            if (!child.First.IsUnknown && !child.Second.IsUnknown)
+            {
+                var cs = child.First.Symbol.CompareTo(child.Second.Symbol) <= 0 
+                    ? (child.First.Symbol, child.Second.Symbol) 
+                    : (child.Second.Symbol, child.First.Symbol);
+                
+                if (!possible.Contains(cs)) return false;
+            }
+            else
+            {
+                // Child is partially known, at least one allele combination from parents must match child
+                bool foundMatch = false;
+                foreach (var pos in possible)
+                {
+                    var posLocus = new Locus(new Allele(pos.Item1), new Allele(pos.Item2)) { OverrideLocusSymbol = child.GetLocusSymbol() };
+                    if (child.Matches(posLocus) && !IsExcluded(posLocus, child))
+                    {
+                        foundMatch = true;
+                        break;
+                    }
+                }
+                if (!foundMatch) return false;
+            }
+        }
+        return true;
+    }
+
+    private static Locus ResolveCommonality(Locus original, List<Locus> possibilities)
+    {
+        if (possibilities.Count == 0) return original;
+        
+        // If all possibilities are the same
+        if (possibilities.All(p => p.First.Symbol == possibilities[0].First.Symbol && p.Second.Symbol == possibilities[0].Second.Symbol))
+        {
+            return possibilities[0];
+        }
+
+        var newFirst = original.First;
+        var newSecond = original.Second;
+
+        // Collect all symbols that appear in each position
+        var firsts = possibilities.Select(p => p.First.Symbol).Distinct().ToList();
+        var seconds = possibilities.Select(p => p.Second.Symbol).Distinct().ToList();
+        
+        // A simple but effective rule: 
+        // If an allele symbol appears in EVERY possible valid genotype for this parent, it's proven.
+        // For first position:
+        if (firsts.Count == 1)
+        {
+            newFirst = new Allele(firsts[0]);
+        }
+        else
+        {
+            var clean = firsts.Where(s => s != "_").ToList();
+            if (clean.Count == 1 && firsts.Contains("_")) newFirst = new Allele(clean[0]); 
+            else if (clean.Count > 1) newFirst = new Allele("_", Suspected: clean.OrderBy(s => s).ToList(), UseSlashInSuspected: true);
+        }
+
+        // For second position:
+        if (seconds.Count == 1)
+        {
+            newSecond = new Allele(seconds[0]);
+        }
+        else
+        {
+            var clean = seconds.Where(s => s != "_").ToList();
+            if (clean.Count == 1 && seconds.Contains("_")) newSecond = new Allele(clean[0]); 
+            else if (clean.Count > 1) newSecond = new Allele("_", Suspected: clean.OrderBy(s => s).ToList(), UseSlashInSuspected: true);
+        }
+
+        return SortLocus(new Locus(newFirst, newSecond) { OverrideLocusSymbol = original.GetLocusSymbol() });
+    }
+
     private static Locus SortLocus(Locus locus)
     {
         var symbol = locus.GetLocusSymbol();

@@ -399,3 +399,44 @@ Console.WriteLine($"Target (Excluded [at]): {targetG5}");
 
 var solvedG5 = GenotypeSolver.Solve(targetG5, p1G5, p2G5);
 Console.WriteLine($"Solved Target (Should exclude Aat option): {solvedG5}");
+
+// Reverse Solving: Deducing parents from offspring
+Console.WriteLine("\n--- Reverse Genetic Solving (Parents from Offspring) ---");
+string parent1Start = "Chestnut"; // A_,B_,C_,D_,E_,enen
+string parent2Start = "Chestnut"; // A_,B_,C_,D_,E_,enen
+string child1Desc = "Black"; // aa,B_,C_,D_,E_,enen
+string child2Desc = "Blue"; // A_,B_,C_,dd,E_,enen
+
+var p1Source = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(parent1Start));
+var p2Source = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(parent2Start));
+var child1 = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(child1Desc));
+var child2 = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(child2Desc));
+
+Console.WriteLine($"Initial Parent 1: {p1Source}");
+Console.WriteLine($"Initial Parent 2: {p2Source}");
+Console.WriteLine($"Offspring 1 (Black): {child1}");
+Console.WriteLine($"Offspring 2 (Blue): {child2}");
+
+var (solvedP1, solvedP2) = GenotypeSolver.SolveParents(p1Source, p2Source, new[] { child1, child2 });
+Console.WriteLine($"Solved Parent 1: {solvedP1}");
+Console.WriteLine($"Solved Parent 2: {solvedP2}");
+
+// Complex reverse solving
+Console.WriteLine("\n--- Complex Reverse Genetic Solving ---");
+string p1Start3 = "Chestnut"; // A_,B_,C_,D_,E_
+string p2Start3 = "Chestnut"; // A_,B_,C_,D_,E_
+var p1S3 = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(p1Start3));
+var p2S3 = RabbitGenotype.Parse(VarietyService.CalculateGenotypeFromDescription(p2Start3));
+
+// Offspring: Black (aa), Black Otter (at_), and Chestnut (A_)
+var c1 = RabbitGenotype.Parse("aa,B_,C_,D_,E_,enen");
+var c2 = RabbitGenotype.Parse("at_,B_,C_,D_,E_,enen");
+var c3 = RabbitGenotype.Parse("A_,B_,C_,D_,E_,enen");
+
+Console.WriteLine($"Parent 1 (Chestnut): {p1S3}");
+Console.WriteLine($"Parent 2 (Chestnut): {p2S3}");
+Console.WriteLine($"Offspring: {c1}, {c2}, {c3}");
+
+var (sp1, sp2) = GenotypeSolver.SolveParents(p1S3, p2S3, new[] { c1, c2, c3 });
+Console.WriteLine($"Solved Parent 1: {sp1}");
+Console.WriteLine($"Solved Parent 2: {sp2}");
