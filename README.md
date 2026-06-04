@@ -9,7 +9,7 @@ RabbitGeneProcessor is a robust and efficient tool for processing rabbit genetic
 - **Genotype Calculation**: Convert descriptive names into full genotypes, applying breed-specific traits, variety rules, and multiple modifiers.
 - **Genetic Modeling**: Support complex notations including unknowns (`_`), suspected alleles `()`, excluded alleles `[]`, and wildcards (`*`).
 - **Inheritance & Solving**: 
-    - **Punnett Squares**: Predict offspring genotypes based on parental genetics.
+    - **Punnett Squares**: Predict offspring genotypes and variety distributions based on parental genetics.
     - **Offspring Solver**: Deduce unknown recessive alleles in an offspring using its parents' genotypes.
     - **Parent Solver**: Identify carrier alleles in parents based on evidence from their offspring.
 - **CLI Interface**: A comprehensive command-line tool for interacting with the genetic engine.
@@ -54,6 +54,12 @@ dotnet run -- solve-offspring --target "A_,B_,C_,D_,E_" --p1 "aa,B_,C_,D_,E_" --
 Deduce carrier alleles in parents using evidence from their offspring.
 ```bash
 dotnet run -- solve-parents --p1 "A_,B_,C_,D_,E_" --p2 "A_,B_,C_,D_,E_" --offspring "aa,B_,C_,D_,E_" "A_,B_,C_,dd,E_"
+```
+
+### Predict Offspring
+Predict possible genotypes and variety descriptions for offspring from two parents.
+```bash
+dotnet run -- predict --p1 "Aa,Bb,C_,D_,E_" --p2 "Aa,Bb,C_,D_,E_" --limit 10
 ```
 
 ## Project Structure

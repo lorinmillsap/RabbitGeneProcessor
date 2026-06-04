@@ -130,6 +130,114 @@ public static class GenotypeSolver
         return target;
     }
 
+    /// <summary>
+    /// Predicts all possible offspring genotypes from a pairing of two genotypes.
+    /// </summary>
+    /// <param name="parent1">The first parent's genotype.</param>
+    /// <param name="parent2">The second parent's genotype.</param>
+    /// <param name="limit">The maximum number of outcomes to return.</param>
+    /// <returns>A list of predicted offspring genotypes with their probabilities.</returns>
+    public static List<OffspringPrediction> PredictOffspring(RabbitGenotype parent1, RabbitGenotype parent2, int limit = 100)
+    {
+        var p1Loci = parent1.Loci.ToDictionary(l => l.GetLocusSymbol());
+        var p2Loci = parent2.Loci.ToDictionary(l => l.GetLocusSymbol());
+
+        var allSymbols = p1Loci.Keys.Union(p2Loci.Keys).Distinct().ToList();
+        
+        // Per-locus possibilities: Symbol -> List of (Locus, Probability)
+        var locusPossibilities = new Dictionary<string, List<(Locus Locus, double Probability)>>();
+
+        foreach (var symbol in allSymbols)
+        {
+            p1Loci.TryGetValue(symbol, out var l1);
+            p2Loci.TryGetValue(symbol, out var l2);
+
+            // Default to __ if missing
+            l1 ??= new Locus(new Allele("_"), new Allele("_")) { OverrideLocusSymbol = symbol };
+            l2 ??= new Locus(new Allele("_"), new Allele("_")) { OverrideLocusSymbol = symbol };
+
+            var g1 = GetExpandedGametes(l1);
+            var g2 = GetExpandedGametes(l2);
+
+            var outcomes = new Dictionary<string, (Locus Locus, int Count)>();
+            int total = g1.Count * g2.Count;
+
+            foreach (var a1 in g1)
+            {
+                foreach (var a2 in g2)
+                {
+                    var offspringLocus = SortLocus(new Locus(a1, a2) { OverrideLocusSymbol = symbol });
+                    
+                    // Respect exclusions from parents if any
+                    // In a simple Punnett square, we typically just combine alleles.
+                    
+                    var key = offspringLocus.ToString();
+                    if (outcomes.TryGetValue(key, out var existing))
+                    {
+                        outcomes[key] = (existing.Locus, existing.Count + 1);
+                    }
+                    else
+                    {
+                        outcomes[key] = (offspringLocus, 1);
+                    }
+                }
+            }
+
+            var possibilities = outcomes.Values
+                .Select(v => (v.Locus, (double)v.Count / total))
+                .OrderByDescending(p => p.Item2)
+                .ToList();
+
+            // Respect exclusions if target offspring loci were provided with exclusions
+            // But since this is general prediction, we don't have a "target" offspring locus here.
+            // However, the issue says "it needs to respect genes that are excluded '[]'".
+            // Usually this means if a parent has an exclusion, we should respect it?
+            // Actually, exclusions on parents filter what they CAN be, which is handled in GetExpandedGametes.
+            // Wait, does GetExpandedGametes handle exclusions? Let's check.
+
+            locusPossibilities[symbol] = possibilities;
+        }
+
+        // Cartesian product of all locus possibilities
+        var currentPredictions = new List<OffspringPrediction> 
+        { 
+            new OffspringPrediction(new RabbitGenotype(), 1.0) 
+        };
+
+        foreach (var symbol in allSymbols)
+        {
+            var nextPredictions = new List<OffspringPrediction>();
+            var possibilities = locusPossibilities[symbol];
+
+            foreach (var current in currentPredictions)
+            {
+                foreach (var possibility in possibilities)
+                {
+                    var newGenotype = new RabbitGenotype();
+                    foreach (var locus in current.Genotype.Loci)
+                    {
+                        newGenotype.Loci.Add(locus);
+                    }
+                    newGenotype.Loci.Add(possibility.Locus);
+
+                    nextPredictions.Add(new OffspringPrediction(newGenotype, current.Probability * possibility.Probability));
+                }
+            }
+
+            // Keep only unique and non-zero probability outcomes
+            currentPredictions = nextPredictions
+                .GroupBy(p => p.Genotype.ToString())
+                .Select(g => new OffspringPrediction(g.First().Genotype, g.Sum(p => p.Probability)))
+                .OrderByDescending(p => p.Probability)
+                .Take(limit) // Apply limit early to prevent exponential explosion
+                .ToList();
+        }
+
+        return currentPredictions;
+    }
+
+    public record OffspringPrediction(RabbitGenotype Genotype, double Probability);
+
     private static List<Allele> GetExpandedGametes(Locus locus)
     {
         var gametes = new List<Allele> { locus.First, locus.Second };
@@ -140,6 +248,8 @@ public static class GenotypeSolver
             {
                 foreach (var s in g.Suspected)
                 {
+                    // Respect exclusions if any
+                    if (g.Excluded != null && g.Excluded.Contains(s)) continue;
                     expanded.Add(new Allele(s));
                 }
             }
@@ -241,14 +351,34 @@ public static class GenotypeSolver
             if (!p.Second.IsUnknown) options.Add(p.Second.Symbol);
             
             // Add suspects
-            if (p.First.Suspected != null) foreach (var s in p.First.Suspected) options.Add(s);
-            if (p.Second.Suspected != null) foreach (var s in p.Second.Suspected) options.Add(s);
+            if (p.First.Suspected != null) 
+            {
+                foreach (var s in p.First.Suspected) 
+                {
+                    if (p.First.Excluded != null && p.First.Excluded.Contains(s)) continue;
+                    options.Add(s);
+                }
+            }
+            if (p.Second.Suspected != null) 
+            {
+                foreach (var s in p.Second.Suspected) 
+                {
+                    if (p.Second.Excluded != null && p.Second.Excluded.Contains(s)) continue;
+                    options.Add(s);
+                }
+            }
             
             // If there's an underscore, it could be any allele seen in children or the other parent
             if (p.First.IsUnknown || p.Second.IsUnknown)
             {
-                foreach (var ka in knownAlleles) options.Add(ka);
-                options.Add("_");
+                var pExcluded = new HashSet<string>();
+                if (p.First.Excluded != null) foreach (var e in p.First.Excluded) pExcluded.Add(e);
+                if (p.Second.Excluded != null) foreach (var e in p.Second.Excluded) pExcluded.Add(e);
+
+                foreach (var ka in knownAlleles)
+                {
+                    if (!pExcluded.Contains(ka)) options.Add(ka);
+                }
             }
             
             return options.Select(s => new Allele(s)).ToList();

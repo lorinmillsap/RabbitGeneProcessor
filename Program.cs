@@ -81,10 +81,35 @@ class Program
             Console.WriteLine($"Solved Parent 2: {solvedP2}");
         }, sp1Option, sp2Option, offspringOption);
 
+        // Command: predict
+        var predictCommand = new Command("predict", "Predicts possible offspring outcomes from pairing two genotypes.");
+        var pp1Option = new Option<string>("--p1", "Parent 1 genotype string.") { IsRequired = true };
+        var pp2Option = new Option<string>("--p2", "Parent 2 genotype string.") { IsRequired = true };
+        var limitOption = new Option<int>("--limit", () => 100, "Maximum number of outcomes to return.");
+        predictCommand.AddOption(pp1Option);
+        predictCommand.AddOption(pp2Option);
+        predictCommand.AddOption(limitOption);
+        predictCommand.SetHandler((p1, p2, limit) =>
+        {
+            var p1G = RabbitGenotype.Parse(p1);
+            var p2G = RabbitGenotype.Parse(p2);
+
+            var predictions = GenotypeSolver.PredictOffspring(p1G, p2G, limit);
+            Console.WriteLine($"Parent 1: {p1G}");
+            Console.WriteLine($"Parent 2: {p2G}");
+            Console.WriteLine($"\nPredicted Outcomes (Top {limit}):");
+            foreach (var p in predictions)
+            {
+                var desc = VarietyService.IdentifyDescription(p.Genotype);
+                Console.WriteLine($" {p.Probability * 100:F2}% - {p.Genotype} ({desc})");
+            }
+        }, pp1Option, pp2Option, limitOption);
+
         rootCommand.AddCommand(calculateCommand);
         rootCommand.AddCommand(identifyCommand);
         rootCommand.AddCommand(solveOffspringCommand);
         rootCommand.AddCommand(solveParentsCommand);
+        rootCommand.AddCommand(predictCommand);
 
         // Default: Run existing demonstration if no args provided
         if (args.Length == 0)
