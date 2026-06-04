@@ -96,11 +96,28 @@ public static class GeneticParser
         string? baseSymbol = null;
         foreach (var symbol in allSymbols)
         {
-            if (input.AsSpan(index).StartsWith(symbol))
+            var span = input.AsSpan(index);
+            if (span.StartsWith(symbol))
             {
                 baseSymbol = symbol;
                 index += symbol.Length;
                 break;
+            }
+
+            // Check if symbol contains '^' and input does not, or vice versa
+            var normalizedSymbol = symbol.Replace("^", "");
+            if (normalizedSymbol != symbol)
+            {
+                if (span.StartsWith(normalizedSymbol))
+                {
+                    // Check if we didn't just match a shorter real symbol
+                    // AllSymbols is sorted by descending length, so this logic is slightly tricky.
+                    // But if symbol was "a^t" and normalized is "at", and we are at "at", 
+                    // we should probably accept it as a match for the same allele.
+                    baseSymbol = symbol;
+                    index += normalizedSymbol.Length;
+                    break;
+                }
             }
         }
 

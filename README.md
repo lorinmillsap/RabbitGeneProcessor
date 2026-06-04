@@ -21,6 +21,7 @@ Genes are represented as allele pairs, with each locus separated by a comma (`,`
 ### Rules:
 - **Case Sensitivity**: Case sensitivity is critical (e.g., `En` vs `en`).
 - **Separators**: Each locus is separated by a comma (`,`) or a space (` `).
+- **Optional Characters**: The caret (`^`) symbol is optional in genetic notations (e.g., `a^t` is equivalent to `at`, `c^chd` is equivalent to `cchd`).
 - **Unknowns**: An underscore (`_`) indicates an unknown or masked allele. `__` indicates a completely unknown locus.
 - **Suspects**: Alleles in parentheses `()` are suspected or likely possibilities (e.g., `A(at)`). Slashes can be used for "or" conditions (e.g., `cchl(ch/c)`).
 - **Exclusions**: Alleles in square brackets `[]` are known exclusions (e.g., `A_[at]`).

@@ -167,6 +167,16 @@ class Program
         Console.WriteLine($"Solved Parent 1: {solvedP1}");
         Console.WriteLine($"Solved Parent 2: {solvedP2}");
 
+        // Caret test
+        Console.WriteLine("\n--- Caret (^) Optionality Test ---");
+        string withCaret = "A^t_";
+        string withoutCaret = "at_";
+        var gWith = RabbitGenotype.Parse(withCaret);
+        var gWithout = RabbitGenotype.Parse(withoutCaret);
+        Console.WriteLine($"'{withCaret}' parses to: {gWith}");
+        Console.WriteLine($"'{withoutCaret}' parses to: {gWithout}");
+        Console.WriteLine($"Match: {gWith.ToString() == gWithout.ToString()}");
+
         Console.WriteLine("\nUse command line arguments for specific tasks. Try '--help' for more information.");
     }
 }
