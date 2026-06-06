@@ -137,7 +137,7 @@ public static class GenotypeSolver
     /// <param name="parent2">The second parent's genotype.</param>
     /// <param name="limit">The maximum number of outcomes to return.</param>
     /// <returns>A list of predicted offspring genotypes with their probabilities.</returns>
-    public static List<OffspringPrediction> PredictOffspring(RabbitGenotype parent1, RabbitGenotype parent2, int limit = 100)
+    public static List<OffspringPrediction> PredictOffspring(RabbitGenotype parent1, RabbitGenotype parent2, int limit = 100, Func<RabbitGenotype, string>? identifyFunc = null)
     {
         var p1Loci = parent1.Loci.ToDictionary(l => l.GetLocusSymbol());
         var p2Loci = parent2.Loci.ToDictionary(l => l.GetLocusSymbol());
@@ -406,15 +406,28 @@ public static class GenotypeSolver
             }
 
             // Keep only unique and non-zero probability outcomes
-            currentPredictions = nextPredictions
-                .GroupBy(p => p.Genotype.ToString())
-                .Select(g => new OffspringPrediction(g.First().Genotype, g.Sum(p => p.Probability)))
+            var grouped = nextPredictions
+                .GroupBy(p => identifyFunc != null ? identifyFunc(p.Genotype) : p.Genotype.ToString())
+                .Select(g => new OffspringPrediction(g.OrderByDescending(x => CountKnownAlleles(x.Genotype)).First().Genotype, g.Sum(p => p.Probability)))
                 .OrderByDescending(p => p.Probability)
-                .Take(limit * 2) // Take more during intermediate steps to avoid losing information
                 .ToList();
+
+            currentPredictions = grouped.Take(limit * 2).ToList();
         }
 
-        return currentPredictions.OrderByDescending(p => p.Probability).Take(limit).ToList();
+        var finalResults = currentPredictions
+            .GroupBy(p => identifyFunc != null ? identifyFunc(p.Genotype) : p.Genotype.ToString())
+            .Select(g => new OffspringPrediction(g.OrderByDescending(x => CountKnownAlleles(x.Genotype)).First().Genotype, g.Sum(p => p.Probability)))
+            .OrderByDescending(p => p.Probability)
+            .Take(limit)
+            .ToList();
+
+        return finalResults;
+    }
+
+    private static int CountKnownAlleles(RabbitGenotype g)
+    {
+        return g.Loci.Sum(l => (l.First.IsUnknown ? 0 : 1) + (l.Second.IsUnknown ? 0 : 1));
     }
 
     public record OffspringPrediction(RabbitGenotype Genotype, double Probability);

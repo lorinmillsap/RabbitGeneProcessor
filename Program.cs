@@ -94,7 +94,7 @@ class Program
             var p1G = RabbitGenotype.Parse(p1);
             var p2G = RabbitGenotype.Parse(p2);
 
-            var predictions = GenotypeSolver.PredictOffspring(p1G, p2G, limit);
+            var predictions = GenotypeSolver.PredictOffspring(p1G, p2G, limit, g => VarietyService.IdentifyDescription(g));
             Console.WriteLine($"Parent 1: {p1G}");
             Console.WriteLine($"Parent 2: {p2G}");
             Console.WriteLine($"\nPredicted Outcomes (Top {limit}):");
