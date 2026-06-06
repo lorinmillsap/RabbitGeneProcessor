@@ -179,7 +179,7 @@ public static class GenotypeSolver
                         {
                             candidates.AddRange(a.Suspected);
                         }
-                        else if (locusDef != null && (hasStacking || (locusSymbol == "E" && (locus.First.Symbol == "E" || locus.Second.Symbol == "E"))))
+                        else if (locusDef != null && (hasStacking || (locusSymbol == "E" && (locus.First.Symbol == "E" || locus.Second.Symbol == "E" || locus.First.Symbol == "ej" || locus.Second.Symbol == "ej"))))
                         {
                             // For stacking loci, or the E locus when it has a dominant E, expand unknown slot to all possible valid alleles
                             // If the OTHER allele is known, this unknown allele cannot be more dominant than it.
@@ -241,7 +241,8 @@ public static class GenotypeSolver
             bool hasStacking = def?.Alleles.Any(a => a.Dominance == DominanceType.PartiallyDominant || a.Dominance == DominanceType.PartiallyRecessive) ?? false;
             
             // ALSO, for the E locus, if we have E_, we want to see if it carries ej or e.
-            bool isEWithDominant = symbol == "E" && (l1.First.Symbol == "E" || l1.Second.Symbol == "E" || l2.First.Symbol == "E" || l2.Second.Symbol == "E");
+            bool isEWithDominant = symbol == "E" && (l1.First.Symbol == "E" || l1.Second.Symbol == "E" || l2.First.Symbol == "E" || l2.Second.Symbol == "E" ||
+                                                    l1.First.Symbol == "ej" || l1.Second.Symbol == "ej" || l2.First.Symbol == "ej" || l2.Second.Symbol == "ej");
 
             if (IsEffectivelyUnknown(l1) && IsEffectivelyUnknown(l2))
             {
@@ -281,53 +282,52 @@ public static class GenotypeSolver
             {
                 foreach (var a2 in g2)
                 {
-                    var offspringLocus = SortLocus(new Locus(a1, a2) { OverrideLocusSymbol = symbol });
+                    var offspringLocus = new Locus(a1, a2) { OverrideLocusSymbol = symbol }.Normalize();
                     
-                    // Phenotypic reduction: If a locus has a dominant allele and an unknown or more recessive allele,
-                    // we reduce it to the dominant form with an underscore (e.g., AA or Aat -> A_)
-                    // unless specifically told to be homozygous or similar.
-                    // The user wants AA and Aat to group into A_.
-                    if (!offspringLocus.First.IsUnknown && !offspringLocus.Second.IsUnknown && offspringLocus.First.Symbol != offspringLocus.Second.Symbol)
+                    // Phenotypic reduction: 
+                    // Consolidation of variations: Dominant genes are always dominant, so what the recessive is doesn't matter.
+                    // Stacking genes (partially dominant/recessive) can have their expression modified by the recessive.
+                    if (!offspringLocus.First.IsUnknown && !offspringLocus.Second.IsUnknown)
                     {
-                        // It's heterozygous and both are known. Check if First is dominant to Second.
-                        var defs = GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == symbol);
-                        if (defs != null)
+                        var d1 = offspringLocus.First.GetDefinition();
+                        var d2 = offspringLocus.Second.GetDefinition();
+                        
+                        if (d1 != null && d2 != null)
                         {
-                            var d1 = defs.Alleles.FirstOrDefault(a => a.Symbol == offspringLocus.First.Symbol);
-                            var d2 = defs.Alleles.FirstOrDefault(a => a.Symbol == offspringLocus.Second.Symbol);
-                            if (d1 != null && d2 != null && d1.Order < d2.Order && 
-                                d1.Dominance != DominanceType.PartiallyDominant && 
-                                d2.Dominance != DominanceType.PartiallyDominant &&
-                                d1.Dominance != DominanceType.PartiallyRecessive &&
-                                d2.Dominance != DominanceType.PartiallyRecessive)
+                            bool d1IsStacking = d1.Dominance == DominanceType.PartiallyDominant || d1.Dominance == DominanceType.PartiallyRecessive;
+                            bool d2IsStacking = d2.Dominance == DominanceType.PartiallyDominant || d2.Dominance == DominanceType.PartiallyRecessive;
+
+                            if (d1.Dominance == DominanceType.Dominant)
                             {
-                                // First is strictly dominant to Second and neither are "stacking" genes.
-                                // Reduce to First_
+                                // Fully dominant gene masks everything
                                 offspringLocus = new Locus(offspringLocus.First, new Allele("_")) { OverrideLocusSymbol = symbol };
                             }
-                        }
-                    }
-                    else if (!offspringLocus.First.IsUnknown && !offspringLocus.Second.IsUnknown && offspringLocus.First.Symbol == offspringLocus.Second.Symbol)
-                    {
-                        // It's homozygous.
-                        var defs = GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == symbol);
-                        if (defs != null)
-                        {
-                            var d1 = defs.Alleles.FirstOrDefault(a => a.Symbol == offspringLocus.First.Symbol);
-                            // Reduce to Symbol_ only if it's NOT a stacking gene.
-                            // Stacking genes (PartiallyDominant) like EsEs vs EsE produce different phenotypes.
-                            if (d1 != null && d1.Dominance != DominanceType.PartiallyDominant && d1.Dominance != DominanceType.PartiallyRecessive)
+                            else if (d1.Dominance == DominanceType.Recessive)
                             {
-                                offspringLocus = new Locus(offspringLocus.First, new Allele("_")) { OverrideLocusSymbol = symbol };
+                                // Recessive gene only expresses as homozygous. 
+                                // (By normalization, if First is Recessive, Second must be Recessive too or Unknown)
+                                // We keep it homozygous for display.
+                            }
+                            else if (d1IsStacking)
+                            {
+                                // Partially dominant/recessive genes.
+                                // If the second is less dominant and NOT a stacking gene, the first one likely masks it phenotypically.
+                                // BUT the issue says: "partially dominant genes do dominate based on their order of dominance, 
+                                // but their expression can still be modified by the recessive, where we refer to stacking genes, thats what the partially dominant genes are."
+                                // This implies we should KEEP the pair if it's "stacking".
+                                
+                                if (!d2IsStacking && d2.Dominance == DominanceType.Recessive)
+                                {
+                                    // If it's a stacking gene over a fully recessive, does it mask?
+                                    // Usually "stacking" implies multiple partially dominant genes.
+                                    // For now, let's keep the pairing if d1 is stacking, unless it's a known masking case.
+                                }
                             }
                         }
                     }
                     else if (!offspringLocus.First.IsUnknown && offspringLocus.Second.IsUnknown)
                     {
-                        // It's already Symbol_
-                        // For non-stacking genes, we want to group outcomes that have the SAME dominant allele.
-                        // However, we must be careful not to hide carrier info if it was explicitly provided.
-                        // But in this method, we are grouping for Phenotypic prediction.
+                        // Already in consolidated form (e.g. A_)
                     }
 
                     // Normalize suspects/exclusions for grouping
@@ -338,17 +338,8 @@ public static class GenotypeSolver
                     {
                          // If we are grouping by phenotype, A(at) is phenotypically same as A_.
                          // However, if the first allele is a "stacking" gene, the second one MIGHT matter.
-                         // But for now, phenotypic grouping assumes dominant expression.
-                         var defs = GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == symbol);
-                         bool isStacking = false;
-                         if (defs != null)
-                         {
-                             var d1 = defs.Alleles.FirstOrDefault(a => a.Symbol == offspringLocus.First.Symbol);
-                             if (d1 != null && (d1.Dominance == DominanceType.PartiallyDominant || d1.Dominance == DominanceType.PartiallyRecessive))
-                             {
-                                 isStacking = true;
-                             }
-                         }
+                         var d1 = offspringLocus.First.GetDefinition();
+                         bool isStacking = d1 != null && (d1.Dominance == DominanceType.PartiallyDominant || d1.Dominance == DominanceType.PartiallyRecessive);
 
                          if (!isStacking)
                          {
@@ -419,12 +410,23 @@ public static class GenotypeSolver
 
         // Final consolidation: Group by variety description if identifyFunc is provided.
         // Otherwise, group by genotype.
-        var finalResults = currentPredictions
-            .GroupBy(p => identifyFunc != null ? identifyFunc(p.Genotype) : p.Genotype.ToString())
-            .Select(g => new OffspringPrediction(g.OrderByDescending(x => CountKnownAlleles(x.Genotype)).First().Genotype, g.Sum(p => p.Probability)))
-            .OrderByDescending(p => p.Probability)
-            .Take(limit) // Limit only the final listing
-            .ToList();
+            var finalResults = currentPredictions
+                .GroupBy(p => identifyFunc != null ? identifyFunc(p.Genotype) : p.Genotype.ToString())
+                .Select(g =>
+                {
+                    // For the displayed genotype, we want the most "representative" one.
+                    // If we have A_, we prefer that over Aa for phenotypic display if they both map to Chestnut.
+                    // Actually, CountKnownAlleles was used to pick the one with MOST known alleles.
+                    // But here, if we consolidated into a phenotype, the genotype should reflect that phenotype.
+                    
+                    // Let's try to find a genotype that has the same string representation as the key
+                    // (if identifyFunc was null) or just pick the best one.
+                    var best = g.OrderByDescending(x => CountKnownAlleles(x.Genotype)).First();
+                    return new OffspringPrediction(best.Genotype, g.Sum(p => p.Probability));
+                })
+                .OrderByDescending(p => p.Probability)
+                .Take(limit) // Limit only the final listing
+                .ToList();
 
         return finalResults;
     }

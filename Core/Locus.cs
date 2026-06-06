@@ -50,9 +50,35 @@ public record Locus(Allele First, Allele Second)
     }
 
     /// <summary>
+    /// Normalizes and sorts the locus based on dominance rules.
+    /// Dominant alleles always come first. 
+    /// Dominant genes are always dominant, so what the recessive is doesn't matter for normalization order.
+    /// Partially dominant/recessive (stacking) genes dominate based on their order of dominance.
+    /// </summary>
+    public Locus Normalize()
+    {
+        if (First.IsUnknown && Second.IsUnknown) return this;
+        if (First.IsUnknown && !Second.IsUnknown) return new Locus(Second, First);
+        if (Second.IsUnknown) return this;
+
+        var def1 = First.GetDefinition();
+        var def2 = Second.GetDefinition();
+
+        if (def1 == null || def2 == null) return this;
+
+        // All alleles work the same: sort by Order of dominance.
+        // dominant, partially dominant, partially recessive, recessive
+        if (def2.Order < def1.Order)
+        {
+            return new Locus(Second, First);
+        }
+
+        return this;
+    }
+
+    /// <summary>
     /// Combines this locus with another locus, where the other locus provides known alleles 
     /// that fill in any unknown underscores ('_') in this locus.
-    /// If forceOverride is true, the 'other' locus alleles will replace 'this' locus alleles.
     /// </summary>
     public Locus Combine(Locus other, bool forceOverride = false)
     {
@@ -60,73 +86,28 @@ public record Locus(Allele First, Allele Second)
         {
             var resF = other.First.IsPreserveWildcard ? First : other.First;
             var resS = other.Second.IsPreserveWildcard ? Second : other.Second;
-            return new Locus(resF, resS);
+            return new Locus(resF, resS).Normalize();
         }
 
         var thisSymbol = GetLocusSymbol();
         var otherSymbol = other.GetLocusSymbol();
         
-        // If this is unknown, we can definitely combine with anything known
-        // If both are known, they must match symbols
         if (thisSymbol != "Unknown" && otherSymbol != "Unknown" && thisSymbol != otherSymbol)
             return this;
 
-        // Determine if 'other' is more specific than 'this'
-        // or if we should just take 'other' if it has no underscores.
-        
-        // If 'other' has no unknowns, it is a complete definition.
-        if (!other.First.IsUnknown && !other.Second.IsUnknown)
-        {
-            // FILL-IN LOGIC: If 'this' is also complete, we don't automatically overwrite 
-            // if we are doing a soft combine, unless 'this' was just a default.
-            // Actually, if we are here, forceOverride is false. 
-            // If 'this' is EnEn and 'other' is enen, we should probably keep EnEn if it's already set?
-            // Or maybe the other way around?
-            
-            if (!First.IsUnknown && !Second.IsUnknown)
-            {
-                // Both are complete. In a soft combine, keep 'this'.
-                return this;
-            }
-            return other;
-        }
-
-        // If 'this' is completely unknown, take 'other'.
-        if (First.IsUnknown && Second.IsUnknown)
-        {
-            return other;
-        }
-
-        // Fill in holes
         var f = First;
         var s = Second;
 
         var otherF = other.First;
         var otherS = other.Second;
 
+        // Fill in unknowns
         if (f.IsUnknown && !otherF.IsUnknown && !otherF.IsPreserveWildcard) f = otherF;
         else if (s.IsUnknown && !otherF.IsUnknown && !otherF.IsPreserveWildcard && otherF.Symbol != f.Symbol) s = otherF;
 
         if (s.IsUnknown && !otherS.IsUnknown && !otherS.IsPreserveWildcard && otherS.Symbol != f.Symbol) s = otherS;
 
-        // Sort by dominance
-        var resultFirst = f;
-        var resultSecond = s;
-        
-        var definitions = GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == (thisSymbol != "Unknown" ? thisSymbol : otherSymbol));
-        if (definitions != null && !resultFirst.IsUnknown && !resultSecond.IsUnknown && resultFirst.Symbol != resultSecond.Symbol)
-        {
-            var def1 = definitions.Alleles.FirstOrDefault(ad => ad.Symbol == resultFirst.Symbol);
-            var def2 = definitions.Alleles.FirstOrDefault(ad => ad.Symbol == resultSecond.Symbol);
-            
-            if (def1 != null && def2 != null && def2.Order < def1.Order)
-            {
-                resultFirst = s;
-                resultSecond = f;
-            }
-        }
-
-        return new Locus(resultFirst, resultSecond);
+        return new Locus(f, s).Normalize();
     }
 
     public override string ToString()

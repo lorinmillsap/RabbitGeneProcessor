@@ -1,6 +1,19 @@
 ﻿namespace RabbitGeneProcessor.Core;
 
 /// <summary>
+/// Genetic dominance rules:
+/// - All loci work the same based on established dominance types and order.
+/// - Dominance hierarchy: Dominant > Partially Dominant > Partially Recessive > Recessive.
+/// - Dominant genes always mask the recessive; the specific recessive doesn't matter (e.g., AA is phenotypically same as Aa).
+/// - Stacking genes (partially dominant/recessive) dominate based on their order, but their expression can be modified by the recessive allele.
+/// - Fully recessive genes only express when homozygous (e.g., aa).
+/// - Partially recessive genes can sometimes express over a dominant gene, but not in a predictable way.
+/// </summary>
+public static class GeneticRules
+{
+}
+
+/// <summary>
 /// Defines the type of dominance an allele exhibits.
 /// </summary>
 public enum DominanceType

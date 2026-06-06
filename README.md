@@ -18,7 +18,16 @@ RabbitGeneProcessor is a robust and efficient tool for processing rabbit genetic
 
 Genes are represented as allele pairs, with each locus separated by a comma (`,`) or a space (` `).
 
-### Rules:
+### Dominance Rules:
+- **Universal Logic**: All loci follow the same dominance rules. We don't need special code for each locus.
+- **Dominance Hierarchy**: Alleles are ordered by dominance: Dominant > Partially Dominant > Partially Recessive > Recessive.
+- **Dominant Genes**: Always dominant. What the recessive allele is doesn't matter once the most dominant gene is established (e.g., `A_` is phenotypically equivalent to `AA`, `Aa`, or `Aat`).
+- **Stacking Genes**: Partially dominant genes (e.g., `at`, `cchd`) dominate based on their order of dominance, but their expression can still be modified by the recessive allele (this is referred to as "stacking").
+- **Fully Recessive Genes**: Only express when no dominant alleles are present, always reflected as homozygous pairs (e.g., `aa`, `bb`, `cc`).
+- **Partially Recessive Genes**: Can sometimes express over a dominant gene, but not in a predictable way.
+- **Notation**: Our prediction respects syntax rules for suspects `()` and exclusions `[]`. When a gene combination calculates as a variation of a singular variety, we consolidate, displaying the dominant to unknown gene pairing (e.g., `A_`).
+
+### Syntax Rules:
 - **Case Sensitivity**: Case sensitivity is critical (e.g., `En` vs `en`).
 - **Separators**: Each locus is separated by a comma (`,`) or a space (` `).
 - **Optional Characters**: The caret (`^`) symbol is optional in genetic notations (e.g., `a^t` is equivalent to `at`, `c^chd` is equivalent to `cchd`).

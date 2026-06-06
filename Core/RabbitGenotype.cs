@@ -111,6 +111,7 @@ public class RabbitGenotype
     /// <summary>
     /// Checks if this genotype "contains" the other genotype.
     /// This is stricter than Match: the other's alleles must be present in this genotype.
+    /// Handles dominant gene pairing: A_ contains Aa.
     /// </summary>
     public bool Contains(RabbitGenotype other)
     {
@@ -118,37 +119,26 @@ public class RabbitGenotype
         foreach (var otherLocus in other.Loci)
         {
             var symbol = otherLocus.GetLocusSymbol();
-            if (symbol == "Unknown") continue; // Skip unknown loci in comparison
+            if (symbol == "Unknown") continue;
             if (!thisLoci.TryGetValue(symbol, out var thisLocus)) return false;
 
-            // Check if thisLocus "contains" otherLocus alleles.
-            // If otherLocus has 'En', thisLocus must have 'En'.
-            bool AllelePresent(Allele target, Locus source, ref bool firstUsed, ref bool secondUsed)
+            // Normalize both for consistent comparison
+            var normThis = thisLocus.Normalize();
+            var normOther = otherLocus.Normalize();
+
+            // Check if normThis "contains" normOther alleles.
+            // Rule: Dominant genes are always dominant.
+            // A_ should contain Aa because A is dominant and matches, and _ can be anything.
+            
+            bool AlleleMatches(Allele source, Allele target)
             {
-                if (target.Symbol == "_") return true;
-                
-                // If target is specific (not _) and source has _, it does NOT contain it.
-                // A _ does not contain A.
-                
-                if (!firstUsed && source.First.Symbol == target.Symbol)
-                {
-                    firstUsed = true;
-                    return true;
-                }
-                if (!secondUsed && source.Second.Symbol == target.Symbol)
-                {
-                    secondUsed = true;
-                    return true;
-                }
-                return false;
+                if (source.Symbol == "_" || target.Symbol == "_") return true;
+                return source.Symbol == target.Symbol;
             }
 
-            bool fUsed = false;
-            bool sUsed = false;
-
-            if (!AllelePresent(otherLocus.First, thisLocus, ref fUsed, ref sUsed) || 
-                !AllelePresent(otherLocus.Second, thisLocus, ref fUsed, ref sUsed))
-                return false;
+            // After normalization, First is the most dominant.
+            if (!AlleleMatches(normThis.First, normOther.First)) return false;
+            if (!AlleleMatches(normThis.Second, normOther.Second)) return false;
         }
         return true;
     }

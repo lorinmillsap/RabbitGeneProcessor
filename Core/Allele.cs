@@ -15,6 +15,11 @@ public record Allele(string Symbol, List<string>? Suspected = null, List<string>
     /// </summary>
     public bool IsPreserveWildcard => Symbol == "*" || Symbol == "?";
 
+    /// <summary>
+    /// Gets the name of the variety based on the allele pair.
+    /// </summary>
+    public string? VarietyName { get; init; }
+
     public override string ToString()
     {
         if (Symbol == "*" || Symbol == "?") return Symbol;
@@ -29,5 +34,15 @@ public record Allele(string Symbol, List<string>? Suspected = null, List<string>
             result += $"[{string.Join("", Excluded)}]";
         }
         return result;
+    }
+
+    /// <summary>
+    /// Gets the dominance definition for this allele.
+    /// </summary>
+    public AlleleDefinition? GetDefinition()
+    {
+        var locusSymbol = GeneticParser.GetLocusSymbol(Symbol);
+        var locusDef = GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == locusSymbol);
+        return locusDef?.Alleles.FirstOrDefault(a => a.Symbol == Symbol);
     }
 }
