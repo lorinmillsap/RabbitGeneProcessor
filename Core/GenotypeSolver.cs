@@ -160,6 +160,7 @@ public static class GenotypeSolver
             // 1. If an allele is known (not _), it is used as is.
             // 2. If an allele is unknown (_), but has suspected alleles (), we use those suspected alleles.
             // 3. If an allele is unknown (_), and has NO suspected alleles, we keep it as _ to avoid explosion.
+            //    EXCEPTION: For stacking loci, we ALWAYS expand unknown alleles to explore hidden recessives.
             // 4. Exclusions [] are always respected.
             
             List<Allele> GetGametes(Locus locus)
@@ -167,6 +168,7 @@ public static class GenotypeSolver
                 var gametes = new List<Allele>();
                 var locusSymbol = locus.GetLocusSymbol();
                 var locusDef = GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == locusSymbol);
+                bool hasStacking = locusDef?.Alleles.Any(a => a.Dominance == DominanceType.PartiallyDominant || a.Dominance == DominanceType.PartiallyRecessive) ?? false;
 
                 foreach (var a in new[] { locus.First, locus.Second })
                 {
@@ -177,8 +179,9 @@ public static class GenotypeSolver
                         {
                             candidates.AddRange(a.Suspected);
                         }
-                        else if (locusDef != null)
+                        else if (locusDef != null && (hasStacking || (locusSymbol == "E" && (locus.First.Symbol == "E" || locus.Second.Symbol == "E"))))
                         {
+                            // For stacking loci, or the E locus when it has a dominant E, expand unknown slot to all possible valid alleles
                             // If the OTHER allele is known, this unknown allele cannot be more dominant than it.
                             var other = a == locus.First ? locus.Second : locus.First;
                             if (!other.IsUnknown)
@@ -194,9 +197,8 @@ public static class GenotypeSolver
                             }
                             else
                             {
-                                // BOTH are unknown? This shouldn't happen here due to IsPartiallyUnknown check,
-                                // but if it does, it could be anything.
-                                // However, usually we keep it as _ to avoid explosion unless suspects exist.
+                                // Both are unknown? Expand to ALL.
+                                candidates.AddRange(locusDef.Alleles.Select(al => al.Symbol));
                             }
                         }
 
@@ -227,38 +229,45 @@ public static class GenotypeSolver
             // If a locus results in 100% of the same thing (e.g. _ x _ -> __), 
             // and it is effectively "unknown" in both parents, we can treat it as a single unit
             // to prevent the Cartesian product from exploding.
-            bool IsEffectivelyUnknown(Locus l) => l.First.Symbol == "_" && l.Second.Symbol == "_" && 
+            bool IsEffectivelyUnknown(Locus l) => l.First.IsUnknown && l.Second.IsUnknown && 
                                                (l.First.Suspected == null || l.First.Suspected.Count == 0) &&
                                                (l.Second.Suspected == null || l.Second.Suspected.Count == 0);
 
+            // SPECIAL CASE: If both have an unknown slot, but we are looking at something like B_ x B_,
+            // we should only skip expansion IF it's a simple dominant/recessive locus.
+            // If it's a stacking locus (PartiallyDominant/PartiallyRecessive), the unknown slot matters 
+            // because it could contain another stacking allele.
+            var def = GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == symbol);
+            bool hasStacking = def?.Alleles.Any(a => a.Dominance == DominanceType.PartiallyDominant || a.Dominance == DominanceType.PartiallyRecessive) ?? false;
+            
+            // ALSO, for the E locus, if we have E_, we want to see if it carries ej or e.
+            bool isEWithDominant = symbol == "E" && (l1.First.Symbol == "E" || l1.Second.Symbol == "E" || l2.First.Symbol == "E" || l2.Second.Symbol == "E");
+
             if (IsEffectivelyUnknown(l1) && IsEffectivelyUnknown(l2))
             {
-                locusPossibilities[symbol] = new List<(Locus Locus, double Probability)> { (l1, 1.0) };
-                continue;
+                // Only skip if not E or other stacking locus
+                if (!hasStacking && !isEWithDominant)
+                {
+                    locusPossibilities[symbol] = new List<(Locus Locus, double Probability)> { (l1, 1.0) };
+                    continue;
+                }
             }
             
             // Also handle cases like B_ x B_ where we just want to see B_ (or its resolution) 
             // instead of expanding every possibility if not requested.
-            bool IsPartiallyUnknown(Locus l) => (l.First.Symbol == "_" || l.Second.Symbol == "_") &&
+            bool IsPartiallyUnknown(Locus l) => (l.First.IsUnknown || l.Second.IsUnknown) &&
                                                (l.First.Suspected == null || l.First.Suspected.Count == 0) &&
                                                (l.Second.Suspected == null || l.Second.Suspected.Count == 0);
 
             if (IsPartiallyUnknown(l1) && IsPartiallyUnknown(l2) && l1.Matches(l2))
             {
-                // SPECIAL CASE: If both have an unknown slot, but we are looking at something like B_ x B_,
-                // we should only skip expansion IF it's a simple dominant/recessive locus.
-                // If it's a stacking locus (PartiallyDominant/PartiallyRecessive), the unknown slot matters 
-                // because it could contain another stacking allele.
-                var def = GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == symbol);
-                bool hasStacking = def?.Alleles.Any(a => a.Dominance == DominanceType.PartiallyDominant || a.Dominance == DominanceType.PartiallyRecessive) ?? false;
-
                 // Also, ONLY skip if NO explicitly specified suspects/exclusions exist in the unknown slot.
                 bool hasConstraints = l1.First.Suspected?.Count > 0 || l1.First.Excluded?.Count > 0 ||
                                      l1.Second.Suspected?.Count > 0 || l1.Second.Excluded?.Count > 0 ||
                                      l2.First.Suspected?.Count > 0 || l2.First.Excluded?.Count > 0 ||
                                      l2.Second.Suspected?.Count > 0 || l2.Second.Excluded?.Count > 0;
 
-                if (!hasStacking && !hasConstraints)
+                if (!hasStacking && !hasConstraints && !isEWithDominant)
                 {
                     locusPossibilities[symbol] = new List<(Locus Locus, double Probability)> { (l1, 1.0) };
                     continue;
@@ -289,18 +298,12 @@ public static class GenotypeSolver
                             if (d1 != null && d2 != null && d1.Order < d2.Order && 
                                 d1.Dominance != DominanceType.PartiallyDominant && 
                                 d2.Dominance != DominanceType.PartiallyDominant &&
-                                d1.Dominance != DominanceType.PartiallyRecessive)
+                                d1.Dominance != DominanceType.PartiallyRecessive &&
+                                d2.Dominance != DominanceType.PartiallyRecessive)
                             {
                                 // First is strictly dominant to Second and neither are "stacking" genes.
                                 // Reduce to First_
                                 offspringLocus = new Locus(offspringLocus.First, new Allele("_")) { OverrideLocusSymbol = symbol };
-                            }
-                            else if (d1 != null && d2 != null && d1.Order < d2.Order &&
-                                (d1.Dominance == DominanceType.PartiallyDominant || d1.Dominance == DominanceType.PartiallyRecessive))
-                            {
-                                // Stacking gene. We keep both but we can potentially normalize the second one
-                                // to a "suspected" form if we want to group purely by PHENOTYPE.
-                                // However, in the user's case, they want to see the difference.
                             }
                         }
                     }
@@ -313,7 +316,7 @@ public static class GenotypeSolver
                             var d1 = defs.Alleles.FirstOrDefault(a => a.Symbol == offspringLocus.First.Symbol);
                             // Reduce to Symbol_ only if it's NOT a stacking gene.
                             // Stacking genes (PartiallyDominant) like EsEs vs EsE produce different phenotypes.
-                            if (d1 != null && d1.Dominance != DominanceType.PartiallyDominant)
+                            if (d1 != null && d1.Dominance != DominanceType.PartiallyDominant && d1.Dominance != DominanceType.PartiallyRecessive)
                             {
                                 offspringLocus = new Locus(offspringLocus.First, new Allele("_")) { OverrideLocusSymbol = symbol };
                             }
@@ -405,21 +408,22 @@ public static class GenotypeSolver
                 }
             }
 
-            // Keep only unique and non-zero probability outcomes
-            var grouped = nextPredictions
-                .GroupBy(p => identifyFunc != null ? identifyFunc(p.Genotype) : p.Genotype.ToString())
-                .Select(g => new OffspringPrediction(g.OrderByDescending(x => CountKnownAlleles(x.Genotype)).First().Genotype, g.Sum(p => p.Probability)))
+            // Group by genotype string during intermediate steps to prevent explosion 
+            // but preserve genetic information. We do NOT apply a limit here yet.
+            currentPredictions = nextPredictions
+                .GroupBy(p => p.Genotype.ToString())
+                .Select(g => new OffspringPrediction(g.First().Genotype, g.Sum(p => p.Probability)))
                 .OrderByDescending(p => p.Probability)
                 .ToList();
-
-            currentPredictions = grouped.Take(limit * 2).ToList();
         }
 
+        // Final consolidation: Group by variety description if identifyFunc is provided.
+        // Otherwise, group by genotype.
         var finalResults = currentPredictions
             .GroupBy(p => identifyFunc != null ? identifyFunc(p.Genotype) : p.Genotype.ToString())
             .Select(g => new OffspringPrediction(g.OrderByDescending(x => CountKnownAlleles(x.Genotype)).First().Genotype, g.Sum(p => p.Probability)))
             .OrderByDescending(p => p.Probability)
-            .Take(limit)
+            .Take(limit) // Limit only the final listing
             .ToList();
 
         return finalResults;
