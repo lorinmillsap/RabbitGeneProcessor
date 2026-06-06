@@ -165,14 +165,46 @@ public static class GenotypeSolver
             List<Allele> GetGametes(Locus locus)
             {
                 var gametes = new List<Allele>();
+                var locusSymbol = locus.GetLocusSymbol();
+                var locusDef = GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == locusSymbol);
+
                 foreach (var a in new[] { locus.First, locus.Second })
                 {
-                    if (a.Symbol == "_" && a.Suspected is { Count: > 0 })
+                    if (a.Symbol == "_" )
                     {
-                        foreach (var s in a.Suspected)
+                        var candidates = new List<string>();
+                        if (a.Suspected is { Count: > 0 })
                         {
-                            if (a.Excluded != null && a.Excluded.Contains(s)) continue;
-                            gametes.Add(new Allele(s));
+                            candidates.AddRange(a.Suspected);
+                        }
+                        else if (locusDef != null)
+                        {
+                            // If the OTHER allele is known, this unknown allele cannot be more dominant than it.
+                            var other = a == locus.First ? locus.Second : locus.First;
+                            if (!other.IsUnknown)
+                            {
+                                var otherDef = locusDef.Alleles.FirstOrDefault(al => al.Symbol == other.Symbol);
+                                if (otherDef != null)
+                                {
+                                    // Add all alleles that are equal or less dominant than the known one
+                                    candidates.AddRange(locusDef.Alleles
+                                        .Where(al => al.Order >= otherDef.Order)
+                                        .Select(al => al.Symbol));
+                                }
+                            }
+                        }
+
+                        if (candidates.Count > 0)
+                        {
+                            foreach (var s in candidates)
+                            {
+                                if (a.Excluded != null && a.Excluded.Contains(s)) continue;
+                                gametes.Add(new Allele(s));
+                            }
+                        }
+                        else
+                        {
+                            gametes.Add(a);
                         }
                     }
                     else
@@ -241,6 +273,13 @@ public static class GenotypeSolver
                                 // Reduce to First_
                                 offspringLocus = new Locus(offspringLocus.First, new Allele("_")) { OverrideLocusSymbol = symbol };
                             }
+                            else if (d1 != null && d2 != null && d1.Order < d2.Order &&
+                                (d1.Dominance == DominanceType.PartiallyDominant || d1.Dominance == DominanceType.PartiallyRecessive))
+                            {
+                                // Stacking gene. We keep both but we can potentially normalize the second one
+                                // to a "suspected" form if we want to group purely by PHENOTYPE.
+                                // However, in the user's case, they want to see the difference.
+                            }
                         }
                     }
                     else if (!offspringLocus.First.IsUnknown && !offspringLocus.Second.IsUnknown && offspringLocus.First.Symbol == offspringLocus.Second.Symbol)
@@ -273,8 +312,23 @@ public static class GenotypeSolver
                     if (!offspringLocus.First.IsUnknown && offspringLocus.Second.IsUnknown && (offspringLocus.Second.Suspected?.Count > 0 || offspringLocus.Second.Excluded?.Count > 0))
                     {
                          // If we are grouping by phenotype, A(at) is phenotypically same as A_.
-                         // So we strip suspects/exclusions for the grouping key.
-                         offspringLocus = new Locus(offspringLocus.First, new Allele("_")) { OverrideLocusSymbol = symbol };
+                         // However, if the first allele is a "stacking" gene, the second one MIGHT matter.
+                         // But for now, phenotypic grouping assumes dominant expression.
+                         var defs = GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == symbol);
+                         bool isStacking = false;
+                         if (defs != null)
+                         {
+                             var d1 = defs.Alleles.FirstOrDefault(a => a.Symbol == offspringLocus.First.Symbol);
+                             if (d1 != null && (d1.Dominance == DominanceType.PartiallyDominant || d1.Dominance == DominanceType.PartiallyRecessive))
+                             {
+                                 isStacking = true;
+                             }
+                         }
+
+                         if (!isStacking)
+                         {
+                             offspringLocus = new Locus(offspringLocus.First, new Allele("_")) { OverrideLocusSymbol = symbol };
+                         }
                     }
                     
                     var key = offspringLocus.ToString();

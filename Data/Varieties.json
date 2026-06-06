@@ -73,23 +73,27 @@
     },
     {
         "Name": "Black Pointed White",
-        "GenotypeString": "aa,B_,ch_,D_,E_",
-        "Description": "Himalayan pattern with black points."
+        "GenotypeString": "aa,B_,chch,D_,E_",
+        "Description": "Himalayan pattern with black points.",
+        "AlternateNames": [ "Black Himalayan" ]
     },
     {
         "Name": "Blue Pointed White",
-        "GenotypeString": "aa,B_,ch_,dd,E_",
-        "Description": "Himalayan pattern with blue points (dilute Black)."
+        "GenotypeString": "aa,B_,chch,dd,E_",
+        "Description": "Himalayan pattern with blue points (dilute Black).",
+        "AlternateNames": [ "Blue Himalayan" ]
     },
     {
         "Name": "Chocolate Pointed White",
-        "GenotypeString": "aa,bb,ch_,D_,E_",
-        "Description": "Himalayan pattern with chocolate points."
+        "GenotypeString": "aa,bb,chch,D_,E_",
+        "Description": "Himalayan pattern with chocolate points.",
+        "AlternateNames": [ "Chocolate Himalayan" ]
     },
     {
         "Name": "Lilac Pointed White",
-        "GenotypeString": "aa,bb,ch_,dd,E_",
-        "Description": "Himalayan pattern with lilac points (dilute Chocolate)."
+        "GenotypeString": "aa,bb,chch,dd,E_",
+        "Description": "Himalayan pattern with lilac points (dilute Chocolate).",
+        "AlternateNames": [ "Lilac Himalayan" ]
     },
     {
         "Name": "Chinchilla",
@@ -186,17 +190,19 @@
     {
         "Name": "Siamese Sable",
         "GenotypeString": "aa,B_,cchlcchl,D_,E_",
-        "Description": "A shaded variety with a sepia brown color and darker points."
-    },
-    {
-        "Name": "Seal",
-        "GenotypeString": "aa,B_,cchlcchl,D_,E_",
-        "Description": "A shaded variety that is genetically identical to Siamese Sable but appears much darker, almost black."
+        "Description": "A shaded variety with a sepia brown color and darker points.",
+        "AlternateNames": [ "Seal", "Siamese" ]
     },
     {
         "Name": "Smoke Pearl",
         "GenotypeString": "aa,B_,cchlcchl,dd,E_",
-        "Description": "The dilute version of Siamese Sable."
+        "Description": "The dilute version of Siamese Sable.",
+        "AlternateNames": [ "Smoke Pearl" ]
+    },
+    {
+        "Name": "Sable Point",
+        "GenotypeString": "aa,B_,cchlch,D_,E_",
+        "Description": "A shaded variety with creamy white body and sepia brown points. Result of Sable combined with Himalayan gene."
     },
     {
         "Name": "Sable",
@@ -204,8 +210,15 @@
         "Description": "A shaded variety with a rich sepia brown color, specifically the heterozygous form of Siamese Sable."
     },
     {
-        "Name": "Sable Point",
-        "GenotypeString": "aa,B_,cchl(ch/c),D_,ee",
-        "Description": "A shaded variety with creamy white body and sepia brown points. The non-extension gene increases contrast."
+        "Name": "Sable Point (Non-Extension)",
+        "GenotypeString": "aa,B_,cchl_,D_,ee",
+        "Description": "Sable point produced by the non-extension gene. Often just called Sable Point.",
+        "AlternateNames": [ "Sable Point" ]
+    },
+    {
+        "Name": "Pointed White",
+        "GenotypeString": "aa,B_,ch_,D_,E_",
+        "Description": "Himalayan pattern with colored points on a white body.",
+        "AlternateNames": [ "Himalayan" ]
     }
 ]
