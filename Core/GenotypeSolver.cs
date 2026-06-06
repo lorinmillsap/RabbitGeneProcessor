@@ -163,7 +163,12 @@ public static class GenotypeSolver
             //    EXCEPTION: For stacking loci, we ALWAYS expand unknown alleles to explore hidden recessives.
             // 4. Exclusions [] are always respected.
             
-            List<Allele> GetGametes(Locus locus)
+            bool hasKnownRecessive = (l1.First.Symbol != "_" && l1.First.GetDefinition()?.Dominance == DominanceType.Recessive) ||
+                                     (l1.Second.Symbol != "_" && l1.Second.GetDefinition()?.Dominance == DominanceType.Recessive) ||
+                                     (l2.First.Symbol != "_" && l2.First.GetDefinition()?.Dominance == DominanceType.Recessive) ||
+                                     (l2.Second.Symbol != "_" && l2.Second.GetDefinition()?.Dominance == DominanceType.Recessive);
+
+            List<Allele> GetGametes(Locus locus, bool forceExpandUnknown = false)
             {
                 var gametes = new List<Allele>();
                 var locusSymbol = locus.GetLocusSymbol();
@@ -179,9 +184,10 @@ public static class GenotypeSolver
                         {
                             candidates.AddRange(a.Suspected);
                         }
-                        else if (locusDef != null && (hasStacking || (locusSymbol == "E" && (locus.First.Symbol == "E" || locus.Second.Symbol == "E" || locus.First.Symbol == "ej" || locus.Second.Symbol == "ej"))))
+                        else if (locusDef != null && (hasStacking || forceExpandUnknown || (locusSymbol == "E" && (locus.First.Symbol == "E" || locus.Second.Symbol == "E" || locus.First.Symbol == "ej" || locus.Second.Symbol == "ej"))))
                         {
                             // For stacking loci, or the E locus when it has a dominant E, expand unknown slot to all possible valid alleles
+                            // ALSO expand if forceExpandUnknown is set (used when the OTHER parent has a known recessive)
                             // If the OTHER allele is known, this unknown allele cannot be more dominant than it.
                             var other = a == locus.First ? locus.Second : locus.First;
                             if (!other.IsUnknown)
@@ -223,8 +229,8 @@ public static class GenotypeSolver
                 return gametes;
             }
 
-            var g1 = GetGametes(l1);
-            var g2 = GetGametes(l2);
+            var g1 = GetGametes(l1, forceExpandUnknown: hasKnownRecessive);
+            var g2 = GetGametes(l2, forceExpandUnknown: hasKnownRecessive);
 
             // If a locus results in 100% of the same thing (e.g. _ x _ -> __), 
             // and it is effectively "unknown" in both parents, we can treat it as a single unit
@@ -243,6 +249,14 @@ public static class GenotypeSolver
             // ALSO, for the E locus, if we have E_, we want to see if it carries ej or e.
             bool isEWithDominant = symbol == "E" && (l1.First.Symbol == "E" || l1.Second.Symbol == "E" || l2.First.Symbol == "E" || l2.Second.Symbol == "E" ||
                                                     l1.First.Symbol == "ej" || l1.Second.Symbol == "ej" || l2.First.Symbol == "ej" || l2.Second.Symbol == "ej");
+            
+            // Do NOT expand simple dominant/recessive loci like B or D if one allele is dominant and other is unknown (e.g. B_)
+            // unless there are constraints.
+            bool isSimpleDominantWithUnknown = !hasStacking && symbol != "E" &&
+                                               ((l1.First.Symbol != "_" && l1.Second.Symbol == "_") || 
+                                                (l1.First.Symbol == "_" && l1.Second.Symbol != "_") ||
+                                                (l2.First.Symbol != "_" && l2.Second.Symbol == "_") || 
+                                                (l2.First.Symbol == "_" && l2.Second.Symbol != "_"));
 
             if (IsEffectivelyUnknown(l1) && IsEffectivelyUnknown(l2))
             {
@@ -271,6 +285,24 @@ public static class GenotypeSolver
                 if (!hasStacking && !hasConstraints && !isEWithDominant)
                 {
                     locusPossibilities[symbol] = new List<(Locus Locus, double Probability)> { (l1, 1.0) };
+                    continue;
+                }
+            }
+
+            // Further restrict expansion for simple loci when only one parent has an unknown slot
+            if (isSimpleDominantWithUnknown && !isEWithDominant)
+            {
+                bool hasConstraints = l1.First.Suspected?.Count > 0 || l1.First.Excluded?.Count > 0 ||
+                                     l1.Second.Suspected?.Count > 0 || l1.Second.Excluded?.Count > 0 ||
+                                     l2.First.Suspected?.Count > 0 || l2.First.Excluded?.Count > 0 ||
+                                     l2.Second.Suspected?.Count > 0 || l2.Second.Excluded?.Count > 0;
+
+                if (!hasConstraints && !hasKnownRecessive)
+                {
+                    // For simple dominant/recessive loci like B or D, if we have B_ x BB, 
+                    // we don't need to assume the B_ parent carries b.
+                    
+                    locusPossibilities[symbol] = new List<(Locus Locus, double Probability)> { (new Locus(l1.First.IsUnknown ? l2.First : l1.First, new Allele("_")) { OverrideLocusSymbol = symbol }, 1.0) };
                     continue;
                 }
             }
@@ -322,6 +354,11 @@ public static class GenotypeSolver
                                 // Recessive gene only expresses as homozygous. 
                                 // (By normalization, if First is Recessive, Second must be Recessive too or Unknown)
                                 // We keep it homozygous for display.
+                            }
+                            else if (offspringLocus.First.Symbol == "b" && offspringLocus.Second.Symbol == "b")
+                            {
+                                // User explicitly requested: "chocolate is always explicitly 'bb'"
+                                // So do not reduce bb to b_.
                             }
                             else
                             {

@@ -227,6 +227,11 @@
         "AlternateNames": [ "Sable Point" ]
     },
     {
+        "Name": "Chocolate Sable Point",
+        "GenotypeString": "aa,bb,cchl_,D_,ee",
+        "Description": "The brown version of Sable Point."
+    },
+    {
         "Name": "Pointed White",
         "GenotypeString": "aa,B_,ch_,D_,E_",
         "Description": "Himalayan pattern with colored points on a white body.",
