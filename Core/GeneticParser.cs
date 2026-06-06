@@ -87,7 +87,9 @@ public static class GeneticParser
     {
         var allSymbols = Definitions.SelectMany(l => l.Alleles)
             .SelectMany(a => new[] { a.Symbol }.Concat(a.AlternativeNotations))
+            .Concat(Definitions.Select(d => d.Symbol)) // Add locus symbols
             .OrderByDescending(s => s.Length)
+            .Distinct()
             .ToList();
         allSymbols.Add("_");
         allSymbols.Add("*");
@@ -160,7 +162,9 @@ public static class GeneticParser
         var list = new List<string>();
         var allSymbols = Definitions.SelectMany(l => l.Alleles)
             .SelectMany(a => new[] { a.Symbol }.Concat(a.AlternativeNotations))
+            .Concat(Definitions.Select(d => d.Symbol)) // Add locus symbols
             .OrderByDescending(s => s.Length)
+            .Distinct()
             .ToList();
 
         while (index < input.Length && input[index] != endChar)
@@ -205,6 +209,7 @@ public static class GeneticParser
     private static string NormalizeAllele(string symbol)
     {
         if (symbol == "_") return "_";
+        if (Definitions.Any(d => d.Symbol == symbol)) return symbol;
         foreach (var locus in Definitions)
         {
             foreach (var allele in locus.Alleles)

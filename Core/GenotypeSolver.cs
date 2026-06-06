@@ -143,6 +143,32 @@ public static class GenotypeSolver
         var p2Loci = parent2.Loci.ToDictionary(l => l.GetLocusSymbol());
 
         var allSymbols = p1Loci.Keys.Union(p2Loci.Keys).Distinct().ToList();
+
+        // If a breed is specified in either parent, we should bring in its default loci if they are missing
+        if (!string.IsNullOrEmpty(parent1.PrimaryBreed))
+        {
+            var breedDef = VarietyService.Breeds.FirstOrDefault(b => b.Name.Equals(parent1.PrimaryBreed, StringComparison.OrdinalIgnoreCase));
+            if (breedDef != null)
+            {
+                var breedGenotype = RabbitGenotype.Parse(breedDef.GenotypeString);
+                foreach (var symbol in breedGenotype.Loci.Select(l => l.GetLocusSymbol()))
+                {
+                    if (!allSymbols.Contains(symbol)) allSymbols.Add(symbol);
+                }
+            }
+        }
+        if (!string.IsNullOrEmpty(parent2.PrimaryBreed))
+        {
+            var breedDef = VarietyService.Breeds.FirstOrDefault(b => b.Name.Equals(parent2.PrimaryBreed, StringComparison.OrdinalIgnoreCase));
+            if (breedDef != null)
+            {
+                var breedGenotype = RabbitGenotype.Parse(breedDef.GenotypeString);
+                foreach (var symbol in breedGenotype.Loci.Select(l => l.GetLocusSymbol()))
+                {
+                    if (!allSymbols.Contains(symbol)) allSymbols.Add(symbol);
+                }
+            }
+        }
         
         // Per-locus possibilities: Symbol -> List of (Locus, Probability)
         var locusPossibilities = new Dictionary<string, List<(Locus Locus, double Probability)>>();
@@ -152,9 +178,12 @@ public static class GenotypeSolver
             p1Loci.TryGetValue(symbol, out var l1);
             p2Loci.TryGetValue(symbol, out var l2);
 
-            // Default to __ if missing
-            l1 ??= new Locus(new Allele("_"), new Allele("_")) { OverrideLocusSymbol = symbol };
-            l2 ??= new Locus(new Allele("_"), new Allele("_")) { OverrideLocusSymbol = symbol };
+            // If missing, use default allele from locus definition if available, otherwise _
+            var locusDefinition = GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == symbol);
+            var defaultAllele = locusDefinition?.DefaultAllele != null ? new Allele(locusDefinition.DefaultAllele.Symbol) : new Allele("_");
+
+            l1 ??= new Locus(defaultAllele, defaultAllele) { OverrideLocusSymbol = symbol };
+            l2 ??= new Locus(defaultAllele, defaultAllele) { OverrideLocusSymbol = symbol };
 
             // Logic for expanding alleles:
             // 1. If an allele is known (not _), it is used as is.
@@ -541,7 +570,10 @@ public static class GenotypeSolver
         return g.Loci.Sum(l => (l.First.IsUnknown ? 0 : 1) + (l.Second.IsUnknown ? 0 : 1));
     }
 
-    public record OffspringPrediction(RabbitGenotype Genotype, double Probability);
+    public record OffspringPrediction(RabbitGenotype Genotype, double Probability)
+    {
+        public string? Description { get; set; }
+    }
 
     private static List<Allele> GetExpandedGametes(Locus locus)
     {

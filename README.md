@@ -66,9 +66,9 @@ dotnet run -- solve-parents --p1 "A_,B_,C_,D_,E_" --p2 "A_,B_,C_,D_,E_" --offspr
 ```
 
 ### Predict Offspring
-Predict possible genotypes and variety descriptions for offspring from two parents.
+Predict possible genotypes and variety descriptions for offspring from two parents. You can optionally include a breed name at the start of the parent genotype strings to use breed-specific variety definitions in the results.
 ```bash
-dotnet run -- predict --p1 "Aa,Bb,C_,D_,E_" --p2 "Aa,Bb,C_,D_,E_" --limit 10
+dotnet run -- predict --p1 "Jersey Wooly Aa,bb,C_,D_,ee" --p2 "Jersey Wooly Aa,bb,C_,D_,ee" --limit 10
 ```
 
 ## Project Structure

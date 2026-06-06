@@ -33,7 +33,8 @@ public record AlleleDefinition(
     string Description,
     DominanceType Dominance,
     int Order,
-    List<string> AlternativeNotations);
+    List<string> AlternativeNotations,
+    bool IsDefault = false);
 
 /// <summary>
 /// Represents the definition of a genetic locus.
@@ -43,4 +44,7 @@ public record LocusDefinition(
     string Name,
     string Description,
     string Category,
-    List<AlleleDefinition> Alleles);
+    List<AlleleDefinition> Alleles)
+{
+    public AlleleDefinition? DefaultAllele => Alleles.FirstOrDefault(a => a.IsDefault);
+}

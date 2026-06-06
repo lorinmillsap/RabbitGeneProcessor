@@ -30,6 +30,15 @@ public record Locus(Allele First, Allele Second)
     }
 
     /// <summary>
+    /// Gets the definition for this locus.
+    /// </summary>
+    public LocusDefinition? GetDefinition()
+    {
+        var symbol = GetLocusSymbol();
+        return GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == symbol);
+    }
+
+    /// <summary>
     /// Gets or sets an optional locus symbol that overrides detection.
     /// </summary>
     public string? OverrideLocusSymbol { get; set; }

@@ -36,6 +36,30 @@ public static class VarietyService
     public static List<BreedDefinition> Breeds => _breeds ?? throw new InvalidOperationException("VarietyService not initialized.");
 
     /// <summary>
+    /// Extracts a breed and genotype from a mixed string (e.g., "Jersey Wooly aa,bb,cc").
+    /// </summary>
+    public static (BreedDefinition? Breed, string GenotypeString) ExtractBreedAndGenotype(string input)
+    {
+        // Try to find a breed name at the start of the string
+        foreach (var breed in Breeds)
+        {
+            var namesToTry = new List<string> { breed.Name };
+            if (breed.AlternateNames != null) namesToTry.AddRange(breed.AlternateNames);
+
+            foreach (var name in namesToTry.OrderByDescending(n => n.Length))
+            {
+                if (input.StartsWith(name, StringComparison.OrdinalIgnoreCase))
+                {
+                    var remaining = input.Substring(name.Length).TrimStart(',', ' ');
+                    return (breed, remaining);
+                }
+            }
+        }
+
+        return (null, input);
+    }
+
+    /// <summary>
     /// Parses a descriptive string into a breed, variety, and list of modifiers.
     /// Example: "Broken VM Chestnut Rex" -> Breed: Rex, Variety: Chestnut, Modifiers: [Broken, VM]
     /// </summary>

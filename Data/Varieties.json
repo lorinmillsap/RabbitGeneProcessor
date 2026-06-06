@@ -183,11 +183,6 @@
         "AlternateNames": [ "Lilac Tort", "Lilac Tortoise" ]
     },
     {
-        "Name": "Orange",
-        "GenotypeString": "A_,bb,C_,D_,ee",
-        "Description": "Agouti-based non-extension color."
-    },
-    {
         "Name": "Siamese Sable",
         "GenotypeString": "aa,B_,cchlcchl,D_,E_",
         "Description": "A shaded variety with a sepia brown color and darker points. Homozygous for the cchl gene.",

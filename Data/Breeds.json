@@ -25,9 +25,16 @@
   },
   {
     "Name": "Jersey Wooly",
-    "GenotypeString": "ll",
+    "GenotypeString": "ll,Dwdw",
     "Description": "Breed trait: long wool (ll).",
-    "Type": "Prefix"
+    "Type": "Prefix",
+    "Varieties": [
+      {
+        "Name": "Orange",
+        "GenotypeString": "A_,bb,C_,D_,ee",
+        "Description": "Jersey Wooly specific Orange variety (Agouti-based non-extension)."
+      }
+    ]
   },
   {
     "Name": "American Fuzzy Lop",

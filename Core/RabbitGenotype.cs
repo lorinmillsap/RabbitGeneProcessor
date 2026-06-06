@@ -6,6 +6,7 @@
 public class RabbitGenotype
 {
     public List<Locus> Loci { get; } = new();
+    public string? PrimaryBreed { get; set; }
 
     /// <summary>
     /// Parses a genotype string (e.g., "A_,B_,C_,D_,E,enen", "{A}__").
@@ -13,6 +14,8 @@ public class RabbitGenotype
     public static RabbitGenotype Parse(string input)
     {
         var genotype = new RabbitGenotype();
+        if (string.IsNullOrWhiteSpace(input)) return genotype;
+
         var parts = input.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         foreach (var part in parts)
         {

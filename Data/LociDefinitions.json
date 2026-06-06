@@ -11,7 +11,8 @@
                 "Description": "Full black pigment.",
                 "Dominance": "Dominant",
                 "Order": 1,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": true
             },
             {
                 "Symbol": "b",
@@ -19,7 +20,8 @@
                 "Description": "Chocolate pigment.",
                 "Dominance": "Recessive",
                 "Order": 2,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": false
             }
         ]
     },
@@ -35,7 +37,8 @@
                 "Description": "Full development of color.",
                 "Dominance": "Dominant",
                 "Order": 1,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": true
             },
             {
                 "Symbol": "cchd",
@@ -46,7 +49,8 @@
                 "AlternativeNotations": [
                     "c^chd",
                     "C^chd"
-                ]
+                ],
+                "IsDefault": false
             },
             {
                 "Symbol": "cchl",
@@ -57,7 +61,8 @@
                 "AlternativeNotations": [
                     "c^chl",
                     "C^chl"
-                ]
+                ],
+                "IsDefault": false
             },
             {
                 "Symbol": "ch",
@@ -68,7 +73,8 @@
                 "AlternativeNotations": [
                     "c^h",
                     "C^h"
-                ]
+                ],
+                "IsDefault": false
             },
             {
                 "Symbol": "c",
@@ -76,7 +82,8 @@
                 "Description": "No pigment (White with Pink Eyes).",
                 "Dominance": "Recessive",
                 "Order": 5,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": false
             }
         ]
     },
@@ -92,7 +99,8 @@
                 "Description": "Normal pigment density.",
                 "Dominance": "Dominant",
                 "Order": 1,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": true
             },
             {
                 "Symbol": "d",
@@ -100,7 +108,8 @@
                 "Description": "Pigment granules are clumped, making colors look lighter (e.g., Blue instead of Black).",
                 "Dominance": "Recessive",
                 "Order": 2,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": false
             }
         ]
     },
@@ -120,7 +129,8 @@
                     "ES",
                     "E^s",
                     "E^S"
-                ]
+                ],
+                "IsDefault": false
             },
             {
                 "Symbol": "E",
@@ -128,7 +138,8 @@
                 "Description": "Normal distribution of color.",
                 "Dominance": "PartiallyDominant",
                 "Order": 2,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": true
             },
             {
                 "Symbol": "ej",
@@ -139,7 +150,8 @@
                 "AlternativeNotations": [
                     "E^j",
                     "e^j"
-                ]
+                ],
+                "IsDefault": false
             },
             {
                 "Symbol": "e",
@@ -147,7 +159,8 @@
                 "Description": "Minimizes the expression of Eumalanin.",
                 "Dominance": "Recessive",
                 "Order": 4,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": false
             }
         ]
     },
@@ -163,7 +176,8 @@
                 "Description": "Normal color and eye pigment.",
                 "Dominance": "Dominant",
                 "Order": 1,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": true
             },
             {
                 "Symbol": "p",
@@ -171,7 +185,8 @@
                 "Description": "Lutino coloration.",
                 "Dominance": "Recessive",
                 "Order": 2,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": false
             }
         ]
     },
@@ -187,7 +202,8 @@
                 "Description": "Normal width band.",
                 "Dominance": "Dominant",
                 "Order": 1,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": true
             },
             {
                 "Symbol": "w",
@@ -195,7 +211,8 @@
                 "Description": "Maximizes the expression of the intermediate band.",
                 "Dominance": "Recessive",
                 "Order": 2,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": false
             }
         ]
     },
@@ -211,7 +228,8 @@
                 "Description": "Banded hair shaft; white or cream belly, eye circles, inside of ears, and underside of tail.",
                 "Dominance": "Dominant",
                 "Order": 1,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": true
             },
             {
                 "Symbol": "at",
@@ -223,7 +241,8 @@
                     "At",
                     "a^t",
                     "A^t"
-                ]
+                ],
+                "IsDefault": false
             },
             {
                 "Symbol": "a",
@@ -231,7 +250,8 @@
                 "Description": "Solid color all over.",
                 "Dominance": "Recessive",
                 "Order": 3,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": false
             }
         ]
     },
@@ -247,7 +267,8 @@
                 "Description": "No Dutch markings.",
                 "Dominance": "Dominant",
                 "Order": 1,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": true
             },
             {
                 "Symbol": "du",
@@ -255,7 +276,8 @@
                 "Description": "Dutch marking pattern (white belt, blaze, and feet).",
                 "Dominance": "Recessive",
                 "Order": 2,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": false
             }
         ]
     },
@@ -271,7 +293,8 @@
                 "Description": "White spotting pattern. Homozygous (EnEn) usually results in 'Charlie' pattern.",
                 "Dominance": "PartiallyDominant",
                 "Order": 1,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": false
             },
             {
                 "Symbol": "en",
@@ -279,7 +302,8 @@
                 "Description": "Solid color (no spotting).",
                 "Dominance": "Recessive",
                 "Order": 2,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": true
             }
         ]
     },
@@ -295,7 +319,8 @@
                 "Description": "No silvering.",
                 "Dominance": "Dominant",
                 "Order": 1,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": true
             },
             {
                 "Symbol": "si",
@@ -303,7 +328,8 @@
                 "Description": "Produces white hairs mixed with color.",
                 "Dominance": "Recessive",
                 "Order": 2,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": false
             }
         ]
     },
@@ -319,7 +345,8 @@
                 "Description": "Non-Vienna",
                 "Dominance": "Dominant",
                 "Order": 1,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": true
             },
             {
                 "Symbol": "v",
@@ -327,7 +354,8 @@
                 "Description": "Heterozygous (Vv) often shows white spots/snip (Vienna Marked). Homozygous (vv) is Blue-Eyed White.",
                 "Dominance": "PartiallyRecessive",
                 "Order": 2,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": false
             }
         ]
     },
@@ -343,7 +371,8 @@
                 "Description": "Produces white ears and often white on the head.",
                 "Dominance": "PartiallyDominant",
                 "Order": 1,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": false
             },
             {
                 "Symbol": "we",
@@ -351,7 +380,8 @@
                 "Description": "No white-eared markings.",
                 "Dominance": "Recessive",
                 "Order": 2,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": true
             }
         ]
     },
@@ -367,7 +397,8 @@
                 "Description": "Short, normal hair.",
                 "Dominance": "Dominant",
                 "Order": 1,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": true
             },
             {
                 "Symbol": "l",
@@ -375,7 +406,8 @@
                 "Description": "Long hair growth.",
                 "Dominance": "Recessive",
                 "Order": 2,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": false
             }
         ]
     },
@@ -391,7 +423,8 @@
                 "Description": "Produces a mane. Heterozygous (Mm) usually results in a single mane, homozygous (MM) in a double mane.",
                 "Dominance": "PartiallyDominant",
                 "Order": 1,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": false
             },
             {
                 "Symbol": "m",
@@ -399,7 +432,8 @@
                 "Description": "No mane.",
                 "Dominance": "Recessive",
                 "Order": 2,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": true
             }
         ]
     },
@@ -415,7 +449,8 @@
                 "Description": "Normal length and texture.",
                 "Dominance": "Dominant",
                 "Order": 1,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": true
             },
             {
                 "Symbol": "r",
@@ -423,7 +458,8 @@
                 "Description": "Short, dense, upright fur.",
                 "Dominance": "Recessive",
                 "Order": 2,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": false
             }
         ]
     },
@@ -439,7 +475,8 @@
                 "Description": "Normal fur texture.",
                 "Dominance": "Dominant",
                 "Order": 1,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": true
             },
             {
                 "Symbol": "sa",
@@ -447,7 +484,8 @@
                 "Description": "Finer hair shaft with a transparent outer layer, creating high sheen.",
                 "Dominance": "Recessive",
                 "Order": 2,
-                "AlternativeNotations": []
+                "AlternativeNotations": [],
+                "IsDefault": false
             }
         ]
     },
@@ -458,7 +496,7 @@
         "Category": "Body",
         "Alleles": [
             {
-                "Symbol": "DW",
+                "Symbol": "Dw",
                 "Name": "Dwarf",
                 "Description": "Reduces size. Homozygous (DWDW) is usually lethal ('Peanut').",
                 "Dominance": "Dominant",
@@ -466,7 +504,7 @@
                 "AlternativeNotations": []
             },
             {
-                "Symbol": "Dw",
+                "Symbol": "dw",
                 "Name": "Normal Size",
                 "Description": "Normal sized rabbit.",
                 "Dominance": "Recessive",
