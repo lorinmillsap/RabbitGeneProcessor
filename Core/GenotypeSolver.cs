@@ -192,6 +192,12 @@ public static class GenotypeSolver
                                         .Select(al => al.Symbol));
                                 }
                             }
+                            else
+                            {
+                                // BOTH are unknown? This shouldn't happen here due to IsPartiallyUnknown check,
+                                // but if it does, it could be anything.
+                                // However, usually we keep it as _ to avoid explosion unless suspects exist.
+                            }
                         }
 
                         if (candidates.Count > 0)
@@ -239,8 +245,24 @@ public static class GenotypeSolver
 
             if (IsPartiallyUnknown(l1) && IsPartiallyUnknown(l2) && l1.Matches(l2))
             {
-                locusPossibilities[symbol] = new List<(Locus Locus, double Probability)> { (l1, 1.0) };
-                continue;
+                // SPECIAL CASE: If both have an unknown slot, but we are looking at something like B_ x B_,
+                // we should only skip expansion IF it's a simple dominant/recessive locus.
+                // If it's a stacking locus (PartiallyDominant/PartiallyRecessive), the unknown slot matters 
+                // because it could contain another stacking allele.
+                var def = GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == symbol);
+                bool hasStacking = def?.Alleles.Any(a => a.Dominance == DominanceType.PartiallyDominant || a.Dominance == DominanceType.PartiallyRecessive) ?? false;
+
+                // Also, ONLY skip if NO explicitly specified suspects/exclusions exist in the unknown slot.
+                bool hasConstraints = l1.First.Suspected?.Count > 0 || l1.First.Excluded?.Count > 0 ||
+                                     l1.Second.Suspected?.Count > 0 || l1.Second.Excluded?.Count > 0 ||
+                                     l2.First.Suspected?.Count > 0 || l2.First.Excluded?.Count > 0 ||
+                                     l2.Second.Suspected?.Count > 0 || l2.Second.Excluded?.Count > 0;
+
+                if (!hasStacking && !hasConstraints)
+                {
+                    locusPossibilities[symbol] = new List<(Locus Locus, double Probability)> { (l1, 1.0) };
+                    continue;
+                }
             }
 
             var outcomes = new Dictionary<string, (Locus Locus, int Count)>();
