@@ -12,14 +12,16 @@
     "GenotypeString": "Vv",
     "Description": "Adds white spots and/or blaze pattern and/or blue eyes (Vienna Marked).",
     "AlternateNames": ["VM"],
-    "Type": "Prefix"
+    "Type": "Prefix",
+    "Priority": 5
   },
   {
     "Name": "Vienna Carrier",
     "GenotypeString": "Vv",
     "Description": "Carries the Vienna gene (v) but does not show white markings; visually identical to a non-carrier but can produce BEW or VM offspring.",
     "AlternateNames": ["VC"],
-    "Type": "Prefix"
+    "Type": "Prefix",
+    "Priority": 10
   },
   {
     "Name": "High Roufus",
