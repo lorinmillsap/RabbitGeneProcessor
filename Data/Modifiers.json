@@ -1,11 +1,12 @@
 ﻿[
-  {
-    "Name": "Broken",
-    "GenotypeString": "En_",
-    "ExclusionGenotypeString": "enen",
-    "Description": "Adds broken pattern to the variety.",
-    "Type": "Prefix"
-  },
+    {
+      "Name": "Broken",
+      "GenotypeString": "Enen",
+      "ExclusionGenotypeString": "enen",
+      "Description": "Adds broken pattern to the variety.",
+      "Type": "Prefix",
+      "Priority": 10
+    },
   {
     "Name": "Vienna Marked",
     "GenotypeString": "Vv",

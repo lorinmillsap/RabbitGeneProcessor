@@ -29,4 +29,5 @@ public record VarietyDefinition(
     string Description = "",
     string? ExclusionGenotypeString = null,
     List<string>? AlternateNames = null,
-    ModifierType? Type = null);
+    ModifierType? Type = null,
+    int Priority = 0);

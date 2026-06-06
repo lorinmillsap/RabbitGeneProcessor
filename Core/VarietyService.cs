@@ -343,8 +343,12 @@ public static class VarietyService
         var baseGenotypeString = (breed?.GenotypeString ?? "") + "," + (bestVariety?.GenotypeString ?? "");
         var baseGenotype = RabbitGenotype.Parse(baseGenotypeString);
 
-        // Sort modifiers by specificity so we can skip redundant ones (e.g. MM vs M_)
-        var sortedModifiers = Modifiers.OrderByDescending(m => CountSpecificity(RabbitGenotype.Parse(m.GenotypeString))).ToList();
+        // Sort modifiers by priority, then specificity so we can skip redundant ones (e.g. MM vs M_)
+        // Higher priority (larger number) comes first.
+        var sortedModifiers = Modifiers
+            .OrderByDescending(m => m.Priority)
+            .ThenByDescending(m => CountSpecificity(RabbitGenotype.Parse(m.GenotypeString)))
+            .ToList();
 
         foreach (var modifier in sortedModifiers)
         {
