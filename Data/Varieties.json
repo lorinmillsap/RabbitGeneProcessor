@@ -216,5 +216,26 @@
         "GenotypeString": "aa,B_,ch_,D_,E_",
         "Description": "Himalayan pattern with colored points on a white body.",
         "AlternateNames": [ "Himalayan" ]
+    },
+    {
+        "Name": "Black Sable Magpie",
+        "GenotypeString": "aa,B_,cchl_,D_,ej_",
+        "Description": "A shaded version of Magpie, combining Sable and Harlequin genes.",
+        "AlternateNames": [ "Sable Magpie" ]
+    },
+    {
+        "Name": "Blue Sable Magpie",
+        "GenotypeString": "aa,B_,cchl_,dd,ej_",
+        "Description": "The dilute version of Black Sable Magpie."
+    },
+    {
+        "Name": "Chocolate Sable Magpie",
+        "GenotypeString": "aa,bb,cchl_,D_,ej_",
+        "Description": "The brown version of Black Sable Magpie."
+    },
+    {
+        "Name": "Lilac Sable Magpie",
+        "GenotypeString": "aa,bb,cchl_,dd,ej_",
+        "Description": "The dilute brown version of Chocolate Sable Magpie."
     }
 ]
