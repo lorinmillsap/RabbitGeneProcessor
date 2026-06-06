@@ -200,10 +200,25 @@
         "AlternateNames": [ "Smoke Pearl" ]
     },
     {
-        "Name": "Sable",
+        "Name": "Black Sable",
         "GenotypeString": "aa,B_,cchl(ch/c),D_,E_",
         "Description": "A shaded variety with a rich sepia brown color. Result of Siamese Sable allele combined with a more recessive C-locus gene.",
         "AlternateNames": [ "Sable" ]
+    },
+    {
+        "Name": "Blue Sable",
+        "GenotypeString": "aa,B_,cchl(ch/c),dd,E_",
+        "Description": "The dilute version of Black Sable."
+    },
+    {
+        "Name": "Chocolate Sable",
+        "GenotypeString": "aa,bb,cchl(ch/c),D_,E_",
+        "Description": "The brown version of Black Sable."
+    },
+    {
+        "Name": "Lilac Sable",
+        "GenotypeString": "aa,bb,cchl(ch/c),dd,E_",
+        "Description": "The dilute brown version of Chocolate Sable."
     },
     {
         "Name": "Sable Point",
@@ -237,5 +252,47 @@
         "Name": "Lilac Sable Magpie",
         "GenotypeString": "aa,bb,cchl_,dd,ej_",
         "Description": "The dilute brown version of Chocolate Sable Magpie."
+    },
+    {
+        "Name": "Black Shagouti",
+        "GenotypeString": "A_,B_,cchl_,D_,E_",
+        "Description": "Shaded Agouti with black pigment.",
+        "AlternateNames": [ "Shagouti", "Shaded Agouti" ]
+    },
+    {
+        "Name": "Blue Shagouti",
+        "GenotypeString": "A_,B_,cchl_,dd,E_",
+        "Description": "The dilute version of Black Shagouti."
+    },
+    {
+        "Name": "Chocolate Shagouti",
+        "GenotypeString": "A_,bb,cchl_,D_,E_",
+        "Description": "The brown version of Black Shagouti."
+    },
+    {
+        "Name": "Lilac Shagouti",
+        "GenotypeString": "A_,bb,cchl_,dd,E_",
+        "Description": "The dilute brown version of Chocolate Shagouti."
+    },
+    {
+        "Name": "Black Sable Marten",
+        "GenotypeString": "at_,B_,cchl_,D_,E_",
+        "Description": "Sable Marten with black pigment.",
+        "AlternateNames": [ "Sable Marten" ]
+    },
+    {
+        "Name": "Blue Sable Marten",
+        "GenotypeString": "at_,B_,cchl_,dd,E_",
+        "Description": "The dilute version of Black Sable Marten."
+    },
+    {
+        "Name": "Chocolate Sable Marten",
+        "GenotypeString": "at_,bb,cchl_,D_,E_",
+        "Description": "The brown version of Black Sable Marten."
+    },
+    {
+        "Name": "Lilac Sable Marten",
+        "GenotypeString": "at_,bb,cchl_,dd,E_",
+        "Description": "The dilute brown version of Chocolate Sable Marten."
     }
 ]

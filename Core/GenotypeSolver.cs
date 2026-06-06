@@ -300,7 +300,22 @@ public static class GenotypeSolver
                             if (d1.Dominance == DominanceType.Dominant)
                             {
                                 // Fully dominant gene masks everything
-                                offspringLocus = new Locus(offspringLocus.First, new Allele("_")) { OverrideLocusSymbol = symbol };
+                                var reducedLocus = new Locus(offspringLocus.First, new Allele("_")) { OverrideLocusSymbol = symbol };
+
+                                // CHECK: Does homozygous form match a DIFFERENT specific variety?
+                                var currentFull = new RabbitGenotype();
+                                currentFull.Loci.AddRange(allSymbols.Select(s => s == symbol ? offspringLocus : (p1Loci.GetValueOrDefault(s) ?? new Locus(new Allele("_"), new Allele("_")) { OverrideLocusSymbol = s })));
+
+                                var reducedFull = new RabbitGenotype();
+                                reducedFull.Loci.AddRange(allSymbols.Select(s => s == symbol ? reducedLocus : (p1Loci.GetValueOrDefault(s) ?? new Locus(new Allele("_"), new Allele("_")) { OverrideLocusSymbol = s })));
+
+                                string currentName = VarietyService.IdentifyDescription(currentFull).Split('(')[0].Trim();
+                                string reducedName = VarietyService.IdentifyDescription(reducedFull).Split('(')[0].Trim();
+
+                                if (currentName == reducedName || reducedName.Contains("Unknown"))
+                                {
+                                    offspringLocus = reducedLocus;
+                                }
                             }
                             else if (d1.Dominance == DominanceType.Recessive)
                             {
@@ -308,19 +323,72 @@ public static class GenotypeSolver
                                 // (By normalization, if First is Recessive, Second must be Recessive too or Unknown)
                                 // We keep it homozygous for display.
                             }
-                            else if (d1IsStacking)
+                            else
                             {
-                                // Partially dominant/recessive genes.
-                                // If the second is less dominant and NOT a stacking gene, the first one likely masks it phenotypically.
-                                // BUT the issue says: "partially dominant genes do dominate based on their order of dominance, 
-                                // but their expression can still be modified by the recessive, where we refer to stacking genes, thats what the partially dominant genes are."
-                                // This implies we should KEEP the pair if it's "stacking".
+                                // Partially dominant/recessive (stacking) genes.
+                                // If the first allele is a stacking gene, and the second one is less dominant,
+                                // we should reduce it to Symbol_ IF it phenotypically masks the second one.
+                                // The user explicitly mentioned:
+                                // - at_ (at over a)
+                                // - cchl_ (cchl over ch or c)
+                                // - ej_ (ej over e)
+                                // - E_ (E over ej or e)
                                 
-                                if (!d2IsStacking && d2.Dominance == DominanceType.Recessive)
+                                bool shouldReduce = false;
+                                if (offspringLocus.First.Symbol == offspringLocus.Second.Symbol)
                                 {
-                                    // If it's a stacking gene over a fully recessive, does it mask?
-                                    // Usually "stacking" implies multiple partially dominant genes.
-                                    // For now, let's keep the pairing if d1 is stacking, unless it's a known masking case.
+                                    shouldReduce = true;
+                                }
+                                else if (d1.Order < d2.Order)
+                                {
+                                    // First is more dominant.
+                                    // Reduction rules:
+                                    // 1. If d2 is the bottom recessive of the locus, it's usually masked.
+                                    var locusDef = GeneticParser.Definitions.FirstOrDefault(def => def.Symbol == symbol);
+                                    var bottomRecessive = locusDef?.Alleles.OrderByDescending(a => a.Order).FirstOrDefault();
+                                    
+                                    if (bottomRecessive != null && offspringLocus.Second.Symbol == bottomRecessive.Symbol)
+                                    {
+                                        shouldReduce = true;
+                                    }
+                                    // 2. Specific case: cchl masks ch (as per user: "All cchl, ch, or c recessives fall under the same shagouti term")
+                                    else if (offspringLocus.First.Symbol == "cchl" && (offspringLocus.Second.Symbol == "ch" || offspringLocus.Second.Symbol == "c"))
+                                    {
+                                        shouldReduce = true;
+                                    }
+                                    // 3. Specific case: E masks ej
+                                    else if (offspringLocus.First.Symbol == "E" && offspringLocus.Second.Symbol == "ej")
+                                    {
+                                        shouldReduce = true;
+                                    }
+                                }
+
+                                if (shouldReduce)
+                                {
+                                    // CHECK: Does homozygous form match a DIFFERENT specific variety?
+                                    // If so, we must respect that explicit definition as requested by user.
+                                    var reducedLocus = new Locus(offspringLocus.First, new Allele("_")) { OverrideLocusSymbol = symbol };
+
+                                    // Create full genotypes to check variety identification
+                                    var currentFull = new RabbitGenotype();
+                                    currentFull.Loci.AddRange(allSymbols.Select(s => s == symbol ? offspringLocus : (p1Loci.GetValueOrDefault(s) ?? new Locus(new Allele("_"), new Allele("_")) { OverrideLocusSymbol = s })));
+
+                                    var reducedFull = new RabbitGenotype();
+                                    reducedFull.Loci.AddRange(allSymbols.Select(s => s == symbol ? reducedLocus : (p1Loci.GetValueOrDefault(s) ?? new Locus(new Allele("_"), new Allele("_")) { OverrideLocusSymbol = s })));
+
+                                    string currentName = VarietyService.IdentifyDescription(currentFull).Split('(')[0].Trim();
+                                    string reducedName = VarietyService.IdentifyDescription(reducedFull).Split('(')[0].Trim();
+
+                                    if (currentName != reducedName && !reducedName.Contains("Unknown"))
+                                    {
+                                        // They represent different varieties, do not reduce.
+                                        shouldReduce = false;
+                                    }
+                                }
+
+                                if (shouldReduce)
+                                {
+                                    offspringLocus = new Locus(offspringLocus.First, new Allele("_")) { OverrideLocusSymbol = symbol };
                                 }
                             }
                         }

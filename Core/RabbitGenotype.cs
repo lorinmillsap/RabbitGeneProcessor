@@ -132,11 +132,21 @@ public class RabbitGenotype
             
             bool AlleleMatches(Allele source, Allele target)
             {
-                if (source.Symbol == "_" || target.Symbol == "_") return true;
+                if (source.Symbol == "_" ) return true;
+                // If the target has an underscore, it means it's a phenotype mask (e.g. A_)
+                // In that case, the source must have the dominant allele.
+                if (target.Symbol == "_") return true; 
                 return source.Symbol == target.Symbol;
             }
 
             // After normalization, First is the most dominant.
+            // Special rule: if normOther.Second is NOT _, it means the variety definition 
+            // EXPLICITLY requires that allele (e.g. Siamese Sable cchlcchl).
+            // In that case, normThis.Second MUST NOT be _ if we want to match it.
+            // Wait, if normThis is cchlcchl and normOther is cchl_, it matches (Contains).
+            // If normThis is cchl_ and normOther is cchlcchl, it should NOT match.
+            if (normOther.Second.Symbol != "_" && normThis.Second.Symbol == "_") return false;
+
             if (!AlleleMatches(normThis.First, normOther.First)) return false;
             if (!AlleleMatches(normThis.Second, normOther.Second)) return false;
         }

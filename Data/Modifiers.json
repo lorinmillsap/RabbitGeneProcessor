@@ -46,11 +46,11 @@
     "Type": "Prefix"
   },
   {
-    "Name": "Harlequinized",
-    "GenotypeString": "*ej",
-    "Description": "Applies the harlequin pattern (patchy distribution of Eumalanin and Pheomelanin).",
-    "Type": "Prefix"
-  },
+        "Name": "Harlequinized",
+        "GenotypeString": "ej_",
+        "Description": "Applies the harlequin pattern (patchy distribution of Eumalanin and Pheomelanin).",
+        "Type": "Prefix"
+    },
   {
     "Name": "Martenized",
     "GenotypeString": "cchd_",
