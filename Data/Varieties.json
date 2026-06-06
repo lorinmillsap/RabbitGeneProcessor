@@ -190,7 +190,7 @@
     {
         "Name": "Siamese Sable",
         "GenotypeString": "aa,B_,cchlcchl,D_,E_",
-        "Description": "A shaded variety with a sepia brown color and darker points.",
+        "Description": "A shaded variety with a sepia brown color and darker points. Homozygous for the cchl gene.",
         "AlternateNames": [ "Seal", "Siamese" ]
     },
     {
@@ -200,19 +200,15 @@
         "AlternateNames": [ "Smoke Pearl" ]
     },
     {
-        "Name": "Sable Point",
-        "GenotypeString": "aa,B_,cchlch,D_,E_",
-        "Description": "A shaded variety with creamy white body and sepia brown points. Result of Sable combined with Himalayan gene."
-    },
-    {
         "Name": "Sable",
-        "GenotypeString": "aa,B_,cchl_,D_,E_",
-        "Description": "A shaded variety with a rich sepia brown color, specifically the heterozygous form of Siamese Sable."
+        "GenotypeString": "aa,B_,cchl(ch/c),D_,E_",
+        "Description": "A shaded variety with a rich sepia brown color. Result of Siamese Sable allele combined with a more recessive C-locus gene.",
+        "AlternateNames": [ "Sable" ]
     },
     {
-        "Name": "Sable Point (Non-Extension)",
+        "Name": "Sable Point",
         "GenotypeString": "aa,B_,cchl_,D_,ee",
-        "Description": "Sable point produced by the non-extension gene. Often just called Sable Point.",
+        "Description": "A shaded variety with creamy white body and sepia brown points. Result of Sable combined with non-extension gene.",
         "AlternateNames": [ "Sable Point" ]
     },
     {
