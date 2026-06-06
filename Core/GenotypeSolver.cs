@@ -156,8 +156,60 @@ public static class GenotypeSolver
             l1 ??= new Locus(new Allele("_"), new Allele("_")) { OverrideLocusSymbol = symbol };
             l2 ??= new Locus(new Allele("_"), new Allele("_")) { OverrideLocusSymbol = symbol };
 
-            var g1 = GetExpandedGametes(l1);
-            var g2 = GetExpandedGametes(l2);
+            // Logic for expanding alleles:
+            // 1. If an allele is known (not _), it is used as is.
+            // 2. If an allele is unknown (_), but has suspected alleles (), we use those suspected alleles.
+            // 3. If an allele is unknown (_), and has NO suspected alleles, we keep it as _ to avoid explosion.
+            // 4. Exclusions [] are always respected.
+            
+            List<Allele> GetGametes(Locus locus)
+            {
+                var gametes = new List<Allele>();
+                foreach (var a in new[] { locus.First, locus.Second })
+                {
+                    if (a.Symbol == "_" && a.Suspected is { Count: > 0 })
+                    {
+                        foreach (var s in a.Suspected)
+                        {
+                            if (a.Excluded != null && a.Excluded.Contains(s)) continue;
+                            gametes.Add(new Allele(s));
+                        }
+                    }
+                    else
+                    {
+                        gametes.Add(a);
+                    }
+                }
+                return gametes;
+            }
+
+            var g1 = GetGametes(l1);
+            var g2 = GetGametes(l2);
+
+            // If a locus results in 100% of the same thing (e.g. _ x _ -> __), 
+            // and it is effectively "unknown" in both parents, we can treat it as a single unit
+            // to prevent the Cartesian product from exploding.
+            bool IsEffectivelyUnknown(Locus l) => l.First.Symbol == "_" && l.Second.Symbol == "_" && 
+                                               (l.First.Suspected == null || l.First.Suspected.Count == 0) &&
+                                               (l.Second.Suspected == null || l.Second.Suspected.Count == 0);
+
+            if (IsEffectivelyUnknown(l1) && IsEffectivelyUnknown(l2))
+            {
+                locusPossibilities[symbol] = new List<(Locus Locus, double Probability)> { (l1, 1.0) };
+                continue;
+            }
+            
+            // Also handle cases like B_ x B_ where we just want to see B_ (or its resolution) 
+            // instead of expanding every possibility if not requested.
+            bool IsPartiallyUnknown(Locus l) => (l.First.Symbol == "_" || l.Second.Symbol == "_") &&
+                                               (l.First.Suspected == null || l.First.Suspected.Count == 0) &&
+                                               (l.Second.Suspected == null || l.Second.Suspected.Count == 0);
+
+            if (IsPartiallyUnknown(l1) && IsPartiallyUnknown(l2) && l1.Matches(l2))
+            {
+                locusPossibilities[symbol] = new List<(Locus Locus, double Probability)> { (l1, 1.0) };
+                continue;
+            }
 
             var outcomes = new Dictionary<string, (Locus Locus, int Count)>();
             int total = g1.Count * g2.Count;
@@ -168,8 +220,62 @@ public static class GenotypeSolver
                 {
                     var offspringLocus = SortLocus(new Locus(a1, a2) { OverrideLocusSymbol = symbol });
                     
-                    // Respect exclusions from parents if any
-                    // In a simple Punnett square, we typically just combine alleles.
+                    // Phenotypic reduction: If a locus has a dominant allele and an unknown or more recessive allele,
+                    // we reduce it to the dominant form with an underscore (e.g., AA or Aat -> A_)
+                    // unless specifically told to be homozygous or similar.
+                    // The user wants AA and Aat to group into A_.
+                    if (!offspringLocus.First.IsUnknown && !offspringLocus.Second.IsUnknown && offspringLocus.First.Symbol != offspringLocus.Second.Symbol)
+                    {
+                        // It's heterozygous and both are known. Check if First is dominant to Second.
+                        var defs = GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == symbol);
+                        if (defs != null)
+                        {
+                            var d1 = defs.Alleles.FirstOrDefault(a => a.Symbol == offspringLocus.First.Symbol);
+                            var d2 = defs.Alleles.FirstOrDefault(a => a.Symbol == offspringLocus.Second.Symbol);
+                            if (d1 != null && d2 != null && d1.Order < d2.Order && 
+                                d1.Dominance != DominanceType.PartiallyDominant && 
+                                d2.Dominance != DominanceType.PartiallyDominant &&
+                                d1.Dominance != DominanceType.PartiallyRecessive)
+                            {
+                                // First is strictly dominant to Second and neither are "stacking" genes.
+                                // Reduce to First_
+                                offspringLocus = new Locus(offspringLocus.First, new Allele("_")) { OverrideLocusSymbol = symbol };
+                            }
+                        }
+                    }
+                    else if (!offspringLocus.First.IsUnknown && !offspringLocus.Second.IsUnknown && offspringLocus.First.Symbol == offspringLocus.Second.Symbol)
+                    {
+                        // It's homozygous.
+                        var defs = GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == symbol);
+                        if (defs != null)
+                        {
+                            var d1 = defs.Alleles.FirstOrDefault(a => a.Symbol == offspringLocus.First.Symbol);
+                            // Reduce to Symbol_ only if it's NOT a stacking gene.
+                            // Stacking genes (PartiallyDominant) like EsEs vs EsE produce different phenotypes.
+                            if (d1 != null && d1.Dominance != DominanceType.PartiallyDominant)
+                            {
+                                offspringLocus = new Locus(offspringLocus.First, new Allele("_")) { OverrideLocusSymbol = symbol };
+                            }
+                        }
+                    }
+                    else if (!offspringLocus.First.IsUnknown && offspringLocus.Second.IsUnknown)
+                    {
+                        // It's already Symbol_
+                        // For non-stacking genes, we want to group outcomes that have the SAME dominant allele.
+                        // However, we must be careful not to hide carrier info if it was explicitly provided.
+                        // But in this method, we are grouping for Phenotypic prediction.
+                    }
+
+                    // Normalize suspects/exclusions for grouping
+                    // If we have A_ and Aat, both should become A_ for grouping.
+                    // We already did this above for AA and Aat. 
+                    // What about A(at) vs A_?
+                    if (!offspringLocus.First.IsUnknown && offspringLocus.Second.IsUnknown && (offspringLocus.Second.Suspected?.Count > 0 || offspringLocus.Second.Excluded?.Count > 0))
+                    {
+                         // If we are grouping by phenotype, A(at) is phenotypically same as A_.
+                         // So we strip suspects/exclusions for the grouping key.
+                         offspringLocus = new Locus(offspringLocus.First, new Allele("_")) { OverrideLocusSymbol = symbol };
+                    }
                     
                     var key = offspringLocus.ToString();
                     if (outcomes.TryGetValue(key, out var existing))
@@ -188,12 +294,14 @@ public static class GenotypeSolver
                 .OrderByDescending(p => p.Item2)
                 .ToList();
 
-            // Respect exclusions if target offspring loci were provided with exclusions
-            // But since this is general prediction, we don't have a "target" offspring locus here.
-            // However, the issue says "it needs to respect genes that are excluded '[]'".
-            // Usually this means if a parent has an exclusion, we should respect it?
-            // Actually, exclusions on parents filter what they CAN be, which is handled in GetExpandedGametes.
-            // Wait, does GetExpandedGametes handle exclusions? Let's check.
+            // If a locus is completely unknown in both parents, avoid expanding it into every possible allele
+            // to prevent probability dilution, unless the user explicitly wants to explore it.
+            // We'll keep it as __ (original) with 100% probability for the purpose of prediction.
+            if ((l1.First.IsUnknown && l1.Second.IsUnknown && l1.First.Suspected == null && l1.Second.Suspected == null) &&
+                (l2.First.IsUnknown && l2.Second.IsUnknown && l2.First.Suspected == null && l2.Second.Suspected == null))
+            {
+                possibilities = new List<(Locus Locus, double Probability)> { (l1, 1.0) };
+            }
 
             locusPossibilities[symbol] = possibilities;
         }
@@ -214,10 +322,7 @@ public static class GenotypeSolver
                 foreach (var possibility in possibilities)
                 {
                     var newGenotype = new RabbitGenotype();
-                    foreach (var locus in current.Genotype.Loci)
-                    {
-                        newGenotype.Loci.Add(locus);
-                    }
+                    newGenotype.Loci.AddRange(current.Genotype.Loci);
                     newGenotype.Loci.Add(possibility.Locus);
 
                     nextPredictions.Add(new OffspringPrediction(newGenotype, current.Probability * possibility.Probability));
@@ -229,36 +334,60 @@ public static class GenotypeSolver
                 .GroupBy(p => p.Genotype.ToString())
                 .Select(g => new OffspringPrediction(g.First().Genotype, g.Sum(p => p.Probability)))
                 .OrderByDescending(p => p.Probability)
-                .Take(limit) // Apply limit early to prevent exponential explosion
+                .Take(limit * 2) // Take more during intermediate steps to avoid losing information
                 .ToList();
         }
 
-        return currentPredictions;
+        return currentPredictions.OrderByDescending(p => p.Probability).Take(limit).ToList();
     }
 
     public record OffspringPrediction(RabbitGenotype Genotype, double Probability);
 
     private static List<Allele> GetExpandedGametes(Locus locus)
     {
-        var gametes = new List<Allele> { locus.First, locus.Second };
-        var expanded = new List<Allele>();
-        foreach (var g in gametes)
+        var locusSymbol = locus.GetLocusSymbol();
+        var locusDef = GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == locusSymbol);
+        var allPossibleAlleles = locusDef?.Alleles.Select(a => a.Symbol).ToList() ?? new List<string>();
+
+        List<Allele> Expand(Allele allele)
         {
-            if (g.IsUnknown && g.Suspected is { Count: > 0 })
+            var options = new List<Allele>();
+            if (allele.IsUnknown)
             {
-                foreach (var s in g.Suspected)
+                var candidates = new List<string>();
+                if (allele.Suspected is { Count: > 0 })
                 {
-                    // Respect exclusions if any
-                    if (g.Excluded != null && g.Excluded.Contains(s)) continue;
-                    expanded.Add(new Allele(s));
+                    candidates.AddRange(allele.Suspected);
                 }
+                else
+                {
+                    candidates.AddRange(allPossibleAlleles);
+                    if (candidates.Count == 0) candidates.Add("_");
+                }
+
+                foreach (var s in candidates)
+                {
+                    if (allele.Excluded != null && allele.Excluded.Contains(s)) continue;
+                    options.Add(new Allele(s));
+                }
+
+                if (options.Count == 0) options.Add(new Allele("_"));
             }
             else
             {
-                expanded.Add(g);
+                options.Add(allele);
             }
+            return options;
         }
-        return expanded;
+
+        var firstOptions = Expand(locus.First);
+        var secondOptions = Expand(locus.Second);
+
+        var result = new List<Allele>();
+        foreach (var f in firstOptions) result.Add(f);
+        foreach (var s in secondOptions) result.Add(s);
+        
+        return result;
     }
 
     private static bool IsExcluded(Locus offspring, Locus target)
