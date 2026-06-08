@@ -49,6 +49,11 @@ public static class GeneticParser
         if (string.IsNullOrWhiteSpace(input))
             throw new ArgumentException("Input cannot be empty.", nameof(input));
 
+        if (input == "__")
+        {
+            return new Locus(new Allele("_"), new Allele("_"));
+        }
+        
         var alleles = new List<Allele>();
         int index = 0;
 
@@ -70,7 +75,17 @@ public static class GeneticParser
             }
             else
             {
-                alleles.Add(new Allele("_"));
+                // Check if the single allele is a dominant allele. If so, default to _ for second.
+                // If it's a recessive allele, it's more likely a homozygous pair shorthand (e.g. "aa").
+                var def = first.GetDefinition();
+                if (def != null && (def.Dominance == DominanceType.Recessive || def.Dominance == DominanceType.PartiallyRecessive))
+                {
+                    alleles.Add(new Allele(first.Symbol));
+                }
+                else
+                {
+                    alleles.Add(new Allele("_"));
+                }
             }
         }
         
@@ -88,9 +103,10 @@ public static class GeneticParser
         var allSymbols = Definitions.SelectMany(l => l.Alleles)
             .SelectMany(a => new[] { a.Symbol }.Concat(a.AlternativeNotations))
             .Concat(Definitions.Select(d => d.Symbol)) // Add locus symbols
-            .OrderByDescending(s => s.Length)
             .Distinct()
+            .OrderByDescending(s => s.Length)
             .ToList();
+        allSymbols.Add("__");
         allSymbols.Add("_");
         allSymbols.Add("*");
         allSymbols.Add("?");
@@ -163,8 +179,8 @@ public static class GeneticParser
         var allSymbols = Definitions.SelectMany(l => l.Alleles)
             .SelectMany(a => new[] { a.Symbol }.Concat(a.AlternativeNotations))
             .Concat(Definitions.Select(d => d.Symbol)) // Add locus symbols
-            .OrderByDescending(s => s.Length)
             .Distinct()
+            .OrderByDescending(s => s.Length)
             .ToList();
 
         while (index < input.Length && input[index] != endChar)

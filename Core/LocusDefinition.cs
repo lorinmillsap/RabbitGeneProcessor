@@ -44,7 +44,8 @@ public record LocusDefinition(
     string Name,
     string Description,
     string Category,
-    List<AlleleDefinition> Alleles)
+    List<AlleleDefinition> Alleles,
+    string? DefaultGenotype = null)
 {
     public AlleleDefinition? DefaultAllele => Alleles.FirstOrDefault(a => a.IsDefault);
 }

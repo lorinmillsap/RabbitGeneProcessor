@@ -128,83 +128,79 @@ class Program
             // Use the first parent's breed as the primary breed for identification, if available.
             var primaryBreed = breed1?.Name ?? breed2?.Name;
 
-            var predictions = GenotypeSolver.PredictOffspring(p1G, p2G, limit);
+            Func<RabbitGenotype, string> identifyFunc = g => VarietyService.IdentifyDescription(g, primaryBreed);
+            var predictions = GenotypeSolver.PredictOffspring(p1G, p2G, limit, identifyFunc);
             
             Console.WriteLine($"Parent 1: {(breed1 != null ? breed1.Name + " " : "")}{p1G}");
             Console.WriteLine($"Parent 2: {(breed2 != null ? breed2.Name + " " : "")}{p2G}");
             if (!string.IsNullOrEmpty(primaryBreed)) Console.WriteLine($"Primary Breed: {primaryBreed}");
 
             // Group predictions by category
-            var colorOutcomes = new List<GenotypeSolver.OffspringPrediction>();
-
-            foreach (var p in predictions)
-            {
-                // We need to identify the outcomes for display.
-                var description = VarietyService.IdentifyDescription(p.Genotype, primaryBreed);
-                p.Description = description;
-                colorOutcomes.Add(p);
-            }
-
-            Console.WriteLine($"\nPredicted Color Outcomes (Top {limit}):");
-            foreach (var p in colorOutcomes.Take(limit))
-            {
-                Console.WriteLine($"{p.Probability,6:P2} - {p.Genotype} ({p.Description})");
-            }
-
-            // Identify Non-Color Loci that were active
-            var activeLoci = predictions.FirstOrDefault()?.Genotype.Loci ?? new List<Locus>();
-            var categories = activeLoci
-                .Select(l => l.GetDefinition())
-                .Where(d => d != null && d.Category != "Color")
+            var activeLoci = predictions.SelectMany(p => p.Genotype.Loci).Select(l => l.GetLocusSymbol()).Distinct().ToList();
+            var categoryNames = activeLoci
+                .Select(s => GeneticParser.Definitions.FirstOrDefault(d => d.Symbol == s))
+                .Where(d => d != null)
                 .Select(d => d!.Category)
                 .Distinct()
-                .OrderBy(c => c)
+                .OrderBy(c => c == "Color" ? 0 : 1)
+                .ThenBy(c => c)
                 .ToList();
 
-            foreach (var category in categories)
+            foreach (var category in categoryNames)
             {
-                Console.WriteLine($"\nPredicted {category} Outcomes:");
-                
-                // For each category, we want to see the unique phenotypes within THAT category
-                var catPredictions = predictions
-                    .GroupBy(p => {
-                        var catLoci = p.Genotype.Loci.Where(l => l.GetDefinition()?.Category == category).ToList();
-                        return string.Join(",", catLoci);
-                    })
-                    .Select(g => {
-                        var prob = g.Sum(x => x.Probability);
-                        var sampleGenotype = g.First().Genotype;
-                        var catLoci = sampleGenotype.Loci.Where(l => l.GetDefinition()?.Category == category).ToList();
-                        
-                        // Create a human readable description for this category outcome
-                        var descriptions = new List<string>();
-                        foreach(var l in catLoci)
-                        {
-                            var def = l.GetDefinition();
-                            if (def == null) continue;
-                            
-                            var norm = l.Normalize();
-                            var alleleDef = def.Alleles.FirstOrDefault(a => a.Symbol == norm.First.Symbol);
-                            
-                            // Only include if NOT the default allele OR if it's explicitly specified in a parent
-                            bool wasExplicit = p1G.Loci.Any(pl => pl.GetLocusSymbol() == def.Symbol) || 
-                                              p2G.Loci.Any(pl => pl.GetLocusSymbol() == def.Symbol);
-
-                            if (alleleDef != null && (alleleDef.Symbol != def.DefaultAllele?.Symbol || wasExplicit))
-                            {
-                                descriptions.Add(alleleDef.Name);
-                            }
-                        }
-                        
-                        var desc = descriptions.Count > 0 ? string.Join(", ", descriptions) : "Normal";
-                        return new { Genotype = string.Join(",", catLoci), Description = desc, Probability = prob };
-                    })
-                    .OrderByDescending(x => x.Probability)
-                    .ToList();
-
-                foreach (var cp in catPredictions)
+                if (category == "Color")
                 {
-                    Console.WriteLine($"{cp.Probability,6:P2} - {cp.Genotype} ({cp.Description})");
+                    Console.WriteLine($"\nPredicted Color Outcomes (Top {limit}):");
+                    foreach (var p in predictions.Take(limit))
+                    {
+                        Console.WriteLine($"{p.Probability,6:P2} - {p.Genotype} ({identifyFunc(p.Genotype)})");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"\nPredicted {category} Outcomes:");
+                    var catPredictions = predictions
+                        .GroupBy(p => {
+                            var catLoci = p.Genotype.Loci.Where(l => l.GetDefinition()?.Category == category).ToList();
+                            return string.Join(",", catLoci.Select(l => l.ToString()));
+                        })
+                        .Select(g => {
+                            var prob = g.Sum(x => x.Probability);
+                            var sampleGenotype = g.First().Genotype;
+                            var catLoci = sampleGenotype.Loci.Where(l => l.GetDefinition()?.Category == category).ToList();
+                            
+                            var descriptions = new List<string>();
+                            foreach(var l in catLoci)
+                            {
+                                var def = l.GetDefinition();
+                                if (def == null) continue;
+                                var norm = l.Normalize();
+
+                                if (def.Symbol == "Dw")
+                                {
+                                    if (norm.First.Symbol == "Dw" && norm.Second.Symbol == "Dw") descriptions.Add("Peanut (Lethal)");
+                                    else if (norm.First.Symbol == "Dw") descriptions.Add("Dwarf");
+                                    else descriptions.Add("Normal Size");
+                                }
+                                else
+                                {
+                                    var alleleDef = def.Alleles.FirstOrDefault(a => a.Symbol == norm.First.Symbol);
+                                    if (alleleDef != null)
+                                    {
+                                        descriptions.Add(alleleDef.Name);
+                                    }
+                                }
+                            }
+                            var desc = descriptions.Count > 0 ? string.Join(", ", descriptions) : "Normal";
+                            return new { Genotype = string.Join(",", catLoci), Description = desc, Probability = prob };
+                        })
+                        .OrderByDescending(x => x.Probability)
+                        .ToList();
+
+                    foreach (var cp in catPredictions)
+                    {
+                        Console.WriteLine($"{cp.Probability,6:P2} - {cp.Genotype} ({cp.Description})");
+                    }
                 }
             }
         }, pp1Option, pp2Option, limitOption);

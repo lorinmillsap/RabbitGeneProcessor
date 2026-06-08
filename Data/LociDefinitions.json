@@ -4,6 +4,7 @@
         "Name": "Black/brown Locus",
         "Description": "Controls the intensity of the black pigment.",
         "Category": "Color",
+        "DefaultGenotype": "B_",
         "Alleles": [
             {
                 "Symbol": "B",
@@ -30,6 +31,7 @@
         "Name": "Color Locus",
         "Description": "Controls the amount of pigment developed.  More specifically controls tyrosinase which is a melanin precursor.",
         "Category": "Color",
+        "DefaultGenotype": "C_",
         "Alleles": [
             {
                 "Symbol": "C",
@@ -92,6 +94,7 @@
         "Name": "Dense/Dilute Locus",
         "Description": "Controls the density of pigment granules.",
         "Category": "Color",
+        "DefaultGenotype": "D_",
         "Alleles": [
             {
                 "Symbol": "D",
@@ -118,6 +121,7 @@
         "Name": "Extension Locus",
         "Description": "Controls the extension of eumalanin.",
         "Category": "Color",
+        "DefaultGenotype": "E_",
         "Alleles": [
             {
                 "Symbol": "Es",
@@ -167,8 +171,9 @@
     {
         "Symbol": "P",
         "Name": "Lutino Locus",
-        "Description": "A rare mutation that causes a partial albinism and fully suppresess eumalanin resulting in pink eyes and an orange color.",
+        "Description": "A rare mutation that causes a partial albinism and fully or nearly fully suppresess eumalanin resulting in pink eyes and an orange color.",
         "Category": "Color",
+        "DefaultGenotype": "PP",
         "Alleles": [
             {
                 "Symbol": "P",
@@ -195,6 +200,7 @@
         "Name": "Wide Band Locus",
         "Description": "Controls the width of the intermediate band on agouti hairs.",
         "Category": "Color",
+        "DefaultGenotype": "WW",
         "Alleles": [
             {
                 "Symbol": "W",
@@ -221,6 +227,7 @@
         "Name": "Agouti Locus",
         "Description": "Controls the distribution of pigment on the hair shaft.",
         "Category": "Pattern",
+        "DefaultGenotype": "A_",
         "Alleles": [
             {
                 "Symbol": "A",
@@ -234,7 +241,7 @@
             {
                 "Symbol": "at",
                 "Name": "Tan Pattern",
-                "Description": "Solid color top with tan/white markings on belly, eye circles, etc.",
+                "Description": "Solid color top with tan/white markings on belly, eye circles, etc.  Also known as otter pattern.",
                 "Dominance": "PartiallyDominant",
                 "Order": 2,
                 "AlternativeNotations": [
@@ -286,6 +293,7 @@
         "Name": "Broken/English Spotting Locus",
         "Description": "Controls white spotting pattern.",
         "Category": "Pattern",
+        "DefaultGenotype": "enen",
         "Alleles": [
             {
                 "Symbol": "En",
@@ -312,6 +320,7 @@
         "Name": "Silvering Locus",
         "Description": "Controls silvering (white hairs mixed with colored hairs).",
         "Category": "Pattern",
+        "DefaultGenotype": "SiSi",
         "Alleles": [
             {
                 "Symbol": "Si",
@@ -338,6 +347,7 @@
         "Name": "Vienna Locus",
         "Description": "Controls the Blue-Eyed White (BEW) pattern.",
         "Category": "Pattern",
+        "DefaultGenotype": "VV",
         "Alleles": [
             {
                 "Symbol": "V",
@@ -364,6 +374,7 @@
         "Name": "White-Eared Locus",
         "Description": "A spotting gene that primarily affects the ears.",
         "Category": "Pattern",
+        "DefaultGenotype": "wewe",
         "Alleles": [
             {
                 "Symbol": "We",
@@ -390,6 +401,7 @@
         "Name": "Long Fur Locus",
         "Description": "Controls hair length.",
         "Category": "Fur",
+        "DefaultGenotype": "LL",
         "Alleles": [
             {
                 "Symbol": "L",
@@ -416,6 +428,7 @@
         "Name": "Mane Locus",
         "Description": "Controls the presence of a mane.",
         "Category": "Fur",
+        "DefaultGenotype": "mm",
         "Alleles": [
             {
                 "Symbol": "M",
@@ -442,6 +455,7 @@
         "Name": "Rex Locus",
         "Description": "Controls the rex fur texture (short, plush).",
         "Category": "Fur",
+        "DefaultGenotype": "RR",
         "Alleles": [
             {
                 "Symbol": "R",
@@ -468,6 +482,7 @@
         "Name": "Satin Locus",
         "Description": "Controls the satin sheen of the fur.",
         "Category": "Fur",
+        "DefaultGenotype": "SaSa",
         "Alleles": [
             {
                 "Symbol": "Sa",
@@ -494,6 +509,7 @@
         "Name": "Dwarf Locus",
         "Description": "Controls dwarfism.",
         "Category": "Body",
+        "DefaultGenotype": "dwdw",
         "Alleles": [
             {
                 "Symbol": "Dw",
@@ -518,6 +534,7 @@
         "Name": "Moon Eye Locus",
         "Description": "A simple recessive genetic defect causing blindness.",
         "Category": "Health",
+        "DefaultGenotype": "MeMe",
         "Alleles": [
             {
                 "Symbol": "Me",

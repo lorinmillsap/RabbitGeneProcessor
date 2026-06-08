@@ -59,6 +59,35 @@ public record Locus(Allele First, Allele Second)
     }
 
     /// <summary>
+    /// Checks if this locus "contains" another locus. 
+    /// Handles underscores as wildcards.
+    /// </summary>
+    public bool Contains(Locus other)
+    {
+        if (GetLocusSymbol() != other.GetLocusSymbol()) return false;
+        
+        var normThis = this.Normalize();
+        var normOther = other.Normalize();
+
+        bool AlleleMatches(Allele source, Allele target)
+        {
+            if (target.Symbol == "_") return true;
+            if (source.Symbol == "_") return true;
+            return source.Symbol == target.Symbol;
+        }
+
+        // If normOther specifies a second allele, normThis must either match it OR have an unknown second allele.
+        // BUT if normThis is A_ and normOther is Aa, it matches.
+        // If normThis is Aa and normOther is A_, it matches.
+        // The previous logic: if (normOther.Second.Symbol != "_" && normThis.Second.Symbol == "_") return false;
+        // was intended to say: "If variety REQUIRES specific recessive, source must have it".
+        // BUT in identification, if we HAVE A_, it matches anything that needs A_.
+        
+        // Let's refine:
+        return AlleleMatches(normThis.First, normOther.First) && AlleleMatches(normThis.Second, normOther.Second);
+    }
+
+    /// <summary>
     /// Normalizes and sorts the locus based on dominance rules.
     /// Dominant alleles always come first. 
     /// Dominant genes are always dominant, so what the recessive is doesn't matter for normalization order.
@@ -121,6 +150,7 @@ public record Locus(Allele First, Allele Second)
 
     public override string ToString()
     {
+        if (First.Symbol == "_" && Second.Symbol == "_") return "__";
         if (Second.Symbol == "_")
         {
             // Special handling for suspected/excluded alleles on an unknown recessive
